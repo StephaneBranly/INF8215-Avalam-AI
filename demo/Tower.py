@@ -24,13 +24,9 @@ class Tower:
         self.content.append(content)
         return True
 
-    def removeColor(self,color):
-        contentRemoved = []
-        i = self.height()-1
-        while self.content[i] == color:
-            contentRemoved.append(color)
-            self.content.pop()
-            i = i - 1
+    def removeContent(self):
+        contentRemoved = self.content
+        self.content = []
         return contentRemoved
         
     
