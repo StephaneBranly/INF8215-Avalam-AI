@@ -268,8 +268,8 @@ class Game:
             logging.info("Winner: draw game")
         self.trace.set_winner(winner, reason)
         self.viewer.finished(self.step, winner, reason)
-        for agent in agents:
-            agent.finished(self.step, winner, reason)
+        for i in range(2):
+            agents[i].finished(self.step, winner, reason, 1 if i==0 else -1)
 
     def timed_exec(self, fn, *args, agent=None):
         """Execute self.agents[agent].fn(*args, time_left) with the

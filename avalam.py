@@ -261,14 +261,17 @@ class Agent:
         """
         pass
 
-    def finished(self, steps, winner, reason=""):
+    def finished(self, steps, winner, reason="", player=None):
         """The game is finished.
-
         Arguments:
         steps -- the number of steps played
         winner -- the winner (>0: even players, <0: odd players, 0: draw)
         reason -- a specific reason for the victory or "" if standard
+        player -- the player this agent controls (None if not applicable)
         """
+        if player:
+            print("Winner", player, ":", reason)
+            print("You was player", player)
         pass
 
     def pool_ended(self, pool, player):
@@ -276,6 +279,7 @@ class Agent:
 
         Arguments:
         pool -- the pool object
+        player -- the player this agent controls
         """
         print("Pool summary:", pool)
         print("You was player", player)
