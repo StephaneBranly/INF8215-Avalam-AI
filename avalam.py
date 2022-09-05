@@ -271,6 +271,15 @@ class Agent:
         """
         pass
 
+    def pool_ended(self, pool, player):
+        """The pool is finished.
+
+        Arguments:
+        pool -- the pool object
+        """
+        print("Pool summary:", pool)
+        print("You was player", player)
+        pass
 
 def serve_agent(agent, address, port):
     """Serve agent on specified bind address and port number."""
