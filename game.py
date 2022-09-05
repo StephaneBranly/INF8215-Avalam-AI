@@ -449,8 +449,18 @@ if __name__ == "__main__":
             return [winners.count(-1)/len(winners),winners.count(0)/len(winners),winners.count(1)/len(winners)]
 
         pool_history = []
+        if args.stats:
+            f = open(f"stats/game_results.csv", "w")
+            f.write(f"Pool id; Agent -1; Agent 1; Scores; Steps\n")
+            f.close()
+
+            f = open(f"stats/pool_results.csv", "w")
+            f.write(f"Pool id; Agent -1; Agent 1; % of -1, % of 0, % of 1')]\n")
+            f.close()
         for p in range(args.pool):
-            game_history = []
+            game_history = dict()
+            game_history['scores'] = []
+            game_history['steps'] = []
             for i in range(args.games):
                 board = Board()
                 game = Game(agents, board, viewer, credits)
@@ -471,7 +481,8 @@ if __name__ == "__main__":
                         logging.debug("Replaying trace.")
                         viewer.replay(game.trace, args.speed, show_end=True)
                     if args.stats:
-                        game_history.append(game.trace.winner)
+                        game_history['scores'].append(game.trace.winner)
+                        game_history['steps'].append(game.step)
 
                 if args.gui:
                     import threading
@@ -479,12 +490,21 @@ if __name__ == "__main__":
                     #viewer.run()
                 else:
                     play()
-            print(game_history)
-            pool_results = compute_pool_results(game_history)
+            # print(game_history)
+            pool_results = compute_pool_results(game_history['scores'])
             pool_history.append(pool_results)
+            if args.stats:
+                f = open("stats/game_results.csv", "a")
+                f.write(f"{p};{agents[1].get_agent_id()};{agents[0].get_agent_id()};{game_history['scores']};{game_history['steps']}\n")
+                f.close()
+                f = open("stats/pool_results.csv", "a")
+                f.write(f"{p};{agents[1].get_agent_id()};{agents[0].get_agent_id()};{pool_results}\n")
+                f.close()
+            
+            print(pool_results)
             for i in range(2):
                 agents[i].pool_ended(pool_results, 1 if i==0 else -1)
-        print(pool_history)
+        # print(pool_history)
         
     else:
         # Replay mode

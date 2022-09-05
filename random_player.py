@@ -30,6 +30,8 @@ class RandomAgent(Agent):
         print('step', step, 'player', player, 'actions', len(actions))
         return random.choice(actions)
 
+    def get_agent_id(self):
+        return "Random Agent"
 
 if __name__ == "__main__":
     agent_main(RandomAgent())

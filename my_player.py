@@ -47,6 +47,8 @@ class MyAgent(Agent):
         # TODO: implement your agent and return an action for the current step.
         pass
 
+    def get_agent_id(self):
+        return "My Agent"
 
 if __name__ == "__main__":
     agent_main(MyAgent())

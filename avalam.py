@@ -269,9 +269,6 @@ class Agent:
         reason -- a specific reason for the victory or "" if standard
         player -- the player this agent controls (None if not applicable)
         """
-        if player:
-            print("Winner", player, ":", reason)
-            print("You was player", player)
         pass
 
     def pool_ended(self, pool, player):
@@ -281,9 +278,11 @@ class Agent:
         pool -- the pool object
         player -- the player this agent controls
         """
-        print("Pool summary:", pool)
-        print("You was player", player)
         pass
+
+    def get_agent_id(self):
+        """Return an identifier for this agent."""
+        return "Agent"
 
 def serve_agent(agent, address, port):
     """Serve agent on specified bind address and port number."""
