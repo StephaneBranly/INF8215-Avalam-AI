@@ -353,6 +353,9 @@ if __name__ == "__main__":
                         metavar="AGENT2")
     parser.add_argument("-v", "--verbose", action="store_true", default=False,
                         help="be verbose")
+    parser.add_argument("-R", "--repeat", type=int, default=1,
+                        help="repeat the game N times (default: 1)",
+                        metavar="N")
     parser.add_argument("--no-gui",
                         action="store_false", dest="gui", default=True,
                         help="do not try to load the graphical user interface")
@@ -443,31 +446,32 @@ if __name__ == "__main__":
             else:
                 agents[i] = connect_agent(agents[i])
                 credits[i] = args.time
+        for i in range(args.repeat):
+            board = Board()
+            game = Game(agents, board, viewer, credits)
 
-        game = Game(agents, board, viewer, credits)
-
-        def play():
-            try:
-                game.startPlaying()
-            except KeyboardInterrupt:
-                exit()
-            if args.write is not None:
-                logging.info("Writing trace to '%s'", args.write.name)
+            def play():
                 try:
-                    game.trace.write(args.write)
-                    args.write.close()
-                except IOError as e:
-                    logging.error("Unable to write trace. Reason: %s", e)
-            if args.gui:
-                logging.debug("Replaying trace.")
-                viewer.replay(game.trace, args.speed, show_end=True)
+                    game.startPlaying()
+                except KeyboardInterrupt:
+                    exit()
+                if args.write is not None:
+                    logging.info("Writing trace to '%s'", args.write.name)
+                    try:
+                        game.trace.write(args.write)
+                        args.write.close()
+                    except IOError as e:
+                        logging.error("Unable to write trace. Reason: %s", e)
+                if args.gui:
+                    logging.debug("Replaying trace.")
+                    viewer.replay(game.trace, args.speed, show_end=True)
 
-        if args.gui:
-            import threading
-            threading.Thread(target=play).start()
-            #viewer.run()
-        else:
-            play()
+            if args.gui:
+                import threading
+                threading.Thread(target=play).start()
+                #viewer.run()
+            else:
+                play()
     else:
         # Replay mode
         viewer.replay(trace, args.speed)
