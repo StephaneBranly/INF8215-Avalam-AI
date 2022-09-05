@@ -350,7 +350,7 @@ if __name__ == "__main__":
                         metavar="N")
     parser.add_argument("-S", "--stats", action="store_true", default=False,
                         help="store stats about winners")
-    parser.add_argument("-R", "--repeat", type=int, default=1,
+    parser.add_argument("-G", "--games", type=int, default=1,
                         help="repeat the game N times in each pool (default: 1)",
                         metavar="N")
     parser.add_argument("--no-gui",
@@ -451,7 +451,7 @@ if __name__ == "__main__":
         pool_history = []
         for p in range(args.pool):
             game_history = []
-            for i in range(args.repeat):
+            for i in range(args.games):
                 board = Board()
                 game = Game(agents, board, viewer, credits)
 
