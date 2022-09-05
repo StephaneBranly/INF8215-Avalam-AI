@@ -20,6 +20,10 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
 from avalam import *
 from NN.neural_network import NN
 import numpy as np
+import random
+import timeit
+
+ 
 
 
 class MyAgent(Agent):
@@ -43,10 +47,12 @@ class MyAgent(Agent):
         :return: an action
             eg; (1, 4, 1 , 3) to move tower on cell (1,4) to cell (1,3)
         """
-        print("percept:", percepts)
+
         print("player:", player)
         print("step:", step)
-        print("time left:", time_left if time_left else '+inf')
+        start = timeit.default_timer()
+
+
 
         # todo: iterating over all possible moves and choosing the best one (not only center of the board)
         m = percepts['m']
@@ -62,14 +68,30 @@ class MyAgent(Agent):
                 """
 
                 predict = self.NN.predict(np.array([m[i-1][j-1], m[i-1][j], m[i-1][j+1], m[i][j-1], m[i][j], m[i][j+1], m[i+1][j-1], m[i+1][j], m[i+1][j+1]]))
-                if dict_to_board(percepts).is_action_valid(self.get_action(i,j,predict[0])):
-                    actions.append([predict[1],self.get_action(i,j,predict[0])])
+                for elem in predict:
+                    if dict_to_board(percepts).is_action_valid(self.get_action(i,j,elem[0])):
+                        actions.append([elem[1],self.get_action(i,j,elem[0])])
+
+        if(len(actions) == 0):
+            board = dict_to_board(percepts)
+            return random.choice(list(board.get_actions()))
 
         action = self.get_best_action(actions,percepts)
         print("action:", action)
+        #Your statements here
+
+        stop = timeit.default_timer()
+
+        print('Time: ', stop - start) 
         return action
     
     def get_action(self,i,j,decision):
+        """
+                decision :
+                0 1 2
+                3   4
+                5 6 7
+        """
         if decision == 0:
             return (i,j,i-1,j-1)
         elif decision == 1:

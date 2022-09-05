@@ -1,8 +1,11 @@
+from tkinter import W
 import numpy as np
+import json
 
 class NN:
 
-    def __init__(self, layers):
+    def __init__(self, layers, name=""):
+        self.name = name
         self.layers = layers
         self.weights = []
         self.biases = []
@@ -27,7 +30,7 @@ class NN:
         for i in range(len(self.weights)):
             x = self.sigmoid(np.dot(x,self.weights[i])+self.biases[i].T)
 
-        return (np.argmax(x), np.max(x))
+        return x
     
     def mutate(self, rate):
         for i in range(len(self.weights)):
@@ -58,5 +61,28 @@ class NN:
                     else:
                         child.biases[i][j][k] = other.biases[i][j][k]
         return child
+
+    def save_as_json(self, filename, score):
+        """Warning: no empty file : it needs to have a array called "gen" """
+        with open(filename) as fp:
+            listObj = json.load(fp)
+        data = {}
+        w  = [a.tolist() for a in self.weights]
+        b  = [a.tolist() for a in self.biases]
+        data['name'] = self.name
+        data['score'] = score
+        data['weights'] = w
+        data['biases'] = b
+        listObj["gen"].append(data)
+        with open(filename, 'w') as outfile:
+            json.dump(listObj, outfile)
+
+    def load_from_json(self, filename, index):
+        with open(filename) as fp:
+            listObj = json.load(fp)
+        self.name = listObj["gen"][index]["name"]
+        self.weights = [np.array(a) for a in listObj["gen"][index]["weights"]]
+        self.biases = [np.array(a) for a in listObj["gen"][index]["biases"]]
+
 
 
