@@ -26,7 +26,7 @@ class MyAgent(Agent):
 
     def __init__(self):
 
-        self.NN = NN([9,9,9])
+        self.NN = NN([9,10,8])
 
     def play(self, percepts, player, step, time_left):
         """
@@ -48,14 +48,56 @@ class MyAgent(Agent):
         print("step:", step)
         print("time left:", time_left if time_left else '+inf')
 
-        # TODO: implement your agent and return an action for the current step.
+        # todo: iterating over all possible moves and choosing the best one (not only center of the board)
         m = percepts['m']
+        actions = []
+
         for i in range(1,8):
             for j in range(1,8):
-                print(self.NN.predict(np.array([m[i-1][j-1], m[i-1][j], m[i-1][j+1], m[i][j-1], m[i][j], m[i][j+1], m[i+1][j-1], m[i+1][j], m[i+1][j+1]])))
+                """
+                decision :
+                0 1 2
+                3   4
+                5 6 7
+                """
+
+                predict = self.NN.predict(np.array([m[i-1][j-1], m[i-1][j], m[i-1][j+1], m[i][j-1], m[i][j], m[i][j+1], m[i+1][j-1], m[i+1][j], m[i+1][j+1]]))
+                if dict_to_board(percepts).is_action_valid(self.getAction(i,j,predict[0])):
+                    actions.append([predict[1],self.getAction(i,j,predict[0])])
+
+        action = self.getBestAction(actions,percepts)
+        print("action:", action)
+        return action
+    
+    def getAction(self,i,j,decision):
+        if decision == 0:
+            return (i,j,i-1,j-1)
+        elif decision == 1:
+            return (i,j,i-1,j)
+        elif decision == 2:
+            return (i,j,i-1,j+1)
+        elif decision == 3:
+            return (i,j,i,j-1)
+        elif decision == 4:
+            return (i,j,i,j+1)
+        elif decision == 5:
+            return (i,j,i+1,j-1)
+        elif decision == 6:
+            return (i,j,i+1,j)
+        elif decision == 7:
+            return (i,j,i+1,j+1)
+    
+    def getBestAction(self,actions,percepts):
+        best = actions[0]
+        for action in actions:
+            if action[0] > best[0]:
+                best = action
+        return best[1]
         
 
 
 if __name__ == "__main__":
     agent_main(MyAgent())
+
+
 
