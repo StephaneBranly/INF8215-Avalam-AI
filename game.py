@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 """
 Main program for the Avalam game.
 Author: Cyrille Dejemeppe <cyrille.dejemeppe@uclouvain.be>
@@ -60,16 +60,6 @@ class Viewer(Agent):
         action -- action played
         player -- player that has played
 
-        """
-        pass
-
-    def finished(self, steps, winner, reason=""):
-        """The game is finished.
-
-        Arguments:
-        steps -- the number of steps played
-        winner -- the winner (>0: even players, <0: odd players, 0: draw)
-        reason -- a specific reason for the victory or "" if standard
         """
         pass
 
@@ -278,6 +268,8 @@ class Game:
             logging.info("Winner: draw game")
         self.trace.set_winner(winner, reason)
         self.viewer.finished(self.step, winner, reason)
+        for i in range(2):
+            agents[i].finished(self.step, winner, reason, 1 if i==0 else -1)
 
     def timed_exec(self, fn, *args, agent=None):
         """Execute self.agents[agent].fn(*args, time_left) with the
@@ -353,6 +345,14 @@ if __name__ == "__main__":
                         metavar="AGENT2")
     parser.add_argument("-v", "--verbose", action="store_true", default=False,
                         help="be verbose")
+    parser.add_argument("-P", "--pool", type=int, default=1,
+                        help="generate N pool competitions (default: 1)",
+                        metavar="N")
+    parser.add_argument("-S", "--stats", action="store_true", default=False,
+                        help="store stats about winners")
+    parser.add_argument("-G", "--games", type=int, default=1,
+                        help="repeat the game N times in each pool (default: 1)",
+                        metavar="N")
     parser.add_argument("--no-gui",
                         action="store_false", dest="gui", default=True,
                         help="do not try to load the graphical user interface")
@@ -444,30 +444,68 @@ if __name__ == "__main__":
                 agents[i] = connect_agent(agents[i])
                 credits[i] = args.time
 
-        game = Game(agents, board, viewer, credits)
+        def compute_pool_results(history):
+            winners=[-1 if score<0 else 1 if score>0 else 0 for score in history]
+            return [winners.count(-1)/len(winners),winners.count(0)/len(winners),winners.count(1)/len(winners)]
 
-        def play():
-            try:
-                game.startPlaying()
-            except KeyboardInterrupt:
-                exit()
-            if args.write is not None:
-                logging.info("Writing trace to '%s'", args.write.name)
-                try:
-                    game.trace.write(args.write)
-                    args.write.close()
-                except IOError as e:
-                    logging.error("Unable to write trace. Reason: %s", e)
-            if args.gui:
-                logging.debug("Replaying trace.")
-                viewer.replay(game.trace, args.speed, show_end=True)
+        pool_history = []
+        if args.stats:
+            f = open(f"stats/game_results.csv", "w")
+            f.write(f"Pool id; Agent -1; Agent 1; Scores; Steps\n")
+            f.close()
 
-        if args.gui:
-            import threading
-            threading.Thread(target=play).start()
-            #viewer.run()
-        else:
-            play()
+            f = open(f"stats/pool_results.csv", "w")
+            f.write(f"Pool id; Agent -1; Agent 1; % of -1, % of 0, % of 1\n")
+            f.close()
+        for p in range(args.pool):
+            game_history = dict()
+            game_history['scores'] = []
+            game_history['steps'] = []
+            for i in range(args.games):
+                board = Board()
+                game = Game(agents, board, viewer, credits)
+
+                def play():
+                    try:
+                        game.startPlaying()
+                    except KeyboardInterrupt:
+                        exit()
+                    if args.write is not None:
+                        logging.info("Writing trace to '%s'", args.write.name)
+                        try:
+                            game.trace.write(args.write)
+                            args.write.close()
+                        except IOError as e:
+                            logging.error("Unable to write trace. Reason: %s", e)
+                    if args.gui:
+                        logging.debug("Replaying trace.")
+                        viewer.replay(game.trace, args.speed, show_end=True)
+                    if args.stats:
+                        game_history['scores'].append(game.trace.winner)
+                        game_history['steps'].append(game.step)
+
+                if args.gui:
+                    import threading
+                    threading.Thread(target=play).start()
+                    #viewer.run()
+                else:
+                    play()
+            # print(game_history)
+            pool_results = compute_pool_results(game_history['scores'])
+            pool_history.append(pool_results)
+            if args.stats:
+                f = open("stats/game_results.csv", "a")
+                f.write(f"{p};{agents[1].get_agent_id()};{agents[0].get_agent_id()};{game_history['scores']};{game_history['steps']}\n")
+                f.close()
+                f = open("stats/pool_results.csv", "a")
+                f.write(f"{p};{agents[1].get_agent_id()};{agents[0].get_agent_id()};{pool_results}\n")
+                f.close()
+            
+            print(pool_results)
+            for i in range(2):
+                agents[i].pool_ended(pool_results, 1 if i==0 else -1)
+        # print(pool_history)
+        
     else:
         # Replay mode
         viewer.replay(trace, args.speed)

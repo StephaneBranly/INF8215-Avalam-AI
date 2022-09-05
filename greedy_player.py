@@ -54,6 +54,8 @@ class GreedyAgent(Agent):
         else :
             return random.choice(actions)        
 
+    def get_agent_id(self):
+        return "Greedy Agent"
 
 if __name__ == "__main__":
     agent_main(GreedyAgent())
