@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 """
 Main program for the Avalam game.
 Author: Cyrille Dejemeppe <cyrille.dejemeppe@uclouvain.be>
@@ -60,16 +60,6 @@ class Viewer(Agent):
         action -- action played
         player -- player that has played
 
-        """
-        pass
-
-    def finished(self, steps, winner, reason=""):
-        """The game is finished.
-
-        Arguments:
-        steps -- the number of steps played
-        winner -- the winner (>0: even players, <0: odd players, 0: draw)
-        reason -- a specific reason for the victory or "" if standard
         """
         pass
 
@@ -278,6 +268,8 @@ class Game:
             logging.info("Winner: draw game")
         self.trace.set_winner(winner, reason)
         self.viewer.finished(self.step, winner, reason)
+        for agent in agents:
+            agent.finished(self.step, winner, reason)
 
     def timed_exec(self, fn, *args, agent=None):
         """Execute self.agents[agent].fn(*args, time_left) with the

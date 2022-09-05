@@ -261,6 +261,16 @@ class Agent:
         """
         pass
 
+    def finished(self, steps, winner, reason=""):
+        """The game is finished.
+
+        Arguments:
+        steps -- the number of steps played
+        winner -- the winner (>0: even players, <0: odd players, 0: draw)
+        reason -- a specific reason for the victory or "" if standard
+        """
+        pass
+
 
 def serve_agent(agent, address, port):
     """Serve agent on specified bind address and port number."""
