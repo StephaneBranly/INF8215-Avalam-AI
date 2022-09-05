@@ -62,14 +62,14 @@ class MyAgent(Agent):
                 """
 
                 predict = self.NN.predict(np.array([m[i-1][j-1], m[i-1][j], m[i-1][j+1], m[i][j-1], m[i][j], m[i][j+1], m[i+1][j-1], m[i+1][j], m[i+1][j+1]]))
-                if dict_to_board(percepts).is_action_valid(self.getAction(i,j,predict[0])):
-                    actions.append([predict[1],self.getAction(i,j,predict[0])])
+                if dict_to_board(percepts).is_action_valid(self.get_action(i,j,predict[0])):
+                    actions.append([predict[1],self.get_action(i,j,predict[0])])
 
-        action = self.getBestAction(actions,percepts)
+        action = self.get_best_action(actions,percepts)
         print("action:", action)
         return action
     
-    def getAction(self,i,j,decision):
+    def get_action(self,i,j,decision):
         if decision == 0:
             return (i,j,i-1,j-1)
         elif decision == 1:
@@ -87,7 +87,7 @@ class MyAgent(Agent):
         elif decision == 7:
             return (i,j,i+1,j+1)
     
-    def getBestAction(self,actions,percepts):
+    def get_best_action(self,actions,percepts):
         best = actions[0]
         for action in actions:
             if action[0] > best[0]:
