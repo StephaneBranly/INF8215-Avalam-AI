@@ -455,7 +455,7 @@ if __name__ == "__main__":
             f.close()
 
             f = open(f"stats/pool_results.csv", "w")
-            f.write(f"Pool id; Agent -1; Agent 1; % of -1, % of 0, % of 1')]\n")
+            f.write(f"Pool id; Agent -1; Agent 1; % of -1, % of 0, % of 1\n")
             f.close()
         for p in range(args.pool):
             game_history = dict()
