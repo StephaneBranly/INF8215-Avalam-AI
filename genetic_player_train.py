@@ -148,9 +148,9 @@ class MyAgent(Agent):
             f.close()
             for l in range(self.nb_individu):
                 father = NN([9,10,8])
-                father.load_from_json(f"NN/gen{self.gen}.json", results[random.randint(0, len(self.nb_individu//10))][0])
+                father.load_from_json(f"NN/gen{self.gen}.json", results[random.randint(0, len(self.nb_individu)//10)][0])
                 mother = NN([9,10,8])
-                mother.load_from_json(f"NN/gen{self.gen}.json", results[random.randint(0, len(self.nb_individu//10))][0])
+                mother.load_from_json(f"NN/gen{self.gen}.json", results[random.randint(0, len(self.nb_individu)//10)][0])
                 child = father.crossover(mother)
                 child.mutate()
                 
