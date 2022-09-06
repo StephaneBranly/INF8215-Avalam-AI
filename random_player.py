@@ -27,7 +27,6 @@ class RandomAgent(Agent):
     def play(self, percepts, player, step, time_left):
         board = dict_to_board(percepts)
         actions = list(board.get_actions())
-        print('step', step, 'player', player, 'actions', len(actions))
         return random.choice(actions)
 
     def get_agent_id(self):
