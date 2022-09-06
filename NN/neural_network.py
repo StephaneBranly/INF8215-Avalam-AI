@@ -1,4 +1,3 @@
-from tkinter import W
 import numpy as np
 import json
 
@@ -30,9 +29,9 @@ class NN:
         for i in range(len(self.weights)):
             x = self.sigmoid(np.dot(x,self.weights[i])+self.biases[i].T)
 
-        return x
+        return x[0]
     
-    def mutate(self, rate):
+    def mutate(self, rate=0.01):
         for i in range(len(self.weights)):
             for j in range(len(self.weights[i])):
                 for k in range(len(self.weights[i][j])):

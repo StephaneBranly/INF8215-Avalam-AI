@@ -480,9 +480,8 @@ if __name__ == "__main__":
                     if args.gui:
                         logging.debug("Replaying trace.")
                         viewer.replay(game.trace, args.speed, show_end=True)
-                    if args.stats:
-                        game_history['scores'].append(game.trace.winner)
-                        game_history['steps'].append(game.step)
+                    game_history['scores'].append(game.trace.winner)
+                    game_history['steps'].append(game.step)
 
                 if args.gui:
                     import threading
@@ -500,8 +499,8 @@ if __name__ == "__main__":
                 f = open("stats/pool_results.csv", "a")
                 f.write(f"{p};{agents[1].get_agent_id()};{agents[0].get_agent_id()};{pool_results}\n")
                 f.close()
-            
-            print(pool_results)
+                print(pool_results)
+
             for i in range(2):
                 agents[i].pool_ended(pool_results, 1 if i==0 else -1)
         # print(pool_history)

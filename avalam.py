@@ -278,7 +278,6 @@ class Agent:
         pool -- the pool object
         player -- the player this agent controls
         """
-        print(player.NN.weights)
         pass
 
     def get_agent_id(self):
