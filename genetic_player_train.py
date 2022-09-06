@@ -65,8 +65,8 @@ class MyAgent(Agent):
         m = percepts['m']
         actions = []
 
-        for i in range(1,8):
-            for j in range(1,8):
+        for i in range(9):
+            for j in range(9):
                 """
                 decision :
                 0 1 2
