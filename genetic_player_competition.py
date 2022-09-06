@@ -22,7 +22,6 @@ from NN.neural_network import NN
 import numpy as np
 import random
 import timeit
-import itertools
 
 
 class MyAgent(Agent):
@@ -30,18 +29,8 @@ class MyAgent(Agent):
         return super().initialize(percepts, players, time_left)
 
     def __init__(self):
-        self.nb_individu = 5
-        self.gen = 0
-        self.NN_p1 = NN([9,10,8])
-        self.NN_m1 = NN([9,10,8])
-
-        self.matchs = [m for m in itertools.combinations(range(self.nb_individu), 2)]
-
-        self.current_match = None
-        self.scores = dict()
-        for a in range(self.nb_individu):
-            self.scores[a] = 0
-        self.load_match()
+        self.NN = NN([9,10,8])
+        self.NN.load_from_json("NN/gen0.json", 0)
         
     def play(self, percepts, player, step, time_left):
         """
@@ -74,8 +63,7 @@ class MyAgent(Agent):
                 5 6 7
                 """
 
-                NN = self.NN_p1 if player == 1 else self.NN_m1
-                predict = NN.predict(np.array([m[i-1][j-1], m[i-1][j], m[i-1][j+1], m[i][j-1], m[i][j], m[i][j+1], m[i+1][j-1], m[i+1][j], m[i+1][j+1]]))
+                predict = self.NN.predict(np.array([m[i-1][j-1], m[i-1][j], m[i-1][j+1], m[i][j-1], m[i][j], m[i][j+1], m[i+1][j-1], m[i+1][j], m[i+1][j+1]]))
 
                 for k in range(len(predict)):
                     if dict_to_board(percepts).is_action_valid(self.get_action(i,j,k)):
@@ -121,50 +109,6 @@ class MyAgent(Agent):
             if action[0] > best[0]:
                 best = action
         return best[1]
-        
-    def finished(self, steps, winner, reason="", player=None):
-        player_winner = 0 if winner < 0 else 1 if winner > 0 else None
-        print(winner)
-        print(player)
-        if player == 1:
-            if winner != 0:
-                self.scores[self.current_match[player_winner]] += abs(winner)
-                self.scores[self.current_match[1-player_winner]] -= abs(winner)
-
-            self.load_match()
-        # print(self.scores)
-
-    def load_match(self):
-        self.current_match = self.matchs.pop(0)
-        self.NN_m1.load_from_json("NN/gen0.json", self.current_match[0])
-        self.NN_p1.load_from_json("NN/gen0.json", self.current_match[1])
-
-    def pool_ended(self, pool, player):
-        if player == 1:
-            print(self.scores)
-            results = sorted(self.scores.items(), key=lambda x: x[1], reverse=True)
-            f = open(f"NN/gen{self.gen+1}.json", "w")
-            f.write('{ \"gen\": []}')
-            f.close()
-            for l in range(self.nb_individu):
-                father = NN([9,10,8])
-                father.load_from_json(f"NN/gen{self.gen}.json", results[0][0])
-                mother = NN([9,10,8])
-                mother.load_from_json(f"NN/gen{self.gen}.json", results[1][0])
-                child = father.crossover(mother)
-                child.mutate()
-                
-                child.save_as_json(f"NN/gen{self.gen+1}.json", l)
-            self.gen += 1
-
-            self.matchs = [m for m in itertools.combinations(range(self.nb_individu), 2)]
-
-            self.current_match = None
-            self.scores = dict()
-            for a in range(self.nb_individu):
-                self.scores[a] = 0
-            self.load_match()
-        return super().pool_ended(pool, player)
 
 if __name__ == "__main__":
     agent_main(MyAgent())
