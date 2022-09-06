@@ -23,6 +23,7 @@ import numpy as np
 import random
 import timeit
 import itertools
+import json
 
 
 class MyAgent(Agent):
@@ -30,7 +31,7 @@ class MyAgent(Agent):
         return super().initialize(percepts, players, time_left)
 
     def __init__(self):
-        self.nb_individu = 10
+        self.nb_individu = 3
         self.gen = 0
         self.NN_p1 = NN([9,10,8])
         self.NN_m1 = NN([9,10,8])
@@ -151,9 +152,18 @@ class MyAgent(Agent):
         self.NN_m1.load_from_json(f"NN/gen{self.gen}.json", self.current_match[0])
         self.NN_p1.load_from_json(f"NN/gen{self.gen}.json", self.current_match[1])
 
+    def save_stats(self):
+        with open(f"NN/gen{self.gen}.json") as f:
+            listObj = json.load(f)
+            for i in range(self.nb_individu):
+                listObj["gen"][i]["score"] = self.scores[i]
+        with open(f"NN/gen{self.gen}.json", 'w') as outfile:
+            json.dump(listObj, outfile)
+
     def pool_ended(self, pool, player):
         if player == 1:
             print(self.scores)
+            self.save_stats()
             results = sorted(self.scores.items(), key=lambda x: x[1], reverse=True)
             f = open(f"NN/gen{self.gen+1}.json", "w")
             f.write('{ \"gen\": []}')
