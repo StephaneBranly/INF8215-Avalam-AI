@@ -30,7 +30,7 @@ class MyAgent(Agent):
         return super().initialize(percepts, players, time_left)
 
     def __init__(self):
-        self.nb_individu = 100
+        self.nb_individu = 10
         self.gen = 0
         self.NN_p1 = NN([9,10,8])
         self.NN_m1 = NN([9,10,8])
@@ -75,7 +75,7 @@ class MyAgent(Agent):
                 """
 
                 NN = self.NN_p1 if player == 1 else self.NN_m1
-                predict = NN.predict(np.array([m[i-1][j-1], m[i-1][j], m[i-1][j+1], m[i][j-1], m[i][j], m[i][j+1], m[i+1][j-1], m[i+1][j], m[i+1][j+1]]))
+                predict = NN.predict(self.get_voisinage(m,i,j,1))
 
                 for k in range(len(predict)):
                     if dict_to_board(percepts).is_action_valid(self.get_action(i,j,k)):
@@ -90,6 +90,19 @@ class MyAgent(Agent):
 
         # print('Time: ', stop - start) 
         return action
+    
+    def get_voisinage(self,m,x,y,size):
+        """
+        return all the voisins of a cell
+        """
+        voisins = []
+        for i in range(x-size,x+size+1):
+            for j in range(y-size,y+size+1):
+                if i > 0 and j > 0 and i < 9 and j < 9:
+                    voisins.append(m[i][j])
+                else:
+                    voisins.append(0)
+        return np.array(voisins)
     
     def get_action(self,i,j,decision):
         """
