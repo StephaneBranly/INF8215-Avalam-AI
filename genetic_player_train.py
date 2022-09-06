@@ -30,7 +30,7 @@ class MyAgent(Agent):
         return super().initialize(percepts, players, time_left)
 
     def __init__(self):
-        self.nb_individu = 5
+        self.nb_individu = 100
         self.gen = 0
         self.NN_p1 = NN([9,10,8])
         self.NN_m1 = NN([9,10,8])
@@ -148,9 +148,9 @@ class MyAgent(Agent):
             f.close()
             for l in range(self.nb_individu):
                 father = NN([9,10,8])
-                father.load_from_json(f"NN/gen{self.gen}.json", results[0][0])
+                father.load_from_json(f"NN/gen{self.gen}.json", results[random.randint(0, len(self.nb_individu//10))][0])
                 mother = NN([9,10,8])
-                mother.load_from_json(f"NN/gen{self.gen}.json", results[1][0])
+                mother.load_from_json(f"NN/gen{self.gen}.json", results[random.randint(0, len(self.nb_individu//10))][0])
                 child = father.crossover(mother)
                 child.mutate()
                 

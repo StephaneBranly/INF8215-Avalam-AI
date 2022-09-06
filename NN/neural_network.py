@@ -83,9 +83,9 @@ class NN:
         self.weights = [np.array(a) for a in listObj["gen"][index]["weights"]]
         self.biases = [np.array(a) for a in listObj["gen"][index]["biases"]]
 
-"""for i in range(50):
+"""for i in range(100):
     nn = NN([9,10,8], "test"+str(i))
-    nn.save_as_json("test.json", i)"""
+    nn.save_as_json("gen0.json", i)"""
 
 
 
