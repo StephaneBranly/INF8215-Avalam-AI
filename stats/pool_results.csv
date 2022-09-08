@@ -1,3 +1,5 @@
 Pool id; Agent -1; Agent 1; % of -1, % of 0, % of 1
-0;Agent;Agent;[0.0, 0.0, 1.0]
-1;Agent;Agent;[0.6666666666666666, 0.0, 0.3333333333333333]
+0;Greedy Agent;Best genetic player (#2) of generation 0;[1.0, 0.0, 0.0]
+1;Greedy Agent;Best genetic player (#2) of generation 1;[1.0, 0.0, 0.0]
+2;Greedy Agent;Best genetic player (#2) of generation 2;[1.0, 0.0, 0.0]
+3;Greedy Agent;Best genetic player (#0) of generation 3;[1.0, 0.0, 0.0]

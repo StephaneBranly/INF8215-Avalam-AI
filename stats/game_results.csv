@@ -1,3 +1,5 @@
 Pool id; Agent -1; Agent 1; Scores; Steps
-0;Agent;Agent;[2, 2, 2];[36, 36, 36]
-1;Agent;Agent;[-3, -2, 2];[35, 36, 32]
+0;Greedy Agent;Best genetic player (#2) of generation 0;[-8, -12, -7];[36, 34, 35]
+1;Greedy Agent;Best genetic player (#2) of generation 1;[-5, -9, -7];[35, 35, 35]
+2;Greedy Agent;Best genetic player (#2) of generation 2;[-9, -10, -9];[35, 34, 35]
+3;Greedy Agent;Best genetic player (#0) of generation 3;[-7, -4, -5];[35, 36, 35]
