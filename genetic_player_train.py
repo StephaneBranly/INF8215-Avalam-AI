@@ -31,12 +31,20 @@ class MyAgent(Agent):
         return super().initialize(percepts, players, time_left)
 
     def __init__(self):
-        self.nb_individu = 3
-        self.gen = 0
-        self.NN_p1 = NN([9,10,8])
-        self.NN_m1 = NN([9,10,8])
+        pass
+        
+    def setup(self, agent, parser, args):
+        #TODO: if args.generation !== 0, load value of layers and individu with the referenced generation
+        self.nb_individu = args.individu
+        self.gen = args.generation
+        self.layers = [int(l) for l in args.layers.split(",")]
+        self.NN_p1 = NN(self.layers)
+        self.NN_m1 = NN(self.layers)
+        self.added_players = []
 
         self.matchs = [m for m in itertools.combinations(range(self.nb_individu), 2)]
+        print('To train, please run the following command and add the number of new generation wanted at the end of the command:')
+        print(f"python3 game.py http://localhost:8080 http://localhost:8080 --headless --no-gui -G {len(self.matchs)} -P ")
 
         self.current_match = None
         self.scores = dict()
@@ -138,8 +146,6 @@ class MyAgent(Agent):
         
     def finished(self, steps, winner, reason="", player=None):
         player_winner = 0 if winner < 0 else 1 if winner > 0 else None
-        print(winner)
-        print(player)
         if player == 1:
             if winner != 0:
                 self.scores[self.current_match[player_winner]] += abs(winner)
@@ -149,8 +155,22 @@ class MyAgent(Agent):
 
     def load_match(self):
         self.current_match = self.matchs.pop(0)
-        self.NN_m1.load_from_json(f"NN/gen{self.gen}.json", self.current_match[0])
-        self.NN_p1.load_from_json(f"NN/gen{self.gen}.json", self.current_match[1])
+        if self.gen == 0: # case of the first generation, we create random NN
+            if len(self.added_players) == 0: # first individu added, we generate a new file
+                f = open(f"NN/gen{self.gen}.json", "w")
+                f.write('{ \"gen\": []}')
+                f.close()
+            if self.current_match[0] not in self.added_players: # we add player -1 if not already added
+                self.NN_m1 = NN(self.layers)
+                self.NN_m1.save_as_json(f"NN/gen{self.gen}.json", self.current_match[0])
+                self.added_players.append(self.current_match[0])
+            if self.current_match[1] not in self.added_players: # we add player 1 if not already added
+                self.NN_m1 = NN(self.layers)
+                self.NN_m1.save_as_json(f"NN/gen{self.gen}.json", self.current_match[1])
+                self.added_players.append(self.current_match[1])
+        else: # case of the next generations, we load the NN of the previous generation
+            self.NN_m1.load_from_json(f"NN/gen{self.gen}.json", self.current_match[0])
+            self.NN_p1.load_from_json(f"NN/gen{self.gen}.json", self.current_match[1])
 
     def save_stats(self):
         with open(f"NN/gen{self.gen}.json") as f:
@@ -169,9 +189,9 @@ class MyAgent(Agent):
             f.write('{ \"gen\": []}')
             f.close()
             for l in range(self.nb_individu):
-                father = NN([9,10,8])
+                father = NN(self.layers)
                 father.load_from_json(f"NN/gen{self.gen}.json", results[random.randint(0, self.nb_individu//10)][0])
-                mother = NN([9,10,8])
+                mother = NN(self.layers)
                 mother.load_from_json(f"NN/gen{self.gen}.json", results[random.randint(0, self.nb_individu//10)][0])
                 child = father.crossover(mother)
                 child.mutate()
@@ -189,7 +209,9 @@ class MyAgent(Agent):
         return super().pool_ended(pool, player)
 
 if __name__ == "__main__":
-    agent_main(MyAgent())
-
-
-
+    def argument_parser(agent, parser):
+        parser.add_argument("-L", "--layers", default='9,10,8', help="layers of the neural network. ie : 9,10,9", type=str)
+        parser.add_argument("-I", "--individu", default=10, help="number of individu in the pool", type=int)
+        parser.add_argument("-G", "--generation", default=0, help="initial generation", type=int)
+    agent = MyAgent()
+    agent_main(agent, argument_parser, agent.setup)
