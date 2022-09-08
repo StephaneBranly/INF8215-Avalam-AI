@@ -29,8 +29,13 @@ class MyAgent(Agent):
         return super().initialize(percepts, players, time_left)
 
     def __init__(self):
-        self.NN = NN([9,10,8])
-        self.NN.load_from_json("NN/gen0.json", 0)
+        pass
+
+    def setup(self, agent, parser, args):
+        self.individu = args.individu
+        self.generation = args.generation
+        self.NN = NN([])
+        self.NN.load_from_json(f"NN/gen{self.generation}.json", self.individu)
         
     def play(self, percepts, player, step, time_left):
         """
@@ -123,8 +128,16 @@ class MyAgent(Agent):
                 best = action
         return best[1]
 
+    def get_agent_id(self):
+        """Return an identifier for this agent."""
+        return f"Genetic player #{self.individu} of generation {self.generation}"
+
 if __name__ == "__main__":
-    agent_main(MyAgent())
+    def argument_parser(agent, parser):
+        parser.add_argument("-I", "--individu", default=0, help="index of the individu to take", type=int)
+        parser.add_argument("-G", "--generation", default=0, help="generation to take", type=int)
+    agent = MyAgent()
+    agent_main(agent, argument_parser, agent.setup)
 
 
 
