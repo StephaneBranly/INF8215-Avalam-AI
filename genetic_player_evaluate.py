@@ -22,20 +22,28 @@ from NN.neural_network import NN
 import numpy as np
 import random
 import timeit
-
+import json
 
 class MyAgent(Agent):
     def initialize(self, percepts, players, time_left):
         return super().initialize(percepts, players, time_left)
 
     def __init__(self):
-        pass
-
-    def setup(self, agent, parser, args):
-        self.individu = args.individu
-        self.generation = args.generation
+        self.current_individu = None
+        self.current_gen = 0
         self.NN = NN([])
-        self.NN.load_from_json(f"NN/gen{self.generation}.json", self.individu)
+        self.load_best_individu()
+
+    def load_best_individu(self):
+        try:
+            with open(f"NN/gen{self.current_gen}.json") as fp:
+                listObj = json.load(fp)
+            scores = [cell['score'] for cell in listObj['gen']]
+            self.current_individu = np.argmax(scores)
+            self.NN.load_from_json(f"NN/gen{self.current_gen}.json", self.current_individu)
+        except:
+            print('No more generation')
+
         
     def play(self, percepts, player, step, time_left):
         """
@@ -130,14 +138,16 @@ class MyAgent(Agent):
 
     def get_agent_id(self):
         """Return an identifier for this agent."""
-        return f"Genetic player #{self.individu} of generation {self.generation}"
+        return f"Best genetic player (#{self.current_individu}) of generation {self.current_gen}"
+
+    def pool_ended(self, pool, player):
+        self.current_gen += 1
+        self.load_best_individu()
+        return super().pool_ended(pool, player)
 
 if __name__ == "__main__":
-    def argument_parser(agent, parser):
-        parser.add_argument("-I", "--individu", default=0, help="index of the individu to take", type=int)
-        parser.add_argument("-G", "--generation", default=0, help="generation to take", type=int)
     agent = MyAgent()
-    agent_main(agent, argument_parser, agent.setup)
+    agent_main(agent)
 
 
 

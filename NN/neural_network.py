@@ -10,13 +10,7 @@ class NN:
         self.biases = []
         for i in range(len(layers)-1):
             self.biases.append(np.random.randn(layers[i+1], 1))
-            self.weights.append(np.random.randn(layers[i], layers[i+1]))
-
-
-    """def __init__(self, weights, biases):
-        self.weights = weights
-        self.biases = biases"""
-        
+            self.weights.append(np.random.randn(layers[i], layers[i+1]))        
 
     def sigmoid(self, z):
         return 1.0/(1.0+np.exp(-z))
@@ -72,6 +66,7 @@ class NN:
         data['score'] = score
         data['weights'] = w
         data['biases'] = b
+        data['layers'] = self.layers
         listObj["gen"].append(data)
         with open(filename, 'w') as outfile:
             json.dump(listObj, outfile)
@@ -82,10 +77,4 @@ class NN:
         self.name = listObj["gen"][index]["name"]
         self.weights = [np.array(a) for a in listObj["gen"][index]["weights"]]
         self.biases = [np.array(a) for a in listObj["gen"][index]["biases"]]
-
-"""for i in range(100):
-    nn = NN([9,10,8], "test"+str(i))
-    nn.save_as_json("gen0.json", i)"""
-
-
-
+        self.layers = listObj["gen"][index]["layers"]
