@@ -505,7 +505,7 @@ if __name__ == "__main__":
             for i in range(2):
                 agents[i].pool_ended(pool_results, 1 if i==0 else -1)
         if args.stats:
-            generate_summary_file()
+            generate_summary_file('stats/')
         
     else:
         # Replay mode

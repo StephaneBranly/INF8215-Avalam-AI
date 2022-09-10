@@ -8,7 +8,7 @@ from matplotlib.backends.backend_pdf import PdfPages
 
 def generate_scores_fig(df):
     length = df.shape[0]
-    fig = plt.figure(figsize=(20, df.shape[0]))
+    fig = plt.figure(figsize=(20, df.shape[0]+2))
     sns.set_theme()
     x_ticks = np.arange(-20, 22, 2)
     y_ticks = np.arange(0, length, 1)
@@ -38,7 +38,7 @@ def generate_scores_fig(df):
 
 def generate_steps_fig(df):
     length = df.shape[0]
-    fig = plt.figure(figsize=(20, df.shape[0]))
+    fig = plt.figure(figsize=(20, df.shape[0]+2))
     sns.set_theme()
     x_ticks = np.arange(20, 48, 2)
 
@@ -53,7 +53,7 @@ def generate_steps_fig(df):
     return fig
 
 def generate_win_rate_fig(df):
-    fig = plt.figure(figsize=(df.shape[0], 20))
+    fig = plt.figure(figsize=(df.shape[0]+1, 20))
     df['Cumulative_m1'] = df['Pct Agent -1'] * 100
 
     df['Cumulative_draw'] = df['Pct Draw']*100 + df['Pct Agent -1']*100
@@ -88,15 +88,15 @@ def generate_win_rate_fig(df):
     return fig
 
 
-def generate_summary_file():
-    game_df = pd.read_csv('game_results.csv', sep=';', index_col=0)
+def generate_summary_file(path=''):
+    game_df = pd.read_csv(f"{path}game_results.csv", sep=';', index_col=0)
     game_df['Scores'] = game_df['Scores'].apply(lambda x: [int(a) for a in x.replace('[', '').replace(']', '').replace(' ', '').split(',')])
     game_df['Steps'] = game_df['Steps'].apply(lambda x: [int(a) for a in x.replace('[', '').replace(']', '').replace(' ', '').split(',')])
     game_df['mean_scores'] = game_df['Scores'].apply(lambda x: np.mean(x))
 
-    pool_df = pd.read_csv('pool_results.csv', sep=';', index_col=0)
+    pool_df = pd.read_csv(f"{path}pool_results.csv", sep=';', index_col=0)
 
-    with PdfPages('summary_file.pdf') as pdf:
+    with PdfPages(f"{path}summary_file.pdf") as pdf:
         fig1 = generate_scores_fig(game_df)
         pdf.savefig(fig1)
         fig2 = generate_steps_fig(game_df)
