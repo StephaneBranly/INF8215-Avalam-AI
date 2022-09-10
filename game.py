@@ -29,6 +29,7 @@ import importlib
 import subprocess
 
 from avalam import *
+from stats.stats import generate_summary_file
 
 
 class TimeCreditExpired(Exception):
@@ -451,11 +452,11 @@ if __name__ == "__main__":
         pool_history = []
         if args.stats:
             f = open(f"stats/game_results.csv", "w")
-            f.write(f"Pool id; Agent -1; Agent 1; Scores; Steps\n")
+            f.write(f"Pool id;Agent -1;Agent 1;Scores;Steps\n")
             f.close()
 
             f = open(f"stats/pool_results.csv", "w")
-            f.write(f"Pool id; Agent -1; Agent 1; % of -1, % of 0, % of 1\n")
+            f.write(f"Pool id;Agent -1;Agent 1;Pct Agent -1;Pct Draw;Pct Agent 1\n")
             f.close()
         for p in range(args.pool):
             game_history = dict()
@@ -497,13 +498,14 @@ if __name__ == "__main__":
                 f.write(f"{p};{agents[1].get_agent_id()};{agents[0].get_agent_id()};{game_history['scores']};{game_history['steps']}\n")
                 f.close()
                 f = open("stats/pool_results.csv", "a")
-                f.write(f"{p};{agents[1].get_agent_id()};{agents[0].get_agent_id()};{pool_results}\n")
+                f.write(f"{p};{agents[1].get_agent_id()};{agents[0].get_agent_id()};{';'.join([str(r) for r in pool_results])}\n")
                 f.close()
                 print(pool_results)
 
             for i in range(2):
                 agents[i].pool_ended(pool_results, 1 if i==0 else -1)
-        # print(pool_history)
+        if args.stats:
+            generate_summary_file()
         
     else:
         # Replay mode
