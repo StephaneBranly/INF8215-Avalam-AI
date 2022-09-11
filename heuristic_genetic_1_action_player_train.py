@@ -53,6 +53,7 @@ class MyAgent(Agent):
 
         
     def play(self, percepts, player, step, time_left):
+
         board = dict_to_board(percepts)
         best_action = ()
         best_score = -99999999
@@ -61,11 +62,13 @@ class MyAgent(Agent):
             heuristic = self.heuristic_p1
         else:
             heuristic = self.heuristic_m1
+
         for action in board.get_actions():
-            if heuristic.evaluate(board, action, player) > best_score:
-                best_score = self.heuristic.evaluate(board, action, player)
+            if heuristic.evaluate(board, player, action) > best_score:
+
+                best_score = heuristic.evaluate(board, player, action)
                 best_action = action
-        print(best_action)
+
         return best_action
 
 

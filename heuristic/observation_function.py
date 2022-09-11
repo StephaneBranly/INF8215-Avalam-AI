@@ -20,7 +20,7 @@ def isolate_tower(board,player,action):
     new_isolated_tower = 0
     for i in range(9):
         for j in range(9):
-            if before.is_tower_moveable(i,j) and not after.is_tower_moveable(i,j) and after.m[i][j]*player > 0:
+            if before.is_tower_movable(i,j) and not after.is_tower_movable(i,j) and after.m[i][j]*player > 0:
                 new_isolated_tower += 1
     return new_isolated_tower
 

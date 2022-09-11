@@ -20,6 +20,7 @@ class Genetic_1_action_heuristique(Heuristic):
 
 
     def evaluate(self,board,player,action):
+
         score = 0
         score += self.parameters[0]*finish_tower(board,player,action)
         score += self.parameters[1]*isolate_tower(board,player,action)
