@@ -447,6 +447,7 @@ if __name__ == "__main__":
 
         def compute_pool_results(history):
             winners=[-1 if score<0 else 1 if score>0 else 0 for score in history]
+            return [1,1,1]
             return [winners.count(-1)/len(winners),winners.count(0)/len(winners),winners.count(1)/len(winners)]
 
         pool_history = []
