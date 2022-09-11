@@ -270,7 +270,11 @@ class Game:
         self.trace.set_winner(winner, reason)
         self.viewer.finished(self.step, winner, reason)
         for i in range(2):
-            agents[i].finished(self.step, winner, reason, 1 if i==0 else -1)
+            try:
+                if agents[i].finished:
+                    agents[i].finished(self.step, winner, reason, 1 if i==0 else -1)
+            except:
+                pass
 
     def timed_exec(self, fn, *args, agent=None):
         """Execute self.agents[agent].fn(*args, time_left) with the
@@ -446,6 +450,7 @@ if __name__ == "__main__":
                 credits[i] = args.time
 
         def compute_pool_results(history):
+            print(history)
             winners=[-1 if score<0 else 1 if score>0 else 0 for score in history]
             return [winners.count(-1)/len(winners),winners.count(0)/len(winners),winners.count(1)/len(winners)]
 
@@ -490,21 +495,33 @@ if __name__ == "__main__":
                     #viewer.run()
                 else:
                     play()
-            # print(game_history)
-            pool_results = compute_pool_results(game_history['scores'])
-            pool_history.append(pool_results)
-            if args.stats:
-                f = open("stats/game_results.csv", "a")
-                f.write(f"{p};{agents[1].get_agent_id()};{agents[0].get_agent_id()};{game_history['scores']};{game_history['steps']}\n")
-                f.close()
-                f = open("stats/pool_results.csv", "a")
-                f.write(f"{p};{agents[1].get_agent_id()};{agents[0].get_agent_id()};{';'.join([str(r) for r in pool_results])}\n")
-                f.close()
-                print(pool_results)
+            if not args.gui:
+                pool_results = compute_pool_results(game_history['scores'])
+                pool_history.append(pool_results)
+                if args.stats:
+                    try:
+                        agent_p1 = agents[0].get_agent_id()
+                    except:
+                        agent_p1 = "Agent +1"
+                    try:
+                        agent_m1 = agents[1].get_agent_id()
+                    except:
+                        agent_m1 = "Agent -1"
+                    f = open("stats/game_results.csv", "a")
+                    f.write(f"{p};{agent_m1};{agent_p1};{game_history['scores']};{game_history['steps']}\n")
+                    f.close()
+                    f = open("stats/pool_results.csv", "a")
+                    f.write(f"{p};{agent_m1};{agent_p1};{';'.join([str(r) for r in pool_results])}\n")
+                    f.close()
+                    print(pool_results)
 
-            for i in range(2):
-                agents[i].pool_ended(pool_results, 1 if i==0 else -1)
-        if args.stats:
+            if not args.gui:
+                for i in range(2):
+                    try:
+                        agents[i].pool_ended(pool_results, 1 if i==0 else -1)
+                    except:
+                        pass
+        if not args.gui and args.stats:
             generate_summary_file('stats/')
         
     else:
