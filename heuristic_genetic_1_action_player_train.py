@@ -128,9 +128,9 @@ class MyAgent(Agent):
             f.close()
             for l in range(self.nb_individu):
                 father = Genetic_1_action_heuristique()
-                father.load_from_json(f"NN_heuristic/gen{self.gen}.json", results[random.randint(0, self.nb_individu//10)][0])
+                father.load_from_json(f"NN_heuristic/gen{self.gen}.json", results[random.randint(0, self.nb_individu//3)][0])
                 mother = Genetic_1_action_heuristique()
-                mother.load_from_json(f"NN_heuristic/gen{self.gen}.json", results[random.randint(0, self.nb_individu//10)][0])
+                mother.load_from_json(f"NN_heuristic/gen{self.gen}.json", results[random.randint(0, self.nb_individu//3)][0])
                 child = father.crossover(mother)
                 child.mutate(0.1)
                 

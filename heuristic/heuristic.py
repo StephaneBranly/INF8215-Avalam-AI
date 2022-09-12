@@ -14,10 +14,10 @@ class Heuristic:
 
 
 class Genetic_1_action_heuristique(Heuristic):
-    def __init__(self):
+    def __init__(self, parameters=None):
         self.parameters = [random.uniform(-1,1) for parameters in range(5)]
-
-
+        if parameters is not None:
+            self.parameters = parameters
 
     def evaluate(self,board,player,action):
 
