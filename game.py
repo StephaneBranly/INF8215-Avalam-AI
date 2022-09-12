@@ -25,12 +25,16 @@ import time
 import socket
 import xmlrpc.client
 import pickle
-import importlib
 import subprocess
+import threading
 
 from avalam import *
+
 from stats.stats import generate_summary_file
 
+# Agent classes for multithreading
+from greedy_player import GreedyAgent
+from random_player import RandomAgent
 
 class TimeCreditExpired(Exception):
     """An agent has expired its time credit."""
@@ -223,15 +227,6 @@ class Game:
         """Play the game."""
         logging.info("Starting new game")
         try:
-            """
-            for agent in [1, -1]:
-                logging.debug("Initializing agent %d", agent)
-                self.timed_exec("initialize",
-                    self.board,
-                    [agent, -agent],
-                    agent=agent)
-            """
-
             while not self.board.is_finished():
                 self.step += 1
                 logging.debug("Asking player %d to play step %d",
@@ -326,7 +321,52 @@ def connect_agent(uri):
     """Connect to a remote player and return a proxy for the Player object."""
     return xmlrpc.client.ServerProxy(uri, allow_none=True)
 
+class GameThread(threading.Thread):
+    def __init__(self, threadID, agents, viewer=None, credits=[None, None]):
+        self.board = Board()
+        self.threadID = threadID
+        self.agents = agents
+        self.viewer = viewer if viewer is not None else Viewer()
+        self.step = 0
+        self.player = 1
+        threading.Thread.__init__(self)
 
+    def run(self):
+        self.play()
+
+    def play(self):
+        try:
+            while not self.board.is_finished():
+                self.step += 1
+                agent = 0 if self.player > 0 else 1
+                board_dict = {
+                    'm': self.board.m,
+                    'rows': self.board.rows,
+                    'max_height': self.board.max_height,
+                }
+                action = self.agents[agent].play(board_dict, self.player, self.step, 0)
+                self.board.play_action(action)
+                self.player = -self.player
+        except e:
+            print(e)
+            pass
+        else:
+            reason = ""
+            winner = self.board.get_score()
+            
+        for i in range(2):
+            try:
+                if agents[i].finished:
+                    agents[i].finished(self.step, winner, reason, 1 if i==0 else -1)
+            except:
+                pass
+
+    def get_scores(self):
+        return self.board.get_score()
+
+    def get_steps(self):
+        return self.step
+    
 if __name__ == "__main__":
     import argparse
 
@@ -350,6 +390,8 @@ if __name__ == "__main__":
                         metavar="AGENT2")
     parser.add_argument("-v", "--verbose", action="store_true", default=False,
                         help="be verbose")
+    parser.add_argument("-M", "--multithreading", action="store_true", default=False,
+                        help="Run using multithreading")
     parser.add_argument("-P", "--pool", type=int, default=1,
                         help="generate N pool competitions (default: 1)",
                         metavar="N")
@@ -385,9 +427,6 @@ if __name__ == "__main__":
     g.add_argument("--realtime", action="store_true", default=False,
                    help="replay with the real durations")
     args = parser.parse_args()
-    if args.replay is None and args.headless and \
-            (args.agent1 == "human" or args.agent2 == "human"):
-        parser.error("human players are not allowed in headless mode")
 
     if args.realtime:
         args.speed = -args.speed
@@ -440,19 +479,42 @@ if __name__ == "__main__":
 
     if args.replay is None:
         # Normal play mode
-        agents = [args.agent1, args.agent2]
         credits = [None, None]
-        for i in range(2):
-            if agents[i] == 'human':
-                agents[i] = viewer
-            else:
-                agents[i] = connect_agent(agents[i])
-                credits[i] = args.time
+        agents = []
+        if not args.multithreading:
+            agents = [args.agent1, args.agent2]
+            for i in range(2):
+                if agents[i] == 'human':
+                    agents[i] = viewer
+                else:
+                    agents[i] = connect_agent(agents[i])
+                    credits[i] = args.time
+        else:
+            agents = [GreedyAgent(), RandomAgent()]
 
         def compute_pool_results(history):
-            print(history)
             winners=[-1 if score<0 else 1 if score>0 else 0 for score in history]
             return [winners.count(-1)/len(winners),winners.count(0)/len(winners),winners.count(1)/len(winners)]
+
+        def play(game):
+            try:
+                game.startPlaying()
+            except KeyboardInterrupt:
+                exit()
+            if args.write is not None:
+                logging.info("Writing trace to '%s'", args.write.name)
+                try:
+                    game.trace.write(args.write)
+                    args.write.close()
+                except IOError as e:
+                    logging.error("Unable to write trace. Reason: %s", e)
+            if args.gui:
+                logging.debug("Replaying trace.")
+                viewer.replay(game.trace, args.speed, show_end=True)
+            game_history['scores'].append(game.trace.winner)
+            game_history['steps'].append(game.step)
+        def progress_bar(i, n):
+            return"[%-20s] %d%%" % ('='*int(20*i/n), 100*i/n)
 
         pool_history = []
         if args.stats:
@@ -467,34 +529,27 @@ if __name__ == "__main__":
             game_history = dict()
             game_history['scores'] = []
             game_history['steps'] = []
-            for i in range(args.games):
-                board = Board()
-                game = Game(agents, board, viewer, credits)
+            if args.multithreading:
+                threads = []
+                for i in range(args.games):
+                    t = GameThread(i, agents, viewer, credits)
+                    threads.append(t)
+                    t.start()
+                for t in threads:
+                    t.join()
+                for t in threads:
+                    game_history['scores'].append(t.get_scores())
+                    game_history['steps'].append(t.get_steps())
+            else:
+                for i in range(args.games):
+                    board = Board()
+                    game = Game(agents, board, viewer, credits)
 
-                def play():
-                    try:
-                        game.startPlaying()
-                    except KeyboardInterrupt:
-                        exit()
-                    if args.write is not None:
-                        logging.info("Writing trace to '%s'", args.write.name)
-                        try:
-                            game.trace.write(args.write)
-                            args.write.close()
-                        except IOError as e:
-                            logging.error("Unable to write trace. Reason: %s", e)
                     if args.gui:
-                        logging.debug("Replaying trace.")
-                        viewer.replay(game.trace, args.speed, show_end=True)
-                    game_history['scores'].append(game.trace.winner)
-                    game_history['steps'].append(game.step)
-
-                if args.gui:
-                    import threading
-                    threading.Thread(target=play).start()
-                    #viewer.run()
-                else:
-                    play()
+                        threading.Thread(target=play, args=[game]).start()
+                    else:
+                        play(game)
+                    print(f"Game progression: {int(100*(i+1)/args.games)}%\t\tPool progression: {progress_bar(p+1, args.pool)}   ", end='\r')
             if not args.gui:
                 pool_results = compute_pool_results(game_history['scores'])
                 pool_history.append(pool_results)
@@ -513,7 +568,9 @@ if __name__ == "__main__":
                     f = open("stats/pool_results.csv", "a")
                     f.write(f"{p};{agent_m1};{agent_p1};{';'.join([str(r) for r in pool_results])}\n")
                     f.close()
-                    print(pool_results)
+                    # print(f"{progress_bar(i, args.pool)}\n{i} : {pool_results}", end='\r')
+                print(f"\t\t\t\tPool progression: {progress_bar(p+1, args.pool)}", end='\r')
+
 
             if not args.gui:
                 for i in range(2):

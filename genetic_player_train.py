@@ -26,7 +26,7 @@ import itertools
 import json
 
 
-class MyAgent(Agent):
+class GeneticPlayerAgent(Agent):
     def initialize(self, percepts, players, time_left):
         return super().initialize(percepts, players, time_left)
 
@@ -213,5 +213,5 @@ if __name__ == "__main__":
         parser.add_argument("-L", "--layers", default='9,10,8', help="layers of the neural network. ie : 9,10,9", type=str)
         parser.add_argument("-I", "--individu", default=10, help="number of individu in the pool", type=int)
         parser.add_argument("-G", "--generation", default=0, help="initial generation", type=int)
-    agent = MyAgent()
+    agent = GeneticPlayerAgent()
     agent_main(agent, argument_parser, agent.setup)
