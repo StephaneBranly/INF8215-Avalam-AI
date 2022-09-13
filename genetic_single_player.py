@@ -24,7 +24,7 @@ import json
 import itertools
 from heuristic.heuristic import Genetic_1_action_heuristique
 
-class MyAgent(Agent):
+class GeneticSinglePlayerAgent(EvolutedAgent):
     def initialize(self, percepts, players, time_left):
         return super().initialize(percepts, players, time_left)
 
@@ -96,5 +96,5 @@ if __name__ == "__main__":
     def argument_parser(agent, parser):
         parser.add_argument("-I", "--individu", default=-1, help="index of indiv if -1 take best", type=int)
         parser.add_argument("-G", "--generation", default=0, help="index of gen", type=int)
-    agent = MyAgent()
+    agent = GeneticSinglePlayerAgent()
     agent_main(agent, argument_parser, agent.setup)

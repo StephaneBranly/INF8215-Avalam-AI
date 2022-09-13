@@ -40,7 +40,7 @@ class TimeCreditExpired(Exception):
     """An agent has expired its time credit."""
 
 
-class Viewer(Agent):
+class Viewer(EvolutedAgent):
 
     """Interface for an Avalam viewer and human agent."""
 
@@ -265,12 +265,9 @@ class Game:
         self.trace.set_winner(winner, reason)
         self.viewer.finished(self.step, winner, reason)
         for i in range(2):
-            try:
-                if agents[i].finished:
-                    agents[i].finished(self.step, winner, reason, 1 if i==0 else -1)
-            except:
-                pass
-
+            if (isinstance(self.agents[i], EvolutedAgent)):
+                agents[i].finished(self.step, winner, reason, 1 if i==0 else -1)
+           
     def timed_exec(self, fn, *args, agent=None):
         """Execute self.agents[agent].fn(*args, time_left) with the
         time limit for the current player.
@@ -355,12 +352,9 @@ class GameThread(threading.Thread):
             winner = self.board.get_score()
             
         for i in range(2):
-            try:
-                if agents[i].finished:
-                    agents[i].finished(self.step, winner, reason, 1 if i==0 else -1)
-            except:
-                pass
-
+            if (isinstance(self.agents[i], EvolutedAgent)):
+                agents[i].finished(self.step, winner, reason, 1 if i==0 else -1)
+           
     def get_scores(self):
         return self.board.get_score()
 
@@ -554,13 +548,13 @@ if __name__ == "__main__":
                 pool_results = compute_pool_results(game_history['scores'])
                 pool_history.append(pool_results)
                 if args.stats:
-                    try:
+                    if (isinstance(agents[0], EvolutedAgent)):
                         agent_p1 = agents[0].get_agent_id()
-                    except:
+                    else:
                         agent_p1 = "Agent +1"
-                    try:
+                    if (isinstance(agents[1], EvolutedAgent)):
                         agent_m1 = agents[1].get_agent_id()
-                    except:
+                    else:
                         agent_m1 = "Agent -1"
                     f = open("stats/game_results.csv", "a")
                     f.write(f"{p};{agent_m1};{agent_p1};{game_history['scores']};{game_history['steps']}\n")
@@ -574,10 +568,9 @@ if __name__ == "__main__":
 
             if not args.gui:
                 for i in range(2):
-                    try:
+                    if (isinstance(agents[i], EvolutedAgent)):
                         agents[i].pool_ended(pool_results, 1 if i==0 else -1)
-                    except:
-                        pass
+                    
         if not args.gui and args.stats:
             generate_summary_file('stats/')
         

@@ -21,7 +21,7 @@ import random
 from avalam import *
 
 
-class RandomAgent(Agent):
+class RandomAgent(EvolutedAgent):
 
     """A dumb random agent."""
     def play(self, percepts, player, step, time_left):

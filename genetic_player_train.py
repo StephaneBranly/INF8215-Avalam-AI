@@ -26,7 +26,7 @@ import itertools
 import json
 
 
-class GeneticPlayerAgent(Agent):
+class GeneticPlayerAgent(EvolutedAgent):
     def initialize(self, percepts, players, time_left):
         return super().initialize(percepts, players, time_left)
 

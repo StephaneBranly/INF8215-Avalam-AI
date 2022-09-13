@@ -261,6 +261,9 @@ class Agent:
         """
         pass
 
+class EvolutedAgent(Agent):
+    """Evoluted agent. This agent has new functions used by the game engine to notify the agent of the competition state."""
+    
     def finished(self, steps, winner, reason="", player=None):
         """The game is finished.
         Arguments:

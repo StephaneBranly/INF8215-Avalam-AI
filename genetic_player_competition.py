@@ -24,7 +24,7 @@ import random
 import timeit
 
 
-class MyAgent(Agent):
+class GeneticPlayerCompetition(EvolutedAgent):
     def initialize(self, percepts, players, time_left):
         return super().initialize(percepts, players, time_left)
 
@@ -136,7 +136,7 @@ if __name__ == "__main__":
     def argument_parser(agent, parser):
         parser.add_argument("-I", "--individu", default=0, help="index of the individu to take", type=int)
         parser.add_argument("-G", "--generation", default=0, help="generation to take", type=int)
-    agent = MyAgent()
+    agent = GeneticPlayerCompetition()
     agent_main(agent, argument_parser, agent.setup)
 
 

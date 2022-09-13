@@ -24,7 +24,7 @@ import random
 import timeit
 import json
 
-class MyAgent(Agent):
+class GeneticPlayerEvaluate(EvolutedAgent):
     def initialize(self, percepts, players, time_left):
         return super().initialize(percepts, players, time_left)
 
@@ -146,7 +146,7 @@ class MyAgent(Agent):
         return super().pool_ended(pool, player)
 
 if __name__ == "__main__":
-    agent = MyAgent()
+    agent = GeneticPlayerEvaluate()
     agent_main(agent)
 
 

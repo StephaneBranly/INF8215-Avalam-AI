@@ -3,7 +3,7 @@ import itertools
 import json
 import random
 
-class Genetic_agent(Agent):
+class Genetic_agent(EvolutedAgent):
     
     def setup(self, agent, parser, args):
         self.nb_individu = args.individu

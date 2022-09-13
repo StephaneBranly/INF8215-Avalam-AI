@@ -27,7 +27,7 @@ import json
 from heuristic.heuristic import Genetic_1_action_heuristique
 
 
-class MyAgent(Agent):
+class HeuristicGenetic1ActionPlayerEvaluateAgent(EvolutedAgent):
     def initialize(self, percepts, players, time_left):
         return super().initialize(percepts, players, time_left)
 
