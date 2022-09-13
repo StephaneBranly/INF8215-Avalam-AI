@@ -58,7 +58,7 @@ class GeneticSinglePlayerAgent(EvolutedAgent):
 
 
         
-    def play(self, percepts, player, step, time_left):
+    def play(self, percepts, player, step, time_left, game_id=None, pool_id=None):
 
         board = dict_to_board(percepts)
         best_action = ()

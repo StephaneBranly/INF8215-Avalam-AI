@@ -37,7 +37,7 @@ class GeneticPlayerCompetition(EvolutedAgent):
         self.NN = NN([])
         self.NN.load_from_json(f"NN/gen{self.generation}.json", self.individu)
         
-    def play(self, percepts, player, step, time_left):
+    def play(self, percepts, player, step, time_left, game_id=None, pool_id=None):
         """
         This function is used to play a move according
         to the percepts, player and time left provided as input.

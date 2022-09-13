@@ -21,14 +21,14 @@ import random
 from avalam import *
 
 
-class GreedyAgent(Agent):
+class GreedyAgent(EvolutedAgent):
 
     def __init__(self):
 
         self.probability = 0.8
     
     """A dumb random agent."""
-    def play(self, percepts, player, step, time_left):
+    def play(self, percepts, player, step, time_left, game_id=None, pool_id=None):
         
         
         board = dict_to_board(percepts)

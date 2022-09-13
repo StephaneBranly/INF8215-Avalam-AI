@@ -24,7 +24,7 @@ from avalam import *
 class RandomAgent(EvolutedAgent):
 
     """A dumb random agent."""
-    def play(self, percepts, player, step, time_left):
+    def play(self, percepts, player, step, time_left, game_id=None, pool_id=None):
         board = dict_to_board(percepts)
         actions = list(board.get_actions())
         return random.choice(actions)

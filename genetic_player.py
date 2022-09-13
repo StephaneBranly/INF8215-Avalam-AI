@@ -47,7 +47,7 @@ class Genetic_agent(EvolutedAgent):
             print('No more generation')
 
 
-    def play(self, percepts, player, step, time_left):
+    def play(self, percepts, player, step, time_left, game_id=None, pool_id=None):
         if self.mode == "train":
             if player == -1:
                 return self.play_agent(self.agent_m1, percepts, player, step, time_left)

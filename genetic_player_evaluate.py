@@ -45,7 +45,7 @@ class GeneticPlayerEvaluate(EvolutedAgent):
             print('No more generation')
 
         
-    def play(self, percepts, player, step, time_left):
+    def play(self, percepts, player, step, time_left, game_id=None, pool_id=None):
         """
         This function is used to play a move according
         to the percepts, player and time left provided as input.

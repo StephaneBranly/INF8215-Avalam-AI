@@ -283,6 +283,20 @@ class EvolutedAgent(Agent):
         """
         pass
 
+    def play(self, percepts, player, step, time_left, game_id=None, pool_id=None):
+        """Play and return an action.
+        Arguments:
+        percepts -- the current board in a form that can be fed to the Board
+            constructor.
+        player -- the player to control in this step
+        step -- the current step number, starting from 1
+        time_left -- a float giving the number of seconds left from the time
+            credit. If the game is not time-limited, time_left is None.
+        game_id -- the id of the game this step belongs to
+        pool_id -- the id of the pool this game belongs to
+        """
+        pass
+
     def get_agent_id(self):
         """Return an identifier for this agent."""
         return "Agent"
