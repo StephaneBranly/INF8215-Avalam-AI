@@ -1,9 +1,9 @@
 from avalam import *
-from genetic_player import Genetic_agent
+from genetic_player import GeneticAgent
 from heuristic.heuristic import Genetic_1_action_heuristique
 
 
-class My_agent(Genetic_agent):
+class Heuristic1ActionAgent(GeneticAgent):
 
     def play_agent(self, agent,percepts, player, step, time_left):
         """
@@ -35,5 +35,5 @@ if __name__ == "__main__":
         parser.add_argument("-S","--save", default="NN_heuristic", help="path to save the NN", type=str)
         parser.add_argument("-R","--rate", default=0.01, help="mutation rate", type=float)
         parser.add_argument("-K","--keep", default=10, help="percentage of agent we keep [0:100]", type=int)
-    agent = My_agent()
+    agent = Heuristic1ActionAgent()
     agent_main(agent, argument_parser, agent.setup)

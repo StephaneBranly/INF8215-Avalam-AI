@@ -24,7 +24,7 @@ import random
 import timeit
 
 
-class GeneticPlayerCompetition(EvolutedAgent):
+class GeneticPlayerCompetition(EvolvedAgent):
     def initialize(self, percepts, players, time_left):
         return super().initialize(percepts, players, time_left)
 

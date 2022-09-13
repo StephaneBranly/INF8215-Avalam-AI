@@ -235,6 +235,8 @@ def load_percepts(filename):
 class Agent:
 
     """Interface for an Arlecchino agent"""
+    def hasEvolved(self):
+        return False
 
     def initialize(self, percepts, players, time_left):
         """Begin a new game.
@@ -261,25 +263,30 @@ class Agent:
         """
         pass
 
-class EvolutedAgent(Agent):
-    """Evoluted agent. This agent has new functions used by the game engine to notify the agent of the competition state."""
+class EvolvedAgent(Agent):
+    """Evolved agent. This agent has new functions used by the game engine to notify the agent of the competition state."""
+    def hasEvolved(self):
+        return True
     
-    def finished(self, steps, winner, reason="", player=None):
+    def finished(self, steps, winner, reason="", player=None, game_id=None, pool_id=None):
         """The game is finished.
         Arguments:
         steps -- the number of steps played
         winner -- the winner (>0: even players, <0: odd players, 0: draw)
         reason -- a specific reason for the victory or "" if standard
         player -- the player this agent controls (None if not applicable)
+        game_id -- the id of the game this step belongs to
+        pool_id -- the id of the pool this game belongs to
         """
         pass
 
-    def pool_ended(self, pool, player):
+    def pool_ended(self, pool_results, player, pool_id=None):
         """The pool is finished.
 
         Arguments:
-        pool -- the pool object
+        pool_results -- the pool_results object
         player -- the player this agent controls
+        game_id -- the id of the game this step belongs to
         """
         pass
 

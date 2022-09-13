@@ -30,17 +30,20 @@ import threading
 
 from avalam import *
 
+
 from stats.stats import generate_summary_file
 
 # Agent classes for multithreading
 from greedy_player import GreedyAgent
 from random_player import RandomAgent
+from genetic_player import GeneticAgent
+from heuristic_genetic_1_action_player import Heuristic1ActionAgent
 
 class TimeCreditExpired(Exception):
     """An agent has expired its time credit."""
 
 
-class Viewer(EvolutedAgent):
+class Viewer(EvolvedAgent):
 
     """Interface for an Avalam viewer and human agent."""
 
@@ -198,7 +201,7 @@ class Game:
 
     """Main Avalam game class."""
 
-    def __init__(self, agents, board, viewer=None, credits=[None, None]):
+    def __init__(self, agents, board, viewer=None, credits=[None, None], game_id=None, pool_id=None):
         """New Avalam game.
 
         Arguments:
@@ -217,6 +220,8 @@ class Game:
         self.step = 0
         self.player = 1
         self.trace = Trace(board, credits)
+        self.game_id = game_id
+        self.pool_id = pool_id
 
     def startPlaying(self):
         self.viewer.init_viewer(self.board.clone(), game=self)
@@ -265,8 +270,8 @@ class Game:
         self.trace.set_winner(winner, reason)
         self.viewer.finished(self.step, winner, reason)
         for i in range(2):
-            if (isinstance(self.agents[i], EvolutedAgent)):
-                agents[i].finished(self.step, winner, reason, 1 if i==0 else -1)
+            if self.agents[i].hasEvolved():
+                self.agents[i].finished(self.step, winner, reason, 1 if i==0 else -1, self.game_id, self.pool_id)
            
     def timed_exec(self, fn, *args, agent=None):
         """Execute self.agents[agent].fn(*args, time_left) with the
@@ -288,7 +293,10 @@ class Game:
             socket.setdefaulttimeout(self.credits[agent] + 1)
         start = time.time()
         try:
-            result = self.agents[agent].play(*args + (self.credits[agent],))
+            if self.agents[agent].hasEvolved():
+                result = self.agents[agent].play(*args + (self.credits[agent],) + (self.game_id,) + (self.pool_id,))
+            else:
+                result = self.agents[agent].play(*args + (self.credits[agent],))
         except socket.timeout:
             self.credits[agent] = -1.0  # ensure it is counted as expired
             raise TimeCreditExpired
@@ -319,13 +327,14 @@ def connect_agent(uri):
     return xmlrpc.client.ServerProxy(uri, allow_none=True)
 
 class GameThread(threading.Thread):
-    def __init__(self, threadID, agents, viewer=None, credits=[None, None]):
+    def __init__(self, agents, viewer=None, credits=[None, None], game_id=None, pool_id=None):
         self.board = Board()
-        self.threadID = threadID
         self.agents = agents
         self.viewer = viewer if viewer is not None else Viewer()
         self.step = 0
         self.player = 1
+        self.game_id=game_id
+        self.pool_id=pool_id
         threading.Thread.__init__(self)
 
     def run(self):
@@ -341,19 +350,22 @@ class GameThread(threading.Thread):
                     'rows': self.board.rows,
                     'max_height': self.board.max_height,
                 }
-                action = self.agents[agent].play(board_dict, self.player, self.step, 0)
+                if self.agents[agent].hasEvolved():
+                    action = self.agents[agent].play(board_dict, self.player, self.step, 0, self.game_id, self.pool_id)
+                else:
+                    action = self.agents[agent].play(board_dict, self.player, self.step, 0)
                 self.board.play_action(action)
                 self.player = -self.player
         except e:
-            print(e)
+            # print(e)
             pass
         else:
             reason = ""
             winner = self.board.get_score()
             
         for i in range(2):
-            if (isinstance(self.agents[i], EvolutedAgent)):
-                agents[i].finished(self.step, winner, reason, 1 if i==0 else -1)
+            if self.agents[i].hasEvolved():
+                agents[i].finished(self.step, winner, reason, 1 if i==0 else -1, self.game_id, self.pool_id)
            
     def get_scores(self):
         return self.board.get_score()
@@ -484,7 +496,33 @@ if __name__ == "__main__":
                     agents[i] = connect_agent(agents[i])
                     credits[i] = args.time
         else:
-            agents = [GreedyAgent(), RandomAgent()]
+            genetic_agent1 = Heuristic1ActionAgent()
+            genetic_agent2 = Heuristic1ActionAgent()
+            class ParamsTrain:
+                individu=10
+                generation= 0
+                mode= "train"
+                save= "NN_MT"
+                rate= 0.2
+                keep= 30
+            class ParamsEvaluate1:
+                mode= "evaluate"
+                save= "NN_heuristic"
+                rate= 0.1
+                keep= 30
+                individu=-1
+                generation=0
+            class ParamsEvaluate2:
+                mode= "evaluate"
+                save= "NN_MT"
+                rate= 0.1
+                keep= 30
+                individu=-1
+                generation=0
+           
+            genetic_agent1.setup(None, None, ParamsEvaluate1())
+            genetic_agent2.setup(None, None, ParamsEvaluate2())
+            agents = [genetic_agent1, genetic_agent2]
 
         def compute_pool_results(history):
             winners=[-1 if score<0 else 1 if score>0 else 0 for score in history]
@@ -507,6 +545,7 @@ if __name__ == "__main__":
                 viewer.replay(game.trace, args.speed, show_end=True)
             game_history['scores'].append(game.trace.winner)
             game_history['steps'].append(game.step)
+
         def progress_bar(i, n):
             return"[%-20s] %d%%" % ('='*int(20*i/n), 100*i/n)
 
@@ -526,7 +565,7 @@ if __name__ == "__main__":
             if args.multithreading:
                 threads = []
                 for i in range(args.games):
-                    t = GameThread(i, agents, viewer, credits)
+                    t = GameThread(agents, viewer, credits, i, p)
                     threads.append(t)
                     t.start()
                 for t in threads:
@@ -537,7 +576,7 @@ if __name__ == "__main__":
             else:
                 for i in range(args.games):
                     board = Board()
-                    game = Game(agents, board, viewer, credits)
+                    game = Game(agents, board, viewer, credits, i, p)
 
                     if args.gui:
                         threading.Thread(target=play, args=[game]).start()
@@ -548,11 +587,11 @@ if __name__ == "__main__":
                 pool_results = compute_pool_results(game_history['scores'])
                 pool_history.append(pool_results)
                 if args.stats:
-                    if (isinstance(agents[0], EvolutedAgent)):
+                    if agents[0].hasEvolved():
                         agent_p1 = agents[0].get_agent_id()
                     else:
                         agent_p1 = "Agent +1"
-                    if (isinstance(agents[1], EvolutedAgent)):
+                    if agents[1].hasEvolved():
                         agent_m1 = agents[1].get_agent_id()
                     else:
                         agent_m1 = "Agent -1"
@@ -562,14 +601,13 @@ if __name__ == "__main__":
                     f = open("stats/pool_results.csv", "a")
                     f.write(f"{p};{agent_m1};{agent_p1};{';'.join([str(r) for r in pool_results])}\n")
                     f.close()
-                    # print(f"{progress_bar(i, args.pool)}\n{i} : {pool_results}", end='\r')
                 print(f"\t\t\t\tPool progression: {progress_bar(p+1, args.pool)}", end='\r')
 
 
             if not args.gui:
                 for i in range(2):
-                    if (isinstance(agents[i], EvolutedAgent)):
-                        agents[i].pool_ended(pool_results, 1 if i==0 else -1)
+                    if agents[i].hasEvolved():
+                        agents[i].pool_ended(pool_results, 1 if i==0 else -1, p)
                     
         if not args.gui and args.stats:
             generate_summary_file('stats/')

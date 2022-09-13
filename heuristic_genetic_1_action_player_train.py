@@ -24,7 +24,7 @@ import json
 import itertools
 from heuristic.heuristic import Genetic_1_action_heuristique
 
-class MyAgent(EvolutedAgent):
+class MyAgent(EvolvedAgent):
     def initialize(self, percepts, players, time_left):
         return super().initialize(percepts, players, time_left)
 
