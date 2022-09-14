@@ -502,27 +502,27 @@ if __name__ == "__main__":
                 individu=10
                 generation= 0
                 mode= "train"
-                save= "NN_MT"
-                rate= 0.2
-                keep= 30
+                save= "NN_MT2"
+                rate= 20
+                keep= 20
             class ParamsEvaluate1:
                 mode= "evaluate"
                 save= "NN_heuristic"
-                rate= 0.1
+                rate= 10
                 keep= 30
                 individu=-1
                 generation=0
             class ParamsEvaluate2:
                 mode= "evaluate"
-                save= "NN_MT"
-                rate= 0.1
+                save= "NN_MT2"
+                rate= 10
                 keep= 30
                 individu=-1
                 generation=0
            
             genetic_agent1.setup(None, None, ParamsEvaluate1())
             genetic_agent2.setup(None, None, ParamsEvaluate2())
-            agents = [genetic_agent1, genetic_agent2]
+            agents = [GreedyAgent(), genetic_agent2]
 
         def compute_pool_results(history):
             winners=[-1 if score<0 else 1 if score>0 else 0 for score in history]
@@ -560,6 +560,7 @@ if __name__ == "__main__":
             f.close()
         for p in range(args.pool):
             game_history = dict()
+            game_history['diff_scores'] = []
             game_history['scores'] = []
             game_history['steps'] = []
             if args.multithreading:
