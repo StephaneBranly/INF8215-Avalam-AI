@@ -37,6 +37,7 @@ from stats.stats import generate_summary_file
 from greedy_player import GreedyAgent
 from random_player import RandomAgent
 from genetic_player import GeneticAgent
+from genetic_observation_NN_player import ObservationNN1actionAgent
 from heuristic_genetic_1_action_player import Heuristic1ActionAgent
 
 class TimeCreditExpired(Exception):
@@ -497,12 +498,12 @@ if __name__ == "__main__":
                     credits[i] = args.time
         else:
             genetic_agent1 = Heuristic1ActionAgent()
-            genetic_agent2 = Heuristic1ActionAgent()
+            genetic_agent2 = ObservationNN1actionAgent()
             class ParamsTrain:
-                individu=40
-                generation= 5
+                individu=20
+                generation= 0
                 mode= "train"
-                save= "NN_MT2"
+                save= "NN_MT3"
                 rate= 2
                 keep= 20
             class ParamsEvaluate1:
@@ -511,14 +512,14 @@ if __name__ == "__main__":
                 rate= 10
                 keep= 30
                 individu=-1
-                generation=0
+                generation=10
             class ParamsEvaluate2:
                 mode= "evaluate"
-                save= "NN_MT"
+                save= "NN_MT3"
                 rate= 10
                 keep= 30
                 individu=-1
-                generation=0
+                generation=18
            
             genetic_agent1.setup(None, None, ParamsEvaluate1())
             genetic_agent2.setup(None, None, ParamsEvaluate2())

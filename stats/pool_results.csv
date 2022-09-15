@@ -1,9 +1,4 @@
 Pool id;Agent -1;Agent 1;Pct Agent -1;Pct Draw;Pct Agent 1
-0;Genetic Agent #5 gen0 NN_MT;Genetic Agent #2 gen0 NN_MT2;0.0;0.0;1.0
-1;Genetic Agent #4 gen1 NN_MT;Genetic Agent #27 gen1 NN_MT2;0.0;0.0;1.0
-2;Genetic Agent #1 gen2 NN_MT;Genetic Agent #0 gen2 NN_MT2;1.0;0.0;0.0
-3;Genetic Agent #1 gen3 NN_MT;Genetic Agent #1 gen3 NN_MT2;0.0;0.0;1.0
-4;Genetic Agent #2 gen4 NN_MT;Genetic Agent #0 gen4 NN_MT2;0.0;0.0;1.0
-2;Genetic Agent Training;Genetic Agent Training;0.0;0.0;1.0
-5;Genetic Agent #7 gen5 NN_MT;Genetic Agent #0 gen5 NN_MT2;0.0;0.0;1.0
-6;Genetic Agent #1 gen6 NN_MT;Genetic Agent #1 gen6 NN_MT2;0.0;0.0;1.0
+0;Genetic Agent #19 gen18 NN_MT3;Genetic Agent #0 gen10 NN_MT2;1.0;0.0;0.0
+1;Genetic Agent #19 gen19 NN_MT3;Genetic Agent #0 gen11 NN_MT2;1.0;0.0;0.0
+2;Genetic Agent #19 gen20 NN_MT3;Genetic Agent #0 gen12 NN_MT2;1.0;0.0;0.0
