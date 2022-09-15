@@ -499,22 +499,22 @@ if __name__ == "__main__":
             genetic_agent1 = Heuristic1ActionAgent()
             genetic_agent2 = Heuristic1ActionAgent()
             class ParamsTrain:
-                individu=10
-                generation= 0
+                individu=40
+                generation= 5
                 mode= "train"
                 save= "NN_MT2"
-                rate= 20
+                rate= 2
                 keep= 20
             class ParamsEvaluate1:
                 mode= "evaluate"
-                save= "NN_heuristic"
+                save= "NN_MT2"
                 rate= 10
                 keep= 30
                 individu=-1
                 generation=0
             class ParamsEvaluate2:
                 mode= "evaluate"
-                save= "NN_MT2"
+                save= "NN_MT"
                 rate= 10
                 keep= 30
                 individu=-1
@@ -522,7 +522,7 @@ if __name__ == "__main__":
            
             genetic_agent1.setup(None, None, ParamsEvaluate1())
             genetic_agent2.setup(None, None, ParamsEvaluate2())
-            agents = [GreedyAgent(), genetic_agent2]
+            agents = [genetic_agent1,genetic_agent2]
 
         def compute_pool_results(history):
             winners=[-1 if score<0 else 1 if score>0 else 0 for score in history]
