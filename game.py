@@ -500,26 +500,26 @@ if __name__ == "__main__":
             genetic_agent1 = Heuristic1ActionAgent()
             genetic_agent2 = ObservationNN1actionAgent()
             class ParamsTrain:
-                individu=20
+                individu=12
                 generation= 0
                 mode= "train"
-                save= "NN_MT3"
+                save= "NN_MT4"
                 rate= 2
-                keep= 20
+                keep= 30
             class ParamsEvaluate1:
                 mode= "evaluate"
-                save= "NN_MT2"
+                save= "NN_MT4"
                 rate= 10
                 keep= 30
                 individu=-1
-                generation=10
+                generation=0
             class ParamsEvaluate2:
                 mode= "evaluate"
                 save= "NN_MT3"
                 rate= 10
                 keep= 30
                 individu=-1
-                generation=18
+                generation=0
            
             genetic_agent1.setup(None, None, ParamsEvaluate1())
             genetic_agent2.setup(None, None, ParamsEvaluate2())

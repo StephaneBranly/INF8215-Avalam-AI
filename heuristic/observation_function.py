@@ -2,12 +2,15 @@
 
 def finish_tower(board,player,action):
     """Return 1:0:-1 if the action finish a tower of the player"""
-    board = board.clone()
-    board.play_action(action)
-    if board.m[action[2]][action[3]] == player*5:
-        return 1
-    elif board.m[action[2]][action[3]] == -player*5:
-        return -1
+    if board.m[action[0]][action[1]]*player > 0:
+        owner = player
+    else:
+        owner = -player
+    if abs(board.m[action[2]][action[3]]) + abs(board.m[action[0]][action[1]]) == 5:
+        if owner == player:
+            return 1
+        else:
+            return -1
     else:
         return 0
 
@@ -36,3 +39,42 @@ def cover_token(board,player,action):
         return 1
     else:
         return -1
+
+def create_tower4(board,player,action):
+    if board.m[action[0]][action[1]]*player > 0:
+        owner = player
+    else:
+        owner = -player
+    if abs(board.m[action[2]][action[3]]) + abs(board.m[action[0]][action[1]]) == 4:
+        if owner == player:
+            return 1
+        else:
+            return -1
+    else:
+        return 0
+
+def create_tower3(board,player,action):
+    if board.m[action[0]][action[1]]*player > 0:
+        owner = player
+    else:
+        owner = -player
+    if abs(board.m[action[2]][action[3]]) + abs(board.m[action[0]][action[1]]) == 3:
+        if owner == player:
+            return 1
+        else:
+            return -1
+    else:
+        return 0
+
+def create_tower2(board,player,action):
+    if board.m[action[0]][action[1]]*player > 0:
+        owner = player
+    else:
+        owner = -player
+    if abs(board.m[action[2]][action[3]]) + abs(board.m[action[0]][action[1]]) == 2:
+        if owner == player:
+            return 1
+        else:
+            return -1
+    else:
+        return 0
