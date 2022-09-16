@@ -9,36 +9,41 @@ class Heuristic:
     def evaluate(self,board,player,action):
         raise NotImplementedError
 
+    def interprete_params(self):
+        return None
+
     def __call__(self,board,player,action):
         return self.evaluate(board,player,action)
 
 
 class Genetic_1_action_heuristique(Heuristic):
     def __init__(self, parameters=None):
-        self.parameters = [random.uniform(-1,1) for parameters in range(5)]
+        self._parameters = [random.uniform(-1,1) for parameters in range(5)]
         if parameters is not None:
-            self.parameters = parameters
+            self._parameters = parameters
 
     def evaluate(self,board,player,action):
-
         score = 0
-        score += self.parameters[0]*finish_tower(board,player,action)
-        score += self.parameters[1]*isolate_tower(board,player,action)
-        score += self.parameters[2]*isolate_tower(board,-player,action)
-        score += self.parameters[3]*use_token(board,player,action)
-        score += self.parameters[4]*cover_token(board,player,action)
+        score += self._parameters[0]*finish_tower(board,player,action)
+        score += self._parameters[1]*isolate_tower(board,player,action)
+        score += self._parameters[2]*isolate_tower(board,-player,action)
+        score += self._parameters[3]*use_token(board,player,action)
+        score += self._parameters[4]*cover_token(board,player,action)
         return score
+
+    def interprete_params(self):
+        return ['finish_tower','isolate_tower','isolate_tower_opponent','use_token','cover_token']
     
     def set_parameters(self,parameters):
-        self.parameters = parameters
+        self._parameters = parameters
     
     def get_parameters(self):
-        return self.parameters
+        return self._parameters
 
     def mutate(self,mutation_rate):
         for i in range(len(self.parameters)):
             if random.random() < mutation_rate:
-                self.parameters[i] += random.uniform(-1,1)
+                self._parameters[i] += random.uniform(-1,1)
 
     def crossover(self,other):
         new_parameters = []
@@ -55,7 +60,7 @@ class Genetic_1_action_heuristique(Heuristic):
             listObj = json.load(fp)
         data = {}
         data['score'] = score
-        data['parameters'] = self.parameters
+        data['parameters'] = self._parameters
         listObj["gen"].append(data)
         with open(filename, 'w') as outfile:
             json.dump(listObj, outfile)
@@ -63,4 +68,4 @@ class Genetic_1_action_heuristique(Heuristic):
     def load_from_json(self, filename, index):
         with open(filename) as fp:
             listObj = json.load(fp)
-        self.parameters = listObj["gen"][index]["parameters"]
+        self._parameters = listObj["gen"][index]["parameters"]

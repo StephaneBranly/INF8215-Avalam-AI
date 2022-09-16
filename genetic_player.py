@@ -25,8 +25,12 @@ class GeneticAgent(EvolvedAgent):
             else:
                 self.current_agent.load_from_json(f"{self.save_path}/gen{self.current_gen}.json", args.individu)
                 self.current_individu = args.individu
+
         elif self.mode == "evaluate":
             self.load_best_individu(self.current_gen)
+
+        if self.mode == "stats":
+            self.generate_stats()
     
     def load_best_individu(self,gen):
         try:
@@ -131,11 +135,14 @@ class GeneticAgent(EvolvedAgent):
             return f"Genetic Agent #{self.current_individu} gen{self.current_gen} {self.save_path}"
         return "Genetic Agent"
 
+    def generate_stats(self):
+        return None
+
 if __name__ == "__main__":
     def argument_parser(agent, parser):
         parser.add_argument("-I", "--individu", default=-1, help="play : index of indiv if -1 take best | number of indiv per gen", type=int)
         parser.add_argument("-G", "--generation", default=0, help="play : index of gen | train : number of gen", type=int)
-        parser.add_argument("-M", "--mode", default="train", help="train | play | evaluate", type=str)
+        parser.add_argument("-M", "--mode", default="train", help="train | play | evaluate | stats", type=str)
         parser.add_argument("-S","--save", default="NN_heuristic", help="path to save the NN", type=str)
         parser.add_argument("-R","--rate", default=1, help="mutation rate in percentage [0:100]", type=float)
         parser.add_argument("-K","--keep", default=10, help="percentage of agent we keep [0:100]", type=int)
