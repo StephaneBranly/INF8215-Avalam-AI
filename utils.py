@@ -15,5 +15,11 @@ def calculate_genetic_diversity(json_file):
 
     return df.std(), df.std().mean()
 
-for i in range(0,14):
-    print("generation "+str(i)+" : \n"+str(calculate_genetic_diversity("NN_MT2/gen"+str(i)+".json"))+"\n------------------")
+# for i in range(0,14):
+#     print("generation "+str(i)+" : \n"+str(calculate_genetic_diversity("NN_MT2/gen"+str(i)+".json"))+"\n------------------")
+
+def key_value_or_default(d, key, default):
+    if key in d:
+        return d[key]
+    else:
+        return default

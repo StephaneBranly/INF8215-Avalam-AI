@@ -3,28 +3,30 @@ import itertools
 import json
 import random
 
+from utils import key_value_or_default
+
 class GeneticAgent(EvolvedAgent):
     
     def setup(self, agent, parser, args):
-        self.nb_individu = args.individu
-        self.mode = args.mode
-        self.save_path = args.save
-        self.rate = args.rate
-        self.keep = args.keep
+        self.individu = key_value_or_default(args, 'individu', -1)
+        self.mode = key_value_or_default(args, 'mode', "train")
+        self.save_path = key_value_or_default(args, 'save_path', "NN")
+        self.rate = key_value_or_default(args, 'rate', 1)
+        self.keep = key_value_or_default(args, 'keep', 20)
         self.current_individu = None
-        self.current_gen = args.generation
+        self.current_gen = key_value_or_default(args, 'generation', 0)
         self.current_agent = self.default_agent() # for play and train
         self.agents = dict()
         if self.mode == "train":
-            self.matchs = [m for m in itertools.combinations(range(self.nb_individu), 2)]
+            self.matchs = [m for m in itertools.combinations(range(self.individu), 2)]
             self.load_agents_of_pool()
 
         elif self.mode == "play":
-            if args.individu == -1:
+            if self.individu == -1:
                 self.load_best_individu(self.current_gen)
             else:
-                self.current_agent.load_from_json(f"{self.save_path}/gen{self.current_gen}.json", args.individu)
-                self.current_individu = args.individu
+                self.current_agent.load_from_json(f"{self.save_path}/gen{self.current_gen}.json", self.individu)
+                self.current_individu = self.individu
 
         elif self.mode == "evaluate":
             self.load_best_individu(self.current_gen)
@@ -46,7 +48,7 @@ class GeneticAgent(EvolvedAgent):
 
     def load_agents_of_pool(self):
         self.scores = dict()
-        for a in range(self.nb_individu):
+        for a in range(self.individu):
             self.scores[a] = 0
             self.load_agent(a, self.current_gen)
 
@@ -95,7 +97,7 @@ class GeneticAgent(EvolvedAgent):
     def save_stats(self):
         with open(f"{self.save_path}/gen{self.current_gen}.json") as f:
             listObj = json.load(f)
-            for i in range(self.nb_individu):
+            for i in range(self.individu):
                 listObj["gen"][i]["score"] = self.scores[i]
         with open(f"{self.save_path}/gen{self.current_gen}.json", 'w') as outfile:
             json.dump(listObj, outfile)
@@ -109,11 +111,11 @@ class GeneticAgent(EvolvedAgent):
                 f.write('{ \"gen\": []}')
                 f.close()
 
-                for l in range(self.nb_individu):
+                for l in range(self.individu):
                     father = self.default_agent()
-                    father.load_from_json(f"{self.save_path}/gen{self.current_gen}.json", results[random.randint(0, self.nb_individu*self.keep//100)][0])
+                    father.load_from_json(f"{self.save_path}/gen{self.current_gen}.json", results[random.randint(0, self.individu*self.keep//100)][0])
                     mother = self.default_agent()
-                    mother.load_from_json(f"{self.save_path}/gen{self.current_gen}.json", results[random.randint(0, self.nb_individu*self.keep//100)][0])
+                    mother.load_from_json(f"{self.save_path}/gen{self.current_gen}.json", results[random.randint(0, self.individu*self.keep//100)][0])
                     child = father.crossover(mother)
                     child.mutate(self.rate/100)
                     

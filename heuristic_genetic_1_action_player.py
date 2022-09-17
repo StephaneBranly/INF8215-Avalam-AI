@@ -40,7 +40,7 @@ if __name__ == "__main__":
         parser.add_argument("-G", "--generation", default=0, help="play : index of gen | train : number of gen", type=int)
         parser.add_argument("-M", "--mode", default="train", help="train | play | evaluate | stats", type=str)
         parser.add_argument("-S","--save", default="NN_heuristic", help="path to save the NN", type=str)
-        parser.add_argument("-R","--rate", default=0.01, help="mutation rate", type=float)
+        parser.add_argument("-R","--rate", default=1, help="mutation rate", type=float)
         parser.add_argument("-K","--keep", default=10, help="percentage of agent we keep [0:100]", type=int)
     agent = Heuristic1ActionAgent()
     agent_main(agent, argument_parser, agent.setup)
