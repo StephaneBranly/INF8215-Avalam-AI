@@ -1,3 +1,6 @@
+from argparse import Namespace
+
+
 def calculate_genetic_diversity(json_file):
     """Calculate the genetic diversity of a population.
 
@@ -19,7 +22,12 @@ def calculate_genetic_diversity(json_file):
 #     print("generation "+str(i)+" : \n"+str(calculate_genetic_diversity("NN_MT2/gen"+str(i)+".json"))+"\n------------------")
 
 def key_value_or_default(d, key, default):
+    if isinstance(d, Namespace):
+        print(getattr(d, key, default))
+        return getattr(d, key, default)
     if key in d:
+        print(d)
+        print(key)
         return d[key]
     else:
         return default

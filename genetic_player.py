@@ -9,7 +9,7 @@ class GeneticAgent(EvolvedAgent):
     def setup(self, agent, parser, args):
         self.individu = key_value_or_default(args, 'individu', -1)
         self.mode = key_value_or_default(args, 'mode', "train")
-        self.save_path = key_value_or_default(args, 'save_path', "NN")
+        self.save_path = key_value_or_default(args, 'save', "NN")
         self.rate = key_value_or_default(args, 'rate', 1)
         self.keep = key_value_or_default(args, 'keep', 20)
         self.current_individu = None
@@ -31,7 +31,7 @@ class GeneticAgent(EvolvedAgent):
             self.load_best_individu(self.current_gen)
 
         if self.mode == "stats":
-            self.generate_stats()
+            self.generate_stats_file()
     
     def load_best_individu(self,gen):
         try:
@@ -136,7 +136,7 @@ class GeneticAgent(EvolvedAgent):
             return f"Genetic Agent #{self.current_individu} gen{self.current_gen} {self.save_path}"
         return "Genetic Agent"
 
-    def generate_stats(self):
+    def generate_stats_file(self):
         return None
 
 if __name__ == "__main__":

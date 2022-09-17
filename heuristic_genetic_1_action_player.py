@@ -25,14 +25,17 @@ class Heuristic1ActionAgent(GeneticAgent):
     def default_agent(self):
         return Genetic_1_action_heuristique()
 
-    def generate_stats(self):
+    def generate_stats_file(self):
         dfs = generate_dataframes(self.save_path)
         with PdfPages(f"{self.save_path}/stats.pdf") as pdf:
                 for param in range(len(dfs)):
-                    fig = plot_param_evolution(dfs, param, self.default_agent().interprete_params()[param])
+                    if len(self.default_agent().interprete_params()) <= param:
+                        function_name = None
+                    else:
+                        function_name = self.default_agent().interprete_params()[param]
+                    fig = plot_param_evolution(dfs, param, function_name)
                     fig.show()
                     pdf.savefig(fig)
-        return super().generate_stats()
 
 if __name__ == "__main__":
     def argument_parser(agent, parser):
