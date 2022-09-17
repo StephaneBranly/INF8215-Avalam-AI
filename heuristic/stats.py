@@ -3,6 +3,15 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
+def generate_header_page(text):
+    fig=plt.figure()
+    ax=fig.add_subplot(111)
+    plt.axis('off')
+    ax.set(ylim=(-1, 1))
+    ax.set(xlim=(-1, 1))
+    ax.text(0, 0, text,horizontalalignment='center',verticalalignment='center', fontsize = 30)
+    return fig
+
 def generate_dataframes(save_path):
     params_df = {}
     gen = 0

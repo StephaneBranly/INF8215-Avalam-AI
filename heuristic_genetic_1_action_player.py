@@ -3,7 +3,7 @@ from genetic_player import GeneticAgent
 from heuristic.heuristic import Genetic_1_action_heuristique
 from matplotlib.backends.backend_pdf import PdfPages
 
-from heuristic.stats import generate_dataframes, plot_param_evolution 
+from heuristic.stats import generate_dataframes, generate_header_page, plot_param_evolution 
 
 class Heuristic1ActionAgent(GeneticAgent):
     def play_agent(self, agent, percepts, player, step, time_left):
@@ -28,14 +28,15 @@ class Heuristic1ActionAgent(GeneticAgent):
     def generate_stats_file(self):
         dfs = generate_dataframes(self.save_path)
         with PdfPages(f"{self.save_path}/stats.pdf") as pdf:
-                for param in range(len(dfs)):
-                    if len(self.default_agent().interprete_params()) <= param:
-                        function_name = None
-                    else:
-                        function_name = self.default_agent().interprete_params()[param]
-                    fig = plot_param_evolution(dfs, param, function_name)
-                    fig.show()
-                    pdf.savefig(fig)
+            fig = generate_header_page(self.save_path)
+            pdf.savefig(fig)
+            for param in range(len(dfs)):
+                if len(self.default_agent().interprete_params()) <= param:
+                    function_name = None
+                else:
+                    function_name = self.default_agent().interprete_params()[param]
+                fig = plot_param_evolution(dfs, param, function_name)
+                pdf.savefig(fig)
 
 if __name__ == "__main__":
     def argument_parser(agent, parser):
