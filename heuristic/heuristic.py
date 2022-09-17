@@ -1,4 +1,4 @@
-from .observation_function import finish_tower, isolate_tower, use_token, cover_token
+from .observation_function import finish_tower, isolate_tower, use_token, cover_token, create_tower4, create_tower3, create_tower2
 import random
 import json
 
@@ -18,17 +18,20 @@ class Heuristic:
 
 class Genetic_1_action_heuristique(Heuristic):
     def __init__(self, parameters=None):
-        self._parameters = [random.uniform(-1,1) for parameters in range(5)]
+        self.parameters = [random.uniform(-1,1) for parameters in range(8)]
         if parameters is not None:
             self._parameters = parameters
 
     def evaluate(self,board,player,action):
         score = 0
-        score += self._parameters[0]*finish_tower(board,player,action)
-        score += self._parameters[1]*isolate_tower(board,player,action)
-        score += self._parameters[2]*isolate_tower(board,-player,action)
-        score += self._parameters[3]*use_token(board,player,action)
-        score += self._parameters[4]*cover_token(board,player,action)
+        score += self.parameters[0]*finish_tower(board,player,action)
+        score += self.parameters[1]*isolate_tower(board,player,action)
+        score += self.parameters[2]*isolate_tower(board,-player,action)
+        score += self.parameters[3]*use_token(board,player,action)
+        score += self.parameters[4]*cover_token(board,player,action)
+        score += self.parameters[5]*create_tower4(board,player,action)
+        score += self.parameters[6]*create_tower3(board,player,action)
+        score += self.parameters[7]*create_tower2(board,player,action)
         return score
 
     def interprete_params(self):
