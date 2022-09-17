@@ -6,7 +6,6 @@ import random
 from utils import key_value_or_default
 
 class GeneticAgent(EvolvedAgent):
-    
     def setup(self, agent, parser, args):
         self.individu = key_value_or_default(args, 'individu', -1)
         self.mode = key_value_or_default(args, 'mode', "train")

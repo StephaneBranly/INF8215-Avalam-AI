@@ -13,6 +13,8 @@ classDiagram
     EvolvedAgent <|-- RandomAgent
     GeneticAgent <|-- Heuristic1ActionAgent
     Heuristic1ActionAgent o-- Genetic_1_action_heuristique : default_agent
+    GeneticAgent <|-- ObservationNN1actionAgent
+    ObservationNN1actionAgent o-- NN : default_agent
     Heuristic <|-- Genetic_1_action_heuristique
     class Agent{
       +initialize()
@@ -55,6 +57,19 @@ classDiagram
     class Heuristic{
         +evaluate(*args)
         +interpret_params()
+    }
+    class ObservationNN1actionAgent{
+        +play_agent(*args)
+        +default_agent()
+    }
+    class NN {
+        +sigmoid(z)
+        +print()
+        +predict(x)
+        +mutate(rate)
+        +crossover(other)
+        +save_a_json(fname, score)
+        +load_from_json(fname, index)
     }
             
 ```
