@@ -25,6 +25,8 @@ def isolate_tower(board,player,action):
             if board.is_tower_movable(i,j) and not after.is_tower_movable(i,j) and after.m[i][j]*player > 0:
                 new_isolated_tower += 1
     return new_isolated_tower
+def ennemy_isolate_tower(board,player,action):
+    return isolate_tower(board,-player,action)
 
 def use_token(board,player,action):
     """Return 1 if the player use a token, -1 otherwise"""

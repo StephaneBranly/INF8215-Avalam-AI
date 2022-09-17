@@ -328,7 +328,7 @@ def connect_agent(uri):
     return xmlrpc.client.ServerProxy(uri, allow_none=True)
 
 class GameThread(threading.Thread):
-    def __init__(self, agents, viewer=None, credits=[None, None], game_id=None, pool_id=None):
+    def __init__(self, agents, viewer=None, credits=[None, None], game_id=None, pool_id=None, nb_games_to_finish=None):
         self.board = Board()
         self.agents = agents
         self.viewer = viewer if viewer is not None else Viewer()
@@ -336,6 +336,7 @@ class GameThread(threading.Thread):
         self.player = 1
         self.game_id=game_id
         self.pool_id=pool_id
+        self.nb_games_to_finish = nb_games_to_finish
         threading.Thread.__init__(self)
 
     def run(self):
@@ -367,6 +368,8 @@ class GameThread(threading.Thread):
         for i in range(2):
             if self.agents[i].hasEvolved():
                 agents[i].finished(self.step, winner, reason, 1 if i==0 else -1, self.game_id, self.pool_id)
+        self.nb_games_to_finish['nb'] -= 1
+        print(f"Game progression: {int(100*(self.nb_games_to_finish['nb']+1)/self.nb_games_to_finish['nb_games'])}%\t\tPool progression: {progress_bar(self.pool_id+1, self.nb_games_to_finish['nb_pool'])}   ", end='\r')
            
     def get_scores(self):
         return self.board.get_score()
@@ -499,20 +502,19 @@ if __name__ == "__main__":
         else:
             genetic_agent1 = Heuristic1ActionAgent()
             genetic_agent2 = ObservationNN1actionAgent()
-            class ParamsTrain:
-                individu=12
-                generation= 0
-                mode= "train"
-                save= "NN_MT4"
-                rate= 2
-                keep= 30
-            class ParamsEvaluate1:
-                mode= "evaluate"
-                save= "NN_MT4"
-                rate= 10
-                keep= 30
-                individu=-1
-                generation=0
+            paramsTrain = {
+                'individu': 8,
+                'generation': 0,
+                'mode': "train",
+                'save': "NN_MT7",
+                'rate': 2,
+                'keep': 25,
+            }
+            paramsEvaluate = {
+                "mode": "evaluate",
+                "save": "NN_MT7",
+                "generation": 0,
+            }
             class ParamsEvaluate2:
                 mode= "evaluate"
                 save= "NN_MT3"
@@ -521,9 +523,9 @@ if __name__ == "__main__":
                 individu=-1
                 generation=0
            
-            genetic_agent1.setup(None, None, ParamsEvaluate1())
-            genetic_agent2.setup(None, None, ParamsEvaluate2())
-            agents = [genetic_agent1,genetic_agent2]
+            genetic_agent1.setup(None, None, paramsEvaluate)
+            # genetic_agent2.setup(None, None, ParamsTrain())
+            agents = [GreedyAgent(), genetic_agent1]
 
         def compute_pool_results(history):
             winners=[-1 if score<0 else 1 if score>0 else 0 for score in history]
@@ -564,10 +566,13 @@ if __name__ == "__main__":
             game_history['diff_scores'] = []
             game_history['scores'] = []
             game_history['steps'] = []
+            
             if args.multithreading:
+                nb_games_to_finish = { 'nb': args.games, 'nb_games': args.games, 'nb_pool': args.pool }
+
                 threads = []
                 for i in range(args.games):
-                    t = GameThread(agents, viewer, credits, i, p)
+                    t = GameThread(agents, viewer, credits, i, p, nb_games_to_finish)
                     threads.append(t)
                     t.start()
                 for t in threads:

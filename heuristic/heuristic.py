@@ -1,4 +1,4 @@
-from .observation_function import finish_tower, isolate_tower, use_token, cover_token, create_tower4, create_tower3, create_tower2
+from .observation_function import ennemy_isolate_tower, finish_tower, isolate_tower, use_token, cover_token, create_tower4, create_tower3, create_tower2
 import random
 import json
 
@@ -15,27 +15,23 @@ class Heuristic:
     def __call__(self,board,player,action):
         return self.evaluate(board,player,action)
 
+default_functions = [finish_tower, isolate_tower, ennemy_isolate_tower, use_token, cover_token, create_tower4, create_tower3, create_tower2]
 
 class Genetic_1_action_heuristique(Heuristic):
-    def __init__(self, parameters=None):
-        self.parameters = [random.uniform(-1,1) for parameters in range(8)]
+    def __init__(self, functions=default_functions, parameters=None):
+        self._parameters = [random.uniform(-1,1) for parameters in range(len(functions))]
         if parameters is not None:
             self._parameters = parameters
+        self.functions = functions
 
     def evaluate(self,board,player,action):
         score = 0
-        score += self.parameters[0]*finish_tower(board,player,action)
-        score += self.parameters[1]*isolate_tower(board,player,action)
-        score += self.parameters[2]*isolate_tower(board,-player,action)
-        score += self.parameters[3]*use_token(board,player,action)
-        score += self.parameters[4]*cover_token(board,player,action)
-        score += self.parameters[5]*create_tower4(board,player,action)
-        score += self.parameters[6]*create_tower3(board,player,action)
-        score += self.parameters[7]*create_tower2(board,player,action)
+        for i in range(len(self.functions)):
+            score += self._parameters[i]*self.functions[i](board,player,action)
         return score
 
     def interprete_params(self):
-        return ['finish_tower','isolate_tower','isolate_tower_opponent','use_token','cover_token']
+        return [f.__name__ for f in self.functions]
     
     def set_parameters(self,parameters):
         self._parameters = parameters
@@ -44,7 +40,7 @@ class Genetic_1_action_heuristique(Heuristic):
         return self._parameters
 
     def mutate(self,mutation_rate):
-        for i in range(len(self.parameters)):
+        for i in range(len(self._parameters)):
             if random.random() < mutation_rate:
                 self._parameters[i] += random.uniform(-1,1)
                 if self._parameters[i] > 1:
@@ -54,11 +50,11 @@ class Genetic_1_action_heuristique(Heuristic):
 
     def crossover(self,other):
         new_parameters = []
-        for i in range(len(self.parameters)):
+        for i in range(len(self._parameters)):
             if random.random() < 0.5:
-                new_parameters.append(self.parameters[i])
+                new_parameters.append(self._parameters[i])
             else:
-                new_parameters.append(other.parameters[i])
+                new_parameters.append(other.get_parameters()[i])
         return Genetic_1_action_heuristique(new_parameters)
 
     def save_as_json(self, filename, score):
