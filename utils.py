@@ -23,11 +23,8 @@ def calculate_genetic_diversity(json_file):
 
 def key_value_or_default(d, key, default):
     if isinstance(d, Namespace):
-        print(getattr(d, key, default))
         return getattr(d, key, default)
     if key in d:
-        print(d)
-        print(key)
         return d[key]
     else:
         return default
