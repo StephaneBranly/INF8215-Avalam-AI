@@ -1,4 +1,4 @@
-from .observation_function import ennemy_isolate_tower, finish_tower, isolate_tower, use_token, cover_token, create_tower4, create_tower3, create_tower2
+from .observation_function import *
 import random
 import json
 
@@ -15,12 +15,13 @@ class Heuristic:
     def __call__(self,board,player,action):
         return self.evaluate(board,player,action)
 
-default_functions = [finish_tower, isolate_tower, ennemy_isolate_tower, use_token, cover_token, create_tower4, create_tower3, create_tower2]
+default_functions = [finish_tower, isolate_tower, ennemy_isolate_tower, use_token, cover_token, create_tower4, create_tower3, create_tower2, score_after_action, remaining_actions]
 
 class Genetic_1_action_heuristique(Heuristic):
     def __init__(self, functions=default_functions, parameters=None):
         self._parameters = [random.uniform(-1,1) for parameters in range(len(functions))]
         if parameters is not None:
+            print('init from parameters')
             self._parameters = parameters
         self.functions = functions
 
@@ -55,7 +56,7 @@ class Genetic_1_action_heuristique(Heuristic):
                 new_parameters.append(self._parameters[i])
             else:
                 new_parameters.append(other.get_parameters()[i])
-        return Genetic_1_action_heuristique(new_parameters)
+        return Genetic_1_action_heuristique(parameters=new_parameters)
 
     def save_as_json(self, filename, score):
         """Warning: no empty file : it needs to have a array called "gen" """

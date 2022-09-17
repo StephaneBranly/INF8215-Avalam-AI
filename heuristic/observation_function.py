@@ -14,8 +14,6 @@ def finish_tower(board,player,action):
     else:
         return 0
 
-
-
 def isolate_tower(board,player,action):
     after = board.clone()
     after.play_action(action)
@@ -25,6 +23,7 @@ def isolate_tower(board,player,action):
             if board.is_tower_movable(i,j) and not after.is_tower_movable(i,j) and after.m[i][j]*player > 0:
                 new_isolated_tower += 1
     return new_isolated_tower
+
 def ennemy_isolate_tower(board,player,action):
     return isolate_tower(board,-player,action)
 
@@ -80,3 +79,13 @@ def create_tower2(board,player,action):
             return -1
     else:
         return 0
+
+def score_after_action(board,player,action):
+    after = board.clone()
+    after.play_action(action)
+    return after.get_score()*player
+
+def remaining_actions(board,player,action):
+    after = board.clone()
+    after.play_action(action)
+    return sum(1 for _ in after.get_actions())

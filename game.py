@@ -359,7 +359,6 @@ class GameThread(threading.Thread):
                 self.board.play_action(action)
                 self.player = -self.player
         except e:
-            # print(e)
             pass
         else:
             reason = ""
@@ -369,7 +368,7 @@ class GameThread(threading.Thread):
             if self.agents[i].hasEvolved():
                 agents[i].finished(self.step, winner, reason, 1 if i==0 else -1, self.game_id, self.pool_id)
         self.nb_games_to_finish['nb'] -= 1
-        print(f"Game progression: {int(100*(self.nb_games_to_finish['nb']+1)/self.nb_games_to_finish['nb_games'])}%\t\tPool progression: {progress_bar(self.pool_id+1, self.nb_games_to_finish['nb_pool'])}   ", end='\r')
+        print(f"Game progression: {int(100*(self.nb_games_to_finish['nb_games']-self.nb_games_to_finish['nb'])/self.nb_games_to_finish['nb_games'])}%\t\tPool progression: {progress_bar(self.pool_id, self.nb_games_to_finish['nb_pool'])}   ", end='\r')
            
     def get_scores(self):
         return self.board.get_score()
@@ -501,31 +500,29 @@ if __name__ == "__main__":
                     credits[i] = args.time
         else:
             genetic_agent1 = Heuristic1ActionAgent()
-            genetic_agent2 = ObservationNN1actionAgent()
+            genetic_agent2 = Heuristic1ActionAgent()
             paramsTrain = {
-                'individu': 8,
+                'individu': 3,
                 'generation': 0,
                 'mode': "train",
-                'save': "NN_MT7",
-                'rate': 2,
-                'keep': 25,
+                'save': "NN_MT9",
+                'rate': 1,
+                'keep': 20,
             }
-            paramsEvaluate = {
+            paramsEvaluate1 = {
                 "mode": "evaluate",
-                "save": "NN_MT7",
+                "save": "NN_MT8",
                 "generation": 0,
             }
-            class ParamsEvaluate2:
-                mode= "evaluate"
-                save= "NN_MT3"
-                rate= 10
-                keep= 30
-                individu=-1
-                generation=0
+            paramsEvaluate2 = {
+                "mode": "evaluate",
+                "save": "NN_MT2",
+                "generation": 0,
+            }
            
-            genetic_agent1.setup(None, None, paramsEvaluate)
-            # genetic_agent2.setup(None, None, ParamsTrain())
-            agents = [GreedyAgent(), genetic_agent1]
+            genetic_agent1.setup(None, None, paramsTrain)
+            genetic_agent2.setup(None, None, paramsEvaluate2)
+            agents = [genetic_agent1, genetic_agent1]
 
         def compute_pool_results(history):
             winners=[-1 if score<0 else 1 if score>0 else 0 for score in history]
