@@ -502,16 +502,16 @@ if __name__ == "__main__":
             genetic_agent1 = Heuristic1ActionAgent()
             genetic_agent2 = Heuristic1ActionAgent()
             paramsTrain = {
-                'individu': 3,
+                'individu': 10,
                 'generation': 0,
                 'mode': "train",
                 'save': "NN_MT9",
-                'rate': 1,
-                'keep': 20,
+                'rate': 2,
+                'keep': 30,
             }
             paramsEvaluate1 = {
                 "mode": "evaluate",
-                "save": "NN_MT8",
+                "save": "NN_MT9",
                 "generation": 0,
             }
             paramsEvaluate2 = {
@@ -605,7 +605,7 @@ if __name__ == "__main__":
                     f = open("stats/pool_results.csv", "a")
                     f.write(f"{p};{agent_m1};{agent_p1};{';'.join([str(r) for r in pool_results])}\n")
                     f.close()
-                print(f"\t\t\t\tPool progression: {progress_bar(p+1, args.pool)}", end='\r')
+                print(f"Game progression: --%\s\t\tPool progression: {progress_bar(p+1, args.pool)}", end='\r')
 
 
             if not args.gui:

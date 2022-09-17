@@ -21,14 +21,15 @@ class Genetic_1_action_heuristique(Heuristic):
     def __init__(self, functions=default_functions, parameters=None):
         self._parameters = [random.uniform(-1,1) for parameters in range(len(functions))]
         if parameters is not None:
-            print('init from parameters')
             self._parameters = parameters
         self.functions = functions
 
     def evaluate(self,board,player,action):
         score = 0
+        next_board = board.clone()
+        next_board.play_action(action)
         for i in range(len(self.functions)):
-            score += self._parameters[i]*self.functions[i](board,player,action)
+            score += self._parameters[i]*self.functions[i]([board, next_board],player,action)
         return score
 
     def interprete_params(self):
