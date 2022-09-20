@@ -39,6 +39,7 @@ from random_player import RandomAgent
 from genetic_player import GeneticAgent
 from genetic_observation_NN_player import ObservationNN1actionAgent
 from heuristic_genetic_1_action_player import Heuristic1ActionAgent
+from heuristic_genetic_2_action_player import Heuristic2ActionAgent
 
 class TimeCreditExpired(Exception):
     """An agent has expired its time credit."""
@@ -499,19 +500,19 @@ if __name__ == "__main__":
                     agents[i] = connect_agent(agents[i])
                     credits[i] = args.time
         else:
-            genetic_agent1 = Heuristic1ActionAgent()
+            genetic_agent1 = Heuristic2ActionAgent()
             genetic_agent2 = Heuristic1ActionAgent()
             paramsTrain = {
-                'individu': 10,
+                'individu': 3,
                 'generation': 0,
                 'mode': "train",
-                'save': "NN_MT9",
+                'save': "NN_MT_2A",
                 'rate': 2,
                 'keep': 30,
             }
             paramsEvaluate1 = {
                 "mode": "evaluate",
-                "save": "NN_MT9",
+                "save": "NN_MT_2A",
                 "generation": 0,
             }
             paramsEvaluate2 = {
