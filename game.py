@@ -515,30 +515,30 @@ if __name__ == "__main__":
                     agents[i] = connect_agent(agents[i])
                     credits[i] = args.time
         else:
-            genetic_agent1 = Heuristic2ActionAgent()
+            genetic_agent1 = Heuristic1ActionAgent()
             genetic_agent2 = Heuristic1ActionAgent()
             paramsTrain = {
-                'individu': 3,
+                'individu': 10,
                 'generation': 0,
                 'mode': "train",
-                'save': "NN_MT_2A",
+                'save': "NN_MT10",
                 'rate': 2,
                 'keep': 30,
             }
             paramsEvaluate1 = {
                 "mode": "evaluate",
-                "save": "NN_MT_2A",
-                "generation": 0,
+                "save": "NN_MT2",
+                "generation": 8,
             }
             paramsEvaluate2 = {
                 "mode": "evaluate",
-                "save": "NN_MT2",
+                "save": "NN_MT10",
                 "generation": 0,
             }
            
-            genetic_agent1.setup(None, None, paramsTrain)
+            genetic_agent1.setup(None, None, paramsEvaluate1)
             genetic_agent2.setup(None, None, paramsEvaluate2)
-            agents = [RandomAgent(), RandomAgent()]
+            agents = [GreedyAgent(), genetic_agent2]
 
         def compute_pool_results(history):
             winners=[-1 if score<0 else 1 if score>0 else 0 for score in history]
@@ -620,7 +620,7 @@ if __name__ == "__main__":
                     f = open("stats/pool_results.csv", "a")
                     f.write(f"{p};{agent_m1};{agent_p1};{';'.join([str(r) for r in pool_results])}\n")
                     f.close()
-                print(f"Game progression: --%\s\t\tPool progression: {progress_bar(p+1, args.pool)}", end='\r')
+                print(f"Game progression: --%_\t\tPool progression: {progress_bar(p+1, args.pool)}", end='\r')
 
 
             if not args.gui:

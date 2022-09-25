@@ -31,6 +31,7 @@ class GeneticAgent(EvolvedAgent):
             self.load_best_individu(self.current_gen)
 
         if self.mode == "stats":
+            self.current_agent.load_from_json(f"{self.save_path}/gen0.json", 0)
             self.generate_stats_file()
     
     def load_best_individu(self,gen):
@@ -40,7 +41,6 @@ class GeneticAgent(EvolvedAgent):
             scores = [cell['score'] for cell in listObj['gen']]
             individu = scores.index(max(scores))
             self.current_individu = individu
-            # print(f"Best individu of generation {gen} is {individu}")
             self.current_agent.load_from_json(f"{self.save_path}/gen{gen}.json", individu)
         except:
             print('No more generation')

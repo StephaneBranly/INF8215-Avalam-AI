@@ -31,10 +31,10 @@ class Heuristic1ActionAgent(GeneticAgent):
             fig = generate_header_page(self.save_path)
             pdf.savefig(fig)
             for param in range(len(dfs)):
-                if len(self.default_agent().interprete_params()) <= param:
+                if len(self.current_agent.interprete_params()) <= param:
                     function_name = None
                 else:
-                    function_name = self.default_agent().interprete_params()[param]
+                    function_name = self.current_agent.interprete_params()[param]
                 fig = plot_param_evolution(dfs, param, function_name)
                 pdf.savefig(fig)
 

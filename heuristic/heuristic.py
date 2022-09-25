@@ -22,18 +22,18 @@ class Genetic_1_action_heuristique(Heuristic):
         self._parameters = [random.uniform(-1,1) for parameters in range(len(functions))]
         if parameters is not None:
             self._parameters = parameters
-        self.functions = functions
+        self._functions = functions
 
     def evaluate(self,board,player,action):
         score = 0
         next_board = board.clone()
         next_board.play_action(action)
-        for i in range(len(self.functions)):
-            score += self._parameters[i]*self.functions[i]([board, next_board],player,action)
+        for i in range(len(self._functions)):
+            score += self._parameters[i]*self._functions[i]([board, next_board],player,action)
         return score
 
     def interprete_params(self):
-        return [f.__name__ for f in self.functions]
+        return [f.__name__ for f in self._functions]
     
     def set_parameters(self,parameters):
         self._parameters = parameters
@@ -66,6 +66,7 @@ class Genetic_1_action_heuristique(Heuristic):
         data = {}
         data['score'] = score
         data['parameters'] = self._parameters
+        data['functions'] = [f.__name__ for f in default_functions if f in self._functions] # non optimal but safe way to save order functions and keep the same order when loading
         listObj["gen"].append(data)
         with open(filename, 'w') as outfile:
             json.dump(listObj, outfile)
@@ -74,3 +75,4 @@ class Genetic_1_action_heuristique(Heuristic):
         with open(filename) as fp:
             listObj = json.load(fp)
         self._parameters = listObj["gen"][index]["parameters"]
+        self._functions = [f for f in default_functions if f.__name__ in listObj["gen"][index]["functions"]]

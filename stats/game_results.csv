@@ -1,1 +1,6 @@
 Pool id;Agent -1;Agent 1;Scores;Steps
+0;Genetic Agent #4 gen0 NN_MT10;Greedy Agent;[4, 2];[36, 36]
+1;Genetic Agent #2 gen1 NN_MT10;Greedy Agent;[5, -4];[36, 34]
+2;Genetic Agent #3 gen2 NN_MT10;Greedy Agent;[4, 3];[36, 37]
+3;Genetic Agent #2 gen3 NN_MT10;Greedy Agent;[1, 2];[35, 36]
+4;Genetic Agent #2 gen4 NN_MT10;Greedy Agent;[-3, -7];[35, 35]
