@@ -24,11 +24,12 @@ class Heuristic2ActionAgent(GeneticAgent):
         def max_value(init_board, current_board, agent, player, alpha, beta, depth, max_depth):
             nonlocal explored
             nonlocal start
+            nonlocal step
             explored += 1
-            if time.time()-start > 40:
-                print("stop",time.time()-start)
+            if time.time()-start > 30:
+                #print("stop",time.time()-start)
                 return (agent.evaluate(init_board, current_board, player,None),None)
-            if(len([a for a in current_board.get_actions()])==0):
+            if(step+depth < 20 and current_board.get_actions()==[]):
                 return (current_board.get_score()*player*1000,None)
             v = -math.inf
             m = None
@@ -47,11 +48,12 @@ class Heuristic2ActionAgent(GeneticAgent):
         def min_value(init_board, current_board, agent, player, alpha, beta, depth, max_depth):
             nonlocal start
             nonlocal explored
+            nonlocal step
             explored += 1
-            if time.time()-start > 40:
-                print("stop",time.time()-start)
+            if time.time()-start > 30:
+                #print("stop",time.time()-start)
                 return (agent.evaluate(init_board, current_board, player,None),None)
-            if(len([a for a in current_board.get_actions()])==0):
+            if(step+depth < 20 and current_board.get_actions()==[]):
                 return (current_board.get_score()*player*1000,None)
             v = math.inf
             m = None

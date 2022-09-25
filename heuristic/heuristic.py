@@ -82,8 +82,8 @@ class Genetic_mult_actions_heuristique(Genetic_1_action_heuristique):
     def evaluate(self,init_board,current_board,player,action):
         score = 0
 
-        for i in range(len(self.functions)):
-            score += self._parameters[i]*self.functions[i]([init_board,current_board],player,action)
+        for i in range(len(self._functions)):
+            score += self._parameters[i]*self._functions[i]([init_board,current_board],player,action)
         return score
 
 
