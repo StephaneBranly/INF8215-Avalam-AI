@@ -24,4 +24,4 @@ jobs:
 
           git add -A
           git commit -m "Update Readme"
-          git push
+          git push origin HEAD:${GITHUB_REF##*/}
