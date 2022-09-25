@@ -31,6 +31,7 @@ class GeneticAgent(EvolvedAgent):
             self.load_best_individu(self.current_gen)
 
         if self.mode == "stats":
+            self.current_agent.load_from_json(f"{self.save_path}/gen0.json", 0)
             self.generate_stats_file()
     
     def load_best_individu(self,gen):
@@ -40,7 +41,6 @@ class GeneticAgent(EvolvedAgent):
             scores = [cell['score'] for cell in listObj['gen']]
             individu = scores.index(max(scores))
             self.current_individu = individu
-            # print(f"Best individu of generation {gen} is {individu}")
             self.current_agent.load_from_json(f"{self.save_path}/gen{gen}.json", individu)
         except:
             print('No more generation')
@@ -83,6 +83,14 @@ class GeneticAgent(EvolvedAgent):
             if individu not in self.agents: # we add player if not already added
                 self.agents[individu] = self.default_agent()
                 self.agents[individu].save_as_json(f"{self.save_path}/gen{generation}.json", individu)
+            if len(self.agents.keys()) == 1: # first individu added, we generate a description file
+                f = open(f"{self.save_path}/description.txt", "w")
+                f.write(f"Class     : {self.__class__.__name__}\n")
+                f.write(f"Agent     : {self.agents[individu].__class__.__name__}\n")
+                f.write(f"Individu  : {str(self.individu)}\n")
+                f.write(f"Keep      : {str(self.keep)}\n")
+                f.write(f"Mutation  : {str(self.rate)}\n")
+                f.close()
 
         else: # case of the next generations, we load the NN of the previous generation
             if individu not in self.agents:
