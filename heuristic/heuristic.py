@@ -16,7 +16,7 @@ class Heuristic:
         return self.evaluate(board,player,action)
 
 default_functions = [finish_tower, isolate_tower, ennemy_isolate_tower, use_token, cover_token, create_tower4, create_tower3, create_tower2, score_after_action, remaining_actions]
-
+default_mult_functions = [isolate_tower, ennemy_isolate_tower, mult_create_tower5,mult_create_tower4, mult_create_tower3, mult_create_tower2, enemy_mult_create_tower5, enemy_mult_create_tower4, enemy_mult_create_tower3, enemy_mult_create_tower2,score_after_action, remaining_actions]
 class Genetic_1_action_heuristique(Heuristic):
     def __init__(self, functions=default_functions, parameters=None):
         self._parameters = [random.uniform(-1,1) for parameters in range(len(functions))]
@@ -44,11 +44,8 @@ class Genetic_1_action_heuristique(Heuristic):
     def mutate(self,mutation_rate):
         for i in range(len(self._parameters)):
             if random.random() < mutation_rate:
-                self._parameters[i] += random.uniform(-1,1)
-                if self._parameters[i] > 1:
-                    self._parameters[i] = 1
-                elif self._parameters[i] < -1:
-                    self._parameters[i] = -1
+                self._parameters[i] *= random.uniform(-1,1)
+
 
     def crossover(self,other):
         new_parameters = []
@@ -74,3 +71,16 @@ class Genetic_1_action_heuristique(Heuristic):
         with open(filename) as fp:
             listObj = json.load(fp)
         self._parameters = listObj["gen"][index]["parameters"]
+
+class Genetic_mult_actions_heuristique(Genetic_1_action_heuristique):
+    def __init__(self, functions=default_mult_functions, parameters=None):
+        super().__init__(functions, parameters)
+    
+    def evaluate(self,init_board,current_board,player,action):
+        score = 0
+
+        for i in range(len(self.functions)):
+            score += self._parameters[i]*self.functions[i]([init_board,current_board],player,action)
+        return score
+
+

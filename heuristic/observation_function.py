@@ -86,3 +86,49 @@ def score_after_action(boards,player,action):
 def remaining_actions(boards,player,action):
     after = boards[1]
     return sum(1 for _ in after.get_actions())
+
+
+
+def mult_create_tower5(boards,player,action):
+    towers = 0
+    for i in range(9):
+        for j in range(9):
+            if boards[0].m[i][j]*player != 5 and boards[1].m[i][j]*player == 5:
+                towers += 1
+    return towers
+
+def mult_create_tower4(boards,player,action):
+    towers = 0
+    for i in range(9):
+        for j in range(9):
+            if boards[0].m[i][j]*player != 4 and boards[1].m[i][j]*player == 4:
+                towers += 1
+    return towers
+
+def mult_create_tower3(boards,player,action):
+    towers = 0
+    for i in range(9):
+        for j in range(9):
+            if boards[0].m[i][j]*player != 3 and boards[1].m[i][j]*player == 3:
+                towers += 1
+    return towers
+
+def mult_create_tower2(boards,player,action):
+    towers = 0
+    for i in range(9):
+        for j in range(9):
+            if boards[0].m[i][j]*player != 2 and boards[1].m[i][j]*player == 2:
+                towers += 1
+    return towers
+
+def enemy_mult_create_tower5(boards,player,action):
+    return mult_create_tower5(boards,-player,action)
+
+def enemy_mult_create_tower4(boards,player,action):
+    return mult_create_tower4(boards,-player,action)
+
+def enemy_mult_create_tower3(boards,player,action):
+    return mult_create_tower3(boards,-player,action)
+
+def enemy_mult_create_tower2(boards,player,action):
+    return mult_create_tower2(boards,-player,action)

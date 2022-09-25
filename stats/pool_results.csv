@@ -1,1 +1,4 @@
 Pool id;Agent -1;Agent 1;Pct Agent -1;Pct Draw;Pct Agent 1
+0;Genetic Agent #11 gen2 NN_MT5;Genetic Agent #19 gen2 NN_MT_2A;1.0;0.0;0.0
+1;Genetic Agent #0 gen3 NN_MT5;Genetic Agent #14 gen3 NN_MT_2A;1.0;0.0;0.0
+2;Genetic Agent #1 gen4 NN_MT5;Genetic Agent #2 gen4 NN_MT_2A;0.0;0.0;1.0

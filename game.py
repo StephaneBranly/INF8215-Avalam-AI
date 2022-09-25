@@ -503,27 +503,27 @@ if __name__ == "__main__":
             genetic_agent1 = Heuristic2ActionAgent()
             genetic_agent2 = Heuristic1ActionAgent()
             paramsTrain = {
-                'individu': 3,
+                'individu': 21,
                 'generation': 0,
                 'mode': "train",
-                'save': "NN_MT_2A",
+                'save': "NN_MT5",
                 'rate': 2,
                 'keep': 30,
             }
             paramsEvaluate1 = {
                 "mode": "evaluate",
                 "save": "NN_MT_2A",
-                "generation": 0,
+                "generation": 2,
             }
             paramsEvaluate2 = {
                 "mode": "evaluate",
-                "save": "NN_MT2",
-                "generation": 0,
+                "save": "NN_MT5",
+                "generation": 2,
             }
            
-            genetic_agent1.setup(None, None, paramsTrain)
+            genetic_agent1.setup(None, None, paramsEvaluate1)
             genetic_agent2.setup(None, None, paramsEvaluate2)
-            agents = [genetic_agent1, genetic_agent1]
+            agents = [genetic_agent1, genetic_agent2]
 
         def compute_pool_results(history):
             winners=[-1 if score<0 else 1 if score>0 else 0 for score in history]
@@ -559,6 +559,7 @@ if __name__ == "__main__":
             f = open(f"stats/pool_results.csv", "w")
             f.write(f"Pool id;Agent -1;Agent 1;Pct Agent -1;Pct Draw;Pct Agent 1\n")
             f.close()
+        start = time.time()
         for p in range(args.pool):
             game_history = dict()
             game_history['diff_scores'] = []
@@ -613,7 +614,7 @@ if __name__ == "__main__":
                 for i in range(2):
                     if agents[i].hasEvolved():
                         agents[i].pool_ended(pool_results, 1 if i==0 else -1, p)
-                    
+        print(time.time()-start,"s")            
         if not args.gui and args.stats:
             generate_summary_file('stats/')
         
