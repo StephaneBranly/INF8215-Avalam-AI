@@ -44,6 +44,15 @@ from heuristic_genetic_2_action_player import Heuristic2ActionAgent
 class TimeCreditExpired(Exception):
     """An agent has expired its time credit."""
 
+def register_history_available_actions(history):
+    f = open(f"stats/available_actions.csv", "a")
+    for i in range(50):
+        if i < len(history):
+            f.write(f"{history[i]},")
+        else:
+            f.write(f"0,")
+    f.write(f"\n")
+    f.close()
 
 class Viewer(EvolvedAgent):
 
@@ -224,6 +233,7 @@ class Game:
         self.trace = Trace(board, credits)
         self.game_id = game_id
         self.pool_id = pool_id
+        self.available_actions = []
 
     def startPlaying(self):
         self.viewer.init_viewer(self.board.clone(), game=self)
@@ -236,6 +246,7 @@ class Game:
         try:
             while not self.board.is_finished():
                 self.step += 1
+                self.available_actions.append(sum(1 for _ in self.board.get_actions()))
                 logging.debug("Asking player %d to play step %d",
                               self.player, self.step)
                 self.viewer.playing(self.step, self.player)
@@ -274,6 +285,7 @@ class Game:
         for i in range(2):
             if self.agents[i].hasEvolved():
                 self.agents[i].finished(self.step, winner, reason, 1 if i==0 else -1, self.game_id, self.pool_id)
+        register_history_available_actions(self.available_actions)
            
     def timed_exec(self, fn, *args, agent=None):
         """Execute self.agents[agent].fn(*args, time_left) with the
@@ -338,6 +350,7 @@ class GameThread(threading.Thread):
         self.game_id=game_id
         self.pool_id=pool_id
         self.nb_games_to_finish = nb_games_to_finish
+        self.available_actions = []
         threading.Thread.__init__(self)
 
     def run(self):
@@ -347,6 +360,7 @@ class GameThread(threading.Thread):
         try:
             while not self.board.is_finished():
                 self.step += 1
+                self.available_actions.append(sum(1 for _ in self.board.get_actions()))
                 agent = 0 if self.player > 0 else 1
                 board_dict = {
                     'm': self.board.m,
@@ -368,6 +382,7 @@ class GameThread(threading.Thread):
         for i in range(2):
             if self.agents[i].hasEvolved():
                 agents[i].finished(self.step, winner, reason, 1 if i==0 else -1, self.game_id, self.pool_id)
+        register_history_available_actions(self.available_actions)
         self.nb_games_to_finish['nb'] -= 1
         print(f"Game progression: {int(100*(self.nb_games_to_finish['nb_games']-self.nb_games_to_finish['nb'])/self.nb_games_to_finish['nb_games'])}%\t\tPool progression: {progress_bar(self.pool_id, self.nb_games_to_finish['nb_pool'])}   ", end='\r')
            
@@ -376,7 +391,7 @@ class GameThread(threading.Thread):
 
     def get_steps(self):
         return self.step
-    
+
 if __name__ == "__main__":
     import argparse
 
@@ -523,7 +538,7 @@ if __name__ == "__main__":
            
             genetic_agent1.setup(None, None, paramsTrain)
             genetic_agent2.setup(None, None, paramsEvaluate2)
-            agents = [genetic_agent1, genetic_agent1]
+            agents = [RandomAgent(), RandomAgent()]
 
         def compute_pool_results(history):
             winners=[-1 if score<0 else 1 if score>0 else 0 for score in history]
@@ -561,7 +576,6 @@ if __name__ == "__main__":
             f.close()
         for p in range(args.pool):
             game_history = dict()
-            game_history['diff_scores'] = []
             game_history['scores'] = []
             game_history['steps'] = []
             
@@ -616,7 +630,6 @@ if __name__ == "__main__":
                     
         if not args.gui and args.stats:
             generate_summary_file('stats/')
-        
     else:
         # Replay mode
         viewer.replay(trace, args.speed)
