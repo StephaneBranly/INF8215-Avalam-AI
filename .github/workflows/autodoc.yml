@@ -17,11 +17,15 @@ jobs:
         run: |
          python ./doc.py
 
-      - name: Commit and push changes
+      - name: Commit changes
         run: |
           git config --global user.name "StephaneBranly"
           git config --global user.email "stephanebranly@mail.com"
 
           git add -A
           git commit -m "Update Readme"
-          git push origin HEAD:${GITHUB_REF}
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          force: true
