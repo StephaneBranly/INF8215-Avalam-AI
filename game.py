@@ -51,7 +51,7 @@ def register_history_available_actions(history):
             f.write(f"{history[i]},")
         else:
             f.write(f"0,")
-    f.write(f"\n")
+    f.write(f"0\n")
     f.close()
 
 class Viewer(EvolvedAgent):
