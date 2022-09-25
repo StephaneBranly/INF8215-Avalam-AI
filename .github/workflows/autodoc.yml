@@ -15,13 +15,13 @@ jobs:
         run: pip install -r ./src/requirements.txt
       - name: Modifiy the specific files using scripts
         run: |
-        python ./doc.py
+         python ./doc.py
 
       - name: Commit and push changes
         run: |
-        git config --global user.name "StephaneBranly"
-        git config --global user.email "stephanebranly@mail.com"
+          git config --global user.name "StephaneBranly"
+          git config --global user.email "stephanebranly@mail.com"
 
-        git add -A
-        git commit -m "Update Readme"
-        git push
+          git add -A
+          git commit -m "Update Readme"
+          git push
