@@ -32,7 +32,7 @@ class Heuristic2ActionAgent(GeneticAgent):
             nonlocal start
             nonlocal step
             explored += 1
-            if time.time()-start > 30:
+            if time.time()-start > 60:
                 #print("stop",time.time()-start)
                 return (agent.evaluate(init_board, current_board, player,None),None)
             if(step+depth < 20 and current_board.get_actions()==[]):
@@ -58,7 +58,7 @@ class Heuristic2ActionAgent(GeneticAgent):
             nonlocal explored
             nonlocal step
             explored += 1
-            if time.time()-start > 30:
+            if time.time()-start > 60:
                 #print("stop",time.time()-start)
                 return (agent.evaluate(init_board, current_board, player,None),None)
             if(step+depth < 20 and current_board.get_actions()==[]):
