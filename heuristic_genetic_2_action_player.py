@@ -28,13 +28,13 @@ class Heuristic2ActionAgent(GeneticAgent):
             explored += 1
             if time.time()-start > 30:
                 #print("stop",time.time()-start)
-                return (agent.evaluate(init_board, current_board, player,None),None)
+                return (agent.evaluate(current_board, player),None)
             if(step+depth < 20 and current_board.get_actions()==[]):
                 return (current_board.get_score()*player*1000,None)
             v = -math.inf
             m = None
             actions = [a for a in current_board.get_actions()]
-            actions.sort(key=lambda x: agent.evaluate(init_board, current_board.clone().play_action(x), player,x), reverse=True)
+            actions.sort(key=lambda x: agent.evaluate(current_board.clone().play_action(x), player), reverse=True)
             for a in actions:
                 nV = min_value(init_board, current_board.clone().play_action(a), agent, player, alpha, beta, depth+1, max_depth)[0]
                 if(nV > v):
@@ -52,13 +52,13 @@ class Heuristic2ActionAgent(GeneticAgent):
             explored += 1
             if time.time()-start > 30:
                 #print("stop",time.time()-start)
-                return (agent.evaluate(init_board, current_board, player,None),None)
+                return (agent.evaluate(current_board, player),None)
             if(step+depth < 20 and current_board.get_actions()==[]):
                 return (current_board.get_score()*player*1000,None)
             v = math.inf
             m = None
             actions = [a for a in current_board.get_actions()]
-            actions.sort(key=lambda x: agent.evaluate(init_board, current_board.clone().play_action(x), player,x), reverse=False)
+            actions.sort(key=lambda x: agent.evaluate(current_board.clone().play_action(x), player), reverse=False)
             for a in actions:
             #for a in current_board.get_actions():
                 nV = max_value(init_board, current_board.clone().play_action(a), agent, player, alpha, beta, depth+1, max_depth)[0]
@@ -83,7 +83,7 @@ class Heuristic2ActionAgent(GeneticAgent):
 
 
     def default_agent(self):
-        return Genetic_mult_actions_heuristique()
+        return Genetic_single_loop_heuristique()
 
     def generate_stats_file(self):
         dfs = generate_dataframes(self.save_path)

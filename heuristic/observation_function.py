@@ -132,3 +132,48 @@ def enemy_mult_create_tower3(boards,player,action):
 
 def enemy_mult_create_tower2(boards,player,action):
     return mult_create_tower2(boards,-player,action)
+
+def single_loop_tower5(board,player,i,j):
+    if board.m[i][j]*player == 5:
+        return 1
+    else:
+        return 0
+
+def single_loop_tower4(board,player,i,j):
+    if board.m[i][j]*player == 4:
+        return 1
+    else:
+        return 0
+
+def single_loop_tower3(board,player,i,j):
+    if board.m[i][j]*player == 3:
+        return 1
+    else:
+        return 0
+
+def single_loop_tower2(board,player,i,j):
+    if board.m[i][j]*player == 2:
+        return 1
+    else:
+        return 0
+
+def enemy_single_loop_tower5(board,player,i,j):
+    return single_loop_tower5(board,-player,i,j)
+
+def enemy_single_loop_tower4(board,player,i,j):
+    return single_loop_tower4(board,-player,i,j)
+
+def enemy_single_loop_tower3(board,player,i,j):
+    return single_loop_tower3(board,-player,i,j)
+
+def enemy_single_loop_tower2(board,player,i,j):
+    return single_loop_tower2(board,-player,i,j)
+
+def single_loop_isolated_tower(board,player,i,j):
+    if board.is_tower_movable(i,j):
+        return 1
+    else:
+        return 0
+
+def enemy_single_loop_isolated_tower(board,player,i,j):
+    return single_loop_isolated_tower(board,-player,i,j)
