@@ -538,7 +538,7 @@ if __name__ == "__main__":
            
             genetic_agent1.setup(None, None, paramsEvaluate1)
             genetic_agent2.setup(None, None, paramsEvaluate2)
-            agents = [RandomAgent(), genetic_agent2]
+            agents = [GreedyAgent(), genetic_agent2]
 
         def compute_pool_results(history):
             winners=[-1 if score<0 else 1 if score>0 else 0 for score in history]
