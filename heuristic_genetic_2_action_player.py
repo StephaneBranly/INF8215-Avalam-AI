@@ -86,7 +86,7 @@ class Heuristic2ActionAgent(GeneticAgent):
         """while pow(size,max_depth) > 1000000:
             max_depth -= 1"""
 
-        v , m = max_value(board, board, agent, player, -math.inf, math.inf, 0, max_depth)
+        v , m = max_value(board, init_board, agent, player, -math.inf, math.inf, 0, max_depth)
         print("time",time.time()-start)
         print("step", step,"explored", explored)
         return m
