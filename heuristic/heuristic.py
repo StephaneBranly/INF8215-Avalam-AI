@@ -1,4 +1,4 @@
-from .observation_function import finish_tower, isolate_tower, use_token, cover_token
+from .observation_function import *
 import random
 import json
 
@@ -9,45 +9,52 @@ class Heuristic:
     def evaluate(self,board,player,action):
         raise NotImplementedError
 
+    def interprete_params(self):
+        return None
+
     def __call__(self,board,player,action):
         return self.evaluate(board,player,action)
 
-
+default_functions = [finish_tower, isolate_tower, ennemy_isolate_tower, use_token, cover_token, create_tower4, create_tower3, create_tower2, score_after_action, remaining_actions]
+default_mult_functions = [isolate_tower, ennemy_isolate_tower, mult_create_tower5,mult_create_tower4, mult_create_tower3, mult_create_tower2, enemy_mult_create_tower5, enemy_mult_create_tower4, enemy_mult_create_tower3, enemy_mult_create_tower2,score_after_action, remaining_actions]
 class Genetic_1_action_heuristique(Heuristic):
-    def __init__(self, parameters=None):
-        self.parameters = [random.uniform(-1,1) for parameters in range(5)]
+    def __init__(self, functions=default_functions, parameters=None):
+        self._parameters = [random.uniform(-1,1) for parameters in range(len(functions))]
         if parameters is not None:
-            self.parameters = parameters
+            self._parameters = parameters
+        self._functions = functions
 
     def evaluate(self,board,player,action):
-
         score = 0
-        score += self.parameters[0]*finish_tower(board,player,action)
-        score += self.parameters[1]*isolate_tower(board,player,action)
-        score += self.parameters[2]*isolate_tower(board,-player,action)
-        score += self.parameters[3]*use_token(board,player,action)
-        score += self.parameters[4]*cover_token(board,player,action)
+        next_board = board.clone()
+        next_board.play_action(action)
+        for i in range(len(self._functions)):
+            score += self._parameters[i]*self._functions[i]([board, next_board],player,action)
         return score
+
+    def interprete_params(self):
+        return [f.__name__ for f in self._functions]
     
     def set_parameters(self,parameters):
-        self.parameters = parameters
+        self._parameters = parameters
     
     def get_parameters(self):
-        return self.parameters
+        return self._parameters
 
     def mutate(self,mutation_rate):
-        for i in range(len(self.parameters)):
+        for i in range(len(self._parameters)):
             if random.random() < mutation_rate:
-                self.parameters[i] += random.uniform(-1,1)
+                self._parameters[i] *= random.uniform(-1,1)
+
 
     def crossover(self,other):
         new_parameters = []
-        for i in range(len(self.parameters)):
+        for i in range(len(self._parameters)):
             if random.random() < 0.5:
-                new_parameters.append(self.parameters[i])
+                new_parameters.append(self._parameters[i])
             else:
-                new_parameters.append(other.parameters[i])
-        return Genetic_1_action_heuristique(new_parameters)
+                new_parameters.append(other.get_parameters()[i])
+        return Genetic_1_action_heuristique(parameters=new_parameters)
 
     def save_as_json(self, filename, score):
         """Warning: no empty file : it needs to have a array called "gen" """
@@ -55,7 +62,8 @@ class Genetic_1_action_heuristique(Heuristic):
             listObj = json.load(fp)
         data = {}
         data['score'] = score
-        data['parameters'] = self.parameters
+        data['parameters'] = self._parameters
+        data['functions'] = [f.__name__ for f in default_functions if f in self._functions] # non optimal but safe way to save order functions and keep the same order when loading
         listObj["gen"].append(data)
         with open(filename, 'w') as outfile:
             json.dump(listObj, outfile)
@@ -63,4 +71,20 @@ class Genetic_1_action_heuristique(Heuristic):
     def load_from_json(self, filename, index):
         with open(filename) as fp:
             listObj = json.load(fp)
-        self.parameters = listObj["gen"][index]["parameters"]
+        self._parameters = listObj["gen"][index]["parameters"]
+        self._functions = [f for f in default_functions if f.__name__ in listObj["gen"][index]["functions"]]
+
+class Genetic_mult_actions_heuristique(Genetic_1_action_heuristique):
+    def __init__(self, functions=default_mult_functions, parameters=None):
+        super().__init__(functions, parameters)
+        
+    
+    def evaluate(self,init_board,current_board,player,action):
+        score = 0
+
+        for i in range(len(self._functions)):
+            score += self._parameters[i]*self._functions[i]([init_board,current_board],player,action)
+        return score
+
+
+

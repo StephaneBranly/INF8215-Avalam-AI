@@ -26,7 +26,7 @@ import itertools
 import json
 
 
-class GeneticPlayerAgent(Agent):
+class GeneticPlayerAgent(EvolvedAgent):
     def initialize(self, percepts, players, time_left):
         return super().initialize(percepts, players, time_left)
 
@@ -52,7 +52,7 @@ class GeneticPlayerAgent(Agent):
             self.scores[a] = 0
         self.load_match()
         
-    def play(self, percepts, player, step, time_left):
+    def play(self, percepts, player, step, time_left, game_id=None, pool_id=None):
         """
         This function is used to play a move according
         to the percepts, player and time left provided as input.

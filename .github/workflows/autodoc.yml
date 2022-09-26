@@ -18,18 +18,18 @@ jobs:
         uses: actions/setup-python@v3
       - name: Install module dependencies 🧱
         run: pip install -r ./requirements.txt
-      - name: Modifiy the specific files using scripts
+      - name: Generating documentation 📝
         run: |
-         python ./doc.py
+         python ./doc/doc.py
 
-      - name: Commit changes
+      - name: Commit changes 📧
         run: |
           git config --global user.name "StephaneBranly"
           git config --global user.email "stephanebranly@mail.com"
 
           git add -A
-          git commit -m "Update Readme"
-      - name: Push changes
+          git commit -m "[action] Update documentation"
+      - name: Push changes 📨
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}

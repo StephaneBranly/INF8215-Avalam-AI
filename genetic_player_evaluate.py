@@ -24,7 +24,7 @@ import random
 import timeit
 import json
 
-class MyAgent(Agent):
+class GeneticPlayerEvaluate(EvolvedAgent):
     def initialize(self, percepts, players, time_left):
         return super().initialize(percepts, players, time_left)
 
@@ -45,7 +45,7 @@ class MyAgent(Agent):
             print('No more generation')
 
         
-    def play(self, percepts, player, step, time_left):
+    def play(self, percepts, player, step, time_left, game_id=None, pool_id=None):
         """
         This function is used to play a move according
         to the percepts, player and time left provided as input.
@@ -146,7 +146,7 @@ class MyAgent(Agent):
         return super().pool_ended(pool, player)
 
 if __name__ == "__main__":
-    agent = MyAgent()
+    agent = GeneticPlayerEvaluate()
     agent_main(agent)
 
 

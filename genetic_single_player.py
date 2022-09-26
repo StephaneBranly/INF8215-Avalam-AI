@@ -18,13 +18,11 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 """
 from avalam import *
-#import numpy as np
-import random
 import json
-import itertools
+
 from heuristic.heuristic import Genetic_1_action_heuristique
 
-class MyAgent(Agent):
+class GeneticSinglePlayerAgent(EvolvedAgent):
     def initialize(self, percepts, players, time_left):
         return super().initialize(percepts, players, time_left)
 
@@ -47,54 +45,31 @@ class MyAgent(Agent):
             with open(f"NN_heuristic/gen{gen}.json") as fp:
                 listObj = json.load(fp)
             scores = [cell['score'] for cell in listObj['gen']]
-            #individu = np.argmax(scores)
             individu = scores.index(max(scores))
             print(f"Best individu of generation {gen} is {individu}")
             self.heuristic.load_from_json(f"NN_heuristic/gen{self.gen}.json", individu)
         except:
             print('No more generation')
-
-
-
-
         
-    def play(self, percepts, player, step, time_left):
-
+    def play(self, percepts, player, step, time_left, game_id=None, pool_id=None):
         board = dict_to_board(percepts)
         best_action = ()
         best_score = -99999999
 
-
         for action in board.get_actions():
-            if self.heuristic.evaluate(board, player, action) > best_score:
-
-                best_score = self.heuristic.evaluate(board, player, action)
+            score = self.heuristic.evaluate(board, action)
+            if score > best_score:
                 best_action = action
 
         return best_action
-
-
-
-    
-
-    
-
 
     def get_agent_id(self):
         """Return an identifier for this agent."""
         return f"Best genetic player (#{self.current_individu}) of generation {self.current_gen}"
 
-
-
-
-
-
-    
-
-
 if __name__ == "__main__":
     def argument_parser(agent, parser):
         parser.add_argument("-I", "--individu", default=-1, help="index of indiv if -1 take best", type=int)
         parser.add_argument("-G", "--generation", default=0, help="index of gen", type=int)
-    agent = MyAgent()
+    agent = GeneticSinglePlayerAgent()
     agent_main(agent, argument_parser, agent.setup)

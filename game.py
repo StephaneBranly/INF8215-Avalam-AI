@@ -30,17 +30,31 @@ import threading
 
 from avalam import *
 
+
 from stats.stats import generate_summary_file
 
 # Agent classes for multithreading
 from greedy_player import GreedyAgent
 from random_player import RandomAgent
+from genetic_player import GeneticAgent
+from genetic_observation_NN_player import ObservationNN1actionAgent
+from heuristic_genetic_1_action_player import Heuristic1ActionAgent
+from heuristic_genetic_2_action_player import Heuristic2ActionAgent
 
 class TimeCreditExpired(Exception):
     """An agent has expired its time credit."""
 
+def register_history_available_actions(history):
+    f = open(f"stats/available_actions.csv", "a")
+    for i in range(50):
+        if i < len(history):
+            f.write(f"{history[i]},")
+        else:
+            f.write(f"0,")
+    f.write(f"0\n")
+    f.close()
 
-class Viewer(Agent):
+class Viewer(EvolvedAgent):
 
     """Interface for an Avalam viewer and human agent."""
 
@@ -198,7 +212,7 @@ class Game:
 
     """Main Avalam game class."""
 
-    def __init__(self, agents, board, viewer=None, credits=[None, None]):
+    def __init__(self, agents, board, viewer=None, credits=[None, None], game_id=None, pool_id=None):
         """New Avalam game.
 
         Arguments:
@@ -217,6 +231,9 @@ class Game:
         self.step = 0
         self.player = 1
         self.trace = Trace(board, credits)
+        self.game_id = game_id
+        self.pool_id = pool_id
+        self.available_actions = []
 
     def startPlaying(self):
         self.viewer.init_viewer(self.board.clone(), game=self)
@@ -229,6 +246,7 @@ class Game:
         try:
             while not self.board.is_finished():
                 self.step += 1
+                self.available_actions.append(sum(1 for _ in self.board.get_actions()))
                 logging.debug("Asking player %d to play step %d",
                               self.player, self.step)
                 self.viewer.playing(self.step, self.player)
@@ -265,12 +283,10 @@ class Game:
         self.trace.set_winner(winner, reason)
         self.viewer.finished(self.step, winner, reason)
         for i in range(2):
-            try:
-                if agents[i].finished:
-                    agents[i].finished(self.step, winner, reason, 1 if i==0 else -1)
-            except:
-                pass
-
+            if self.agents[i].hasEvolved():
+                self.agents[i].finished(self.step, winner, reason, 1 if i==0 else -1, self.game_id, self.pool_id)
+        register_history_available_actions(self.available_actions)
+           
     def timed_exec(self, fn, *args, agent=None):
         """Execute self.agents[agent].fn(*args, time_left) with the
         time limit for the current player.
@@ -291,7 +307,10 @@ class Game:
             socket.setdefaulttimeout(self.credits[agent] + 1)
         start = time.time()
         try:
-            result = self.agents[agent].play(*args + (self.credits[agent],))
+            if self.agents[agent].hasEvolved():
+                result = self.agents[agent].play(*args + (self.credits[agent],) + (self.game_id,) + (self.pool_id,))
+            else:
+                result = self.agents[agent].play(*args + (self.credits[agent],))
         except socket.timeout:
             self.credits[agent] = -1.0  # ensure it is counted as expired
             raise TimeCreditExpired
@@ -322,13 +341,16 @@ def connect_agent(uri):
     return xmlrpc.client.ServerProxy(uri, allow_none=True)
 
 class GameThread(threading.Thread):
-    def __init__(self, threadID, agents, viewer=None, credits=[None, None]):
+    def __init__(self, agents, viewer=None, credits=[None, None], game_id=None, pool_id=None, nb_games_to_finish=None):
         self.board = Board()
-        self.threadID = threadID
         self.agents = agents
         self.viewer = viewer if viewer is not None else Viewer()
         self.step = 0
         self.player = 1
+        self.game_id=game_id
+        self.pool_id=pool_id
+        self.nb_games_to_finish = nb_games_to_finish
+        self.available_actions = []
         threading.Thread.__init__(self)
 
     def run(self):
@@ -338,35 +360,38 @@ class GameThread(threading.Thread):
         try:
             while not self.board.is_finished():
                 self.step += 1
+                self.available_actions.append(sum(1 for _ in self.board.get_actions()))
                 agent = 0 if self.player > 0 else 1
                 board_dict = {
                     'm': self.board.m,
                     'rows': self.board.rows,
                     'max_height': self.board.max_height,
                 }
-                action = self.agents[agent].play(board_dict, self.player, self.step, 0)
+                if self.agents[agent].hasEvolved():
+                    action = self.agents[agent].play(board_dict, self.player, self.step, 0, self.game_id, self.pool_id)
+                else:
+                    action = self.agents[agent].play(board_dict, self.player, self.step, 0)
                 self.board.play_action(action)
                 self.player = -self.player
         except e:
-            print(e)
             pass
         else:
             reason = ""
             winner = self.board.get_score()
             
         for i in range(2):
-            try:
-                if agents[i].finished:
-                    agents[i].finished(self.step, winner, reason, 1 if i==0 else -1)
-            except:
-                pass
-
+            if self.agents[i].hasEvolved():
+                agents[i].finished(self.step, winner, reason, 1 if i==0 else -1, self.game_id, self.pool_id)
+        register_history_available_actions(self.available_actions)
+        self.nb_games_to_finish['nb'] -= 1
+        print(f"Game progression: {int(100*(self.nb_games_to_finish['nb_games']-self.nb_games_to_finish['nb'])/self.nb_games_to_finish['nb_games'])}%\t\tPool progression: {progress_bar(self.pool_id, self.nb_games_to_finish['nb_pool'])}   ", end='\r')
+           
     def get_scores(self):
         return self.board.get_score()
 
     def get_steps(self):
         return self.step
-    
+
 if __name__ == "__main__":
     import argparse
 
@@ -490,7 +515,30 @@ if __name__ == "__main__":
                     agents[i] = connect_agent(agents[i])
                     credits[i] = args.time
         else:
-            agents = [GreedyAgent(), RandomAgent()]
+            genetic_agent1 = Heuristic1ActionAgent()
+            genetic_agent2 = Heuristic2ActionAgent()
+            paramsTrain = {
+                'individu': 10,
+                'generation': 0,
+                'mode': "train",
+                'save': "NN_MT10",
+                'rate': 2,
+                'keep': 30,
+            }
+            paramsEvaluate1 = {
+                "mode": "evaluate",
+                "save": "NN_MT5",
+                "generation": 0,
+            }
+            paramsEvaluate2 = {
+                "mode": "evaluate",
+                "save": "NN_MT_2A",
+                "generation": 0,
+            }
+           
+            genetic_agent1.setup(None, None, paramsEvaluate1)
+            genetic_agent2.setup(None, None, paramsEvaluate2)
+            agents = [genetic_agent1, genetic_agent2]
 
         def compute_pool_results(history):
             winners=[-1 if score<0 else 1 if score>0 else 0 for score in history]
@@ -513,6 +561,7 @@ if __name__ == "__main__":
                 viewer.replay(game.trace, args.speed, show_end=True)
             game_history['scores'].append(game.trace.winner)
             game_history['steps'].append(game.step)
+
         def progress_bar(i, n):
             return"[%-20s] %d%%" % ('='*int(20*i/n), 100*i/n)
 
@@ -525,14 +574,18 @@ if __name__ == "__main__":
             f = open(f"stats/pool_results.csv", "w")
             f.write(f"Pool id;Agent -1;Agent 1;Pct Agent -1;Pct Draw;Pct Agent 1\n")
             f.close()
+        start = time.time()
         for p in range(args.pool):
             game_history = dict()
             game_history['scores'] = []
             game_history['steps'] = []
+            
             if args.multithreading:
+                nb_games_to_finish = { 'nb': args.games, 'nb_games': args.games, 'nb_pool': args.pool }
+
                 threads = []
                 for i in range(args.games):
-                    t = GameThread(i, agents, viewer, credits)
+                    t = GameThread(agents, viewer, credits, i, p, nb_games_to_finish)
                     threads.append(t)
                     t.start()
                 for t in threads:
@@ -543,7 +596,7 @@ if __name__ == "__main__":
             else:
                 for i in range(args.games):
                     board = Board()
-                    game = Game(agents, board, viewer, credits)
+                    game = Game(agents, board, viewer, credits, i, p)
 
                     if args.gui:
                         threading.Thread(target=play, args=[game]).start()
@@ -554,13 +607,13 @@ if __name__ == "__main__":
                 pool_results = compute_pool_results(game_history['scores'])
                 pool_history.append(pool_results)
                 if args.stats:
-                    try:
+                    if agents[0].hasEvolved():
                         agent_p1 = agents[0].get_agent_id()
-                    except:
+                    else:
                         agent_p1 = "Agent +1"
-                    try:
+                    if agents[1].hasEvolved():
                         agent_m1 = agents[1].get_agent_id()
-                    except:
+                    else:
                         agent_m1 = "Agent -1"
                     f = open("stats/game_results.csv", "a")
                     f.write(f"{p};{agent_m1};{agent_p1};{game_history['scores']};{game_history['steps']}\n")
@@ -568,19 +621,16 @@ if __name__ == "__main__":
                     f = open("stats/pool_results.csv", "a")
                     f.write(f"{p};{agent_m1};{agent_p1};{';'.join([str(r) for r in pool_results])}\n")
                     f.close()
-                    # print(f"{progress_bar(i, args.pool)}\n{i} : {pool_results}", end='\r')
-                print(f"\t\t\t\tPool progression: {progress_bar(p+1, args.pool)}", end='\r')
+                print(f"Game progression: --%_\t\tPool progression: {progress_bar(p+1, args.pool)}", end='\r')
 
 
             if not args.gui:
                 for i in range(2):
-                    try:
-                        agents[i].pool_ended(pool_results, 1 if i==0 else -1)
-                    except:
-                        pass
+                    if agents[i].hasEvolved():
+                        agents[i].pool_ended(pool_results, 1 if i==0 else -1, p)
+        print(time.time()-start,"s")            
         if not args.gui and args.stats:
             generate_summary_file('stats/')
-        
     else:
         # Replay mode
         viewer.replay(trace, args.speed)
