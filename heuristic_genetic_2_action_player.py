@@ -83,7 +83,7 @@ class Heuristic2ActionAgent(GeneticAgent):
 
 
     def default_agent(self):
-        return Genetic_single_loop_heuristique()
+        return Genetic_single_loop_heuristic()
 
     def generate_stats_file(self):
         dfs = generate_dataframes(self.save_path)

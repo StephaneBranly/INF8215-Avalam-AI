@@ -7,7 +7,7 @@ default_mult_functions = [isolate_tower, ennemy_isolate_tower, mult_create_tower
 default_single_loop_functions = [single_loop_isolated_tower, enemy_single_loop_isolated_tower, single_loop_tower5, single_loop_tower4, single_loop_tower3, single_loop_tower2, enemy_single_loop_tower5, enemy_single_loop_tower4, enemy_single_loop_tower3, enemy_single_loop_tower2]
 default_board_functions = [score_after_action, remaining_actions]
 
-class Heuristique:
+class Heuristic:
     def __init__(self):
         pass
 
@@ -20,7 +20,7 @@ class Heuristique:
     def __call__(self,board,player,action):
         return self.evaluate(board,player,action)
 
-class Genetic_heuristique(Heuristique):
+class Genetic_heuristic(Heuristic):
     def __init__(self, functions=None, parameters=None):
         self._parameters = [random.uniform(-1,1) for parameters in range(len(functions))]
         if parameters is not None:
@@ -34,7 +34,7 @@ class Genetic_heuristique(Heuristique):
         return [f.__name__ for f in self._functions]
 
     def get_default_agent(self):
-        return Genetic_heuristique(self._functions)
+        return Genetic_heuristic(self._functions)
     
     def set_parameters(self,parameters):
         self._parameters = parameters
@@ -78,7 +78,7 @@ class Genetic_heuristique(Heuristique):
         self._functions = [f for f in default_functions if f.__name__ in listObj["gen"][index]["functions"]]
 
 
-class Genetic_1_action_heuristique(Genetic_heuristique):
+class Genetic_1_action_heuristic(Genetic_heuristic):
     def __init__(self, functions=default_functions, parameters=None):
         super().__init__(functions, parameters)
 
@@ -91,13 +91,13 @@ class Genetic_1_action_heuristique(Genetic_heuristique):
         return score
     
     def get_default_agent(self):
-        return Genetic_1_action_heuristique(self._functions)
+        return Genetic_1_action_heuristic(self._functions)
 
     
 
     
 
-class Genetic_mult_actions_heuristique(Genetic_1_action_heuristique):
+class Genetic_mult_actions_heuristic(Genetic_1_action_heuristic):
     def __init__(self, functions=default_mult_functions, parameters=None):
         super().__init__(functions, parameters)
         
@@ -110,9 +110,9 @@ class Genetic_mult_actions_heuristique(Genetic_1_action_heuristique):
         return score
 
     def get_default_agent(self):
-        return Genetic_mult_actions_heuristique(self._functions)
+        return Genetic_mult_actions_heuristic(self._functions)
 
-class Genetic_single_loop_heuristique(Genetic_heuristique):
+class Genetic_single_loop_heuristic(Genetic_heuristic):
     def __init__(self, functions=default_single_loop_functions, parameters=None, whole_board_functions=default_board_functions):
         super().__init__(functions, parameters)
         self._whole_board_functions = whole_board_functions
@@ -129,6 +129,6 @@ class Genetic_single_loop_heuristique(Genetic_heuristique):
         return score
 
     def get_default_agent(self):
-        return Genetic_single_loop_heuristique(self._functions,self._whole_board_functions)
+        return Genetic_single_loop_heuristic(self._functions,self._whole_board_functions)
 
 
