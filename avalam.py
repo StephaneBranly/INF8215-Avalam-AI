@@ -201,6 +201,40 @@ class Board:
                         score += 1
         return score
 
+class ImprovedBoard(Board):
+    last_move = []
+    
+    def __init__(self, percepts=Board.initial_board, max_height=Board.max_height,invert=False, last_move=[]):
+        self.last_move = last_move
+        super().__init__(percepts, max_height, invert)
+    
+    def play_action(self, action):
+        if not self.is_action_valid(action):
+            print(self)
+            print(action)
+            print(self.last_move)
+        self.last_move.append((action, self.m[action[0]][action[1]], self.m[action[2]][action[3]]))
+        return super().play_action(action)
+
+    def undo_action(self):
+        if len(self.last_move):
+            action, s, e = self.last_move.pop()
+            self.m[action[0]][action[1]] = s
+            self.m[action[2]][action[3]] = e
+        else:
+            raise Exception("No move to undo")
+
+    def clone(self):
+        """Return a clone of this object."""
+        return ImprovedBoard(self.m, last_move=self.last_move.copy())
+
+def dict_to_improved_board(dictio):
+    board = ImprovedBoard()
+    board.m = dictio['m']
+    board.rows = dictio['rows']
+    board.max_height = dictio['max_height']
+
+    return board
 
 def dict_to_board(dictio):
     """Return a clone of the board object encoded as a dictionary."""

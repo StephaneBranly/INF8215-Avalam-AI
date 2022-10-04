@@ -26,7 +26,7 @@ def generate_class_uml(class_):
             args = inspect.getfullargspec(class_.__dict__[attr]).args[1:]
             str += f"  +{attr}({','.join(args)}) \n"
     str += "}\n"
-    str += f"""click {class_.__name__} href "{repo_path}/doc/{class_.__name__}.md" "Detail of the class {class_.__name__}\"\n"""
+    str += f"""click {class_.__name__} href "{repo_path}/blob/main/doc/{class_.__name__}.md" "Detail of the class {class_.__name__}\"\n"""
     return str
 
 def generate_class_diagram(module):
