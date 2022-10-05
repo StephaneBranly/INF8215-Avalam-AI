@@ -40,6 +40,7 @@ from genetic_player import GeneticAgent
 from genetic_observation_NN_player import ObservationNN1actionAgent
 from heuristic_genetic_1_action_player import Heuristic1ActionAgent
 from heuristic_genetic_2_action_player import Heuristic2ActionAgent
+from monte_carlo_player import MonteCarloAgent
 
 class TimeCreditExpired(Exception):
     """An agent has expired its time credit."""
@@ -254,6 +255,7 @@ class Game:
                                             self.board,
                                             self.player,
                                             self.step)
+                
                 self.board.play_action(action)
                 self.viewer.update(self.step, action, self.player)
                 self.trace.add_action(self.player, action, t)
@@ -536,10 +538,10 @@ if __name__ == "__main__":
                 "generation": 6,
             }
            
-            genetic_agent1.setup(None, None, paramsEvaluate1)
-            genetic_agent2.setup(None, None, paramsEvaluate2)
-            agents = [GreedyAgent(), genetic_agent2]
-
+            # genetic_agent1.setup(None, None, paramsEvaluate1)
+            # genetic_agent2.setup(None, None, paramsEvaluate2)
+            agents = [GreedyAgent(), MonteCarloAgent()]
+            
         def compute_pool_results(history):
             winners=[-1 if score<0 else 1 if score>0 else 0 for score in history]
             return [winners.count(-1)/len(winners),winners.count(0)/len(winners),winners.count(1)/len(winners)]
@@ -549,6 +551,7 @@ if __name__ == "__main__":
                 game.startPlaying()
             except KeyboardInterrupt:
                 exit()
+            
             if args.write is not None:
                 logging.info("Writing trace to '%s'", args.write.name)
                 try:
@@ -574,7 +577,6 @@ if __name__ == "__main__":
             f = open(f"stats/pool_results.csv", "w")
             f.write(f"Pool id;Agent -1;Agent 1;Pct Agent -1;Pct Draw;Pct Agent 1\n")
             f.close()
-        start = time.time()
         for p in range(args.pool):
             game_history = dict()
             game_history['scores'] = []
@@ -628,7 +630,6 @@ if __name__ == "__main__":
                 for i in range(2):
                     if agents[i].hasEvolved():
                         agents[i].pool_ended(pool_results, 1 if i==0 else -1, p)
-        print(time.time()-start,"s")            
         if not args.gui and args.stats:
             generate_summary_file('stats/')
     else:

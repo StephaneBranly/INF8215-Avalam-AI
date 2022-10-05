@@ -17,13 +17,14 @@ def generate_scores_fig(df):
     plt.gca().add_patch(rect_m1)
     a = sns.violinplot(data=df['Scores'], palette="flare", inner="points", orient="h")
     # Tendency of the mean score
-    z = np.polyfit(y_ticks, df['mean_scores'], 1)
-    p = np.poly1d(z)
-    plt.plot(p(y_ticks), y_ticks, c="green", ls=":", label="Tendency", linewidth=2)
+    if length > 1:
+        z = np.polyfit(y_ticks, df['mean_scores'], 1)
+        p = np.poly1d(z)
+        plt.plot(p(y_ticks), y_ticks, c="green", ls=":", label="Tendency", linewidth=2)
+
     plt.xlim((-20, 20))
     plt.ylim((length, -1))
    
-
     a.set(title='Score distribution for each pool', xlabel='Scores', ylabel='Pool', xticks=x_ticks)
     a.set_xticklabels(x_ticks, rotation=45)
     a.text(10, -0.1, 'Player +1', fontsize = 10, color='red', ha='center')

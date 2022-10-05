@@ -46,7 +46,7 @@ def generate_class_diagram(module):
 
 def generate_class_documentation(class_):
     str = f"# {class_.__name__}\n"
-    str += f"Back to [readme menu](../readme.md)\n\n"
+    str += f"Back to [readme menu](../README.md)\n\n"
     if class_.__doc__:
         str += f"{class_.__doc__}\n"
     str += f"## Attributes\n"
