@@ -528,12 +528,12 @@ if __name__ == "__main__":
             paramsEvaluate1 = {
                 "mode": "evaluate",
                 "save": "NN_MT5",
-                "generation": 0,
+                "generation": 5,
             }
             paramsEvaluate2 = {
                 "mode": "evaluate",
                 "save": "NN_MT_2A",
-                "generation": 0,
+                "generation": 6,
             }
            
             genetic_agent1.setup(None, None, paramsEvaluate1)

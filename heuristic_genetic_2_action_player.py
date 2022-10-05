@@ -34,7 +34,7 @@ class Heuristic2ActionAgent(GeneticAgent):
             explored += 1
             if time.time()-start > 60:
                 #print("stop",time.time()-start)
-                return (agent.evaluate(init_board, current_board, player,None),None)
+                return (agent.evaluate(current_board, player),None)
             if(step+depth < 20 and current_board.get_actions()==[]):
                 return (current_board.get_score()*player*1000,None)
             v = -math.inf
@@ -60,7 +60,7 @@ class Heuristic2ActionAgent(GeneticAgent):
             explored += 1
             if time.time()-start > 60:
                 #print("stop",time.time()-start)
-                return (agent.evaluate(init_board, current_board, player,None),None)
+                return (agent.evaluate(current_board, player),None)
             if(step+depth < 20 and current_board.get_actions()==[]):
                 return (current_board.get_score()*player*1000,None)
             v = math.inf
@@ -93,7 +93,7 @@ class Heuristic2ActionAgent(GeneticAgent):
 
 
     def default_agent(self):
-        return Genetic_mult_actions_heuristique()
+        return Genetic_single_loop_heuristic()
 
     def generate_stats_file(self):
         dfs = generate_dataframes(self.save_path)
