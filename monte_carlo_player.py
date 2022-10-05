@@ -46,7 +46,7 @@ class MonteCarloAgent(EvolvedAgent):
     def mcts(self, board, player, iterations=300):
         tree = self.node_dict()
         start = time.time()
-        while time.time()-start <= 20:
+        while time.time()-start <= 40:
             n_leaf = self.select(tree, board)
             n_child = self.expand(n_leaf, board)
             if n_child is None:

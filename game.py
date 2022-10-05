@@ -517,7 +517,7 @@ if __name__ == "__main__":
                     agents[i] = connect_agent(agents[i])
                     credits[i] = args.time
         else:
-            genetic_agent1 = Heuristic1ActionAgent()
+            genetic_agent1 = Heuristic2ActionAgent()
             genetic_agent2 = Heuristic2ActionAgent()
             paramsTrain = {
                 'individu': 10,
@@ -529,8 +529,8 @@ if __name__ == "__main__":
             }
             paramsEvaluate1 = {
                 "mode": "evaluate",
-                "save": "NN_MT5",
-                "generation": 5,
+                "save": "NN_MT_2A",
+                "generation": 6,
             }
             paramsEvaluate2 = {
                 "mode": "evaluate",
@@ -538,9 +538,9 @@ if __name__ == "__main__":
                 "generation": 6,
             }
            
-            # genetic_agent1.setup(None, None, paramsEvaluate1)
-            # genetic_agent2.setup(None, None, paramsEvaluate2)
-            agents = [GreedyAgent(), MonteCarloAgent()]
+            genetic_agent1.setup(None, None, paramsEvaluate1)
+            genetic_agent2.setup(None, None, paramsEvaluate2)
+            agents = [genetic_agent1, genetic_agent2]
             
         def compute_pool_results(history):
             winners=[-1 if score<0 else 1 if score>0 else 0 for score in history]

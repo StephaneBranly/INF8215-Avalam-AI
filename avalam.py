@@ -230,6 +230,22 @@ class ImprovedBoard(Board):
     def clone(self):
         """Return a clone of this object."""
         return ImprovedBoard(self.m, last_action=self.last_action.copy())
+    
+    def get_useful_towers(self):
+        useful_towers = []
+        for i in range(self.rows):
+            for j in range(self.columns):
+                useful = False
+                for k in range(i-1, i+2):
+                    for l in range(j-1, j+2):
+                        if l > 0 and k > 0 and l < 9 and k < 9:
+                            if self.m[k][l] != 1 and self.m[k][l] != -1:
+                                useful = True
+                if useful:
+                    useful_towers.append((i, j))
+        return useful_towers
+                        
+                
 
 def dict_to_improved_board(dictio):
     board = ImprovedBoard()
