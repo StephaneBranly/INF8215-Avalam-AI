@@ -21,12 +21,18 @@ class Heuristic2ActionAgent(GeneticAgent):
 
         start = time.time()
 
+        def lambda_x(agent, init_board, board, x, player):
+            board.play_action(x)
+            score = agent.evaluate(init_board, board, player, x)
+            board.undo_action()
+            return score
+
         def max_value(init_board, current_board, agent, player, alpha, beta, depth, max_depth):
             nonlocal explored
             nonlocal start
             nonlocal step
             explored += 1
-            if time.time()-start > 30:
+            if time.time()-start > 60:
                 #print("stop",time.time()-start)
                 return (agent.evaluate(current_board, player),None)
             if(step+depth < 20 and current_board.get_actions()==[]):
@@ -34,9 +40,11 @@ class Heuristic2ActionAgent(GeneticAgent):
             v = -math.inf
             m = None
             actions = [a for a in current_board.get_actions()]
-            actions.sort(key=lambda x: agent.evaluate(current_board.clone().play_action(x), player), reverse=True)
+            actions.sort(key=lambda x: lambda_x(agent, init_board, current_board, x, player), reverse=True)
             for a in actions:
-                nV = min_value(init_board, current_board.clone().play_action(a), agent, player, alpha, beta, depth+1, max_depth)[0]
+                current_board.play_action(a)
+                nV = min_value(init_board, current_board, agent, player, alpha, beta, depth+1, max_depth)[0]
+                current_board.undo_action()
                 if(nV > v):
                     v = nV
                     m = a
@@ -50,7 +58,7 @@ class Heuristic2ActionAgent(GeneticAgent):
             nonlocal explored
             nonlocal step
             explored += 1
-            if time.time()-start > 30:
+            if time.time()-start > 60:
                 #print("stop",time.time()-start)
                 return (agent.evaluate(current_board, player),None)
             if(step+depth < 20 and current_board.get_actions()==[]):
@@ -58,10 +66,11 @@ class Heuristic2ActionAgent(GeneticAgent):
             v = math.inf
             m = None
             actions = [a for a in current_board.get_actions()]
-            actions.sort(key=lambda x: agent.evaluate(current_board.clone().play_action(x), player), reverse=False)
+            actions.sort(key=lambda x: lambda_x(agent, init_board, current_board, x, player), reverse=True)
             for a in actions:
-            #for a in current_board.get_actions():
-                nV = max_value(init_board, current_board.clone().play_action(a), agent, player, alpha, beta, depth+1, max_depth)[0]
+                current_board.play_action(a)
+                nV = max_value(init_board, current_board, agent, player, alpha, beta, depth+1, max_depth)[0]
+                current_board.undo_action()
                 if(nV < v):
                     v = nV
                     m = a
@@ -70,13 +79,14 @@ class Heuristic2ActionAgent(GeneticAgent):
                     return (v,m)
             return (v,m)
     
-        board = dict_to_board(percepts)
+        board = dict_to_improved_board(percepts)
+        init_board = dict_to_improved_board(percepts)
         max_depth = 30
         size = len([a for a in board.get_actions()])
         """while pow(size,max_depth) > 1000000:
             max_depth -= 1"""
 
-        v , m = max_value(board, board, agent, player, -math.inf, math.inf, 0, max_depth)
+        v , m = max_value(board, init_board, agent, player, -math.inf, math.inf, 0, max_depth)
         print("time",time.time()-start)
         print("step", step,"explored", explored)
         return m
