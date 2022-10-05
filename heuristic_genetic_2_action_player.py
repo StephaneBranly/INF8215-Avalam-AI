@@ -21,22 +21,54 @@ class Heuristic2ActionAgent(GeneticAgent):
 
         start = time.time()
 
+
+        HashMaps = []
+        for i in range(0, 10):
+            HashMaps.append({})
+
+        hashReduced = 0
+        transposition = 0
+        max_depth_reached = 0
+
         def lambda_x(agent, init_board, board, x, player):
             board.play_action(x)
             score = agent.evaluate(init_board, board, player, x)
             board.undo_action()
             return score
 
+
         def max_value(init_board, current_board, agent, player, alpha, beta, depth, max_depth):
             nonlocal explored
             nonlocal start
             nonlocal step
+            nonlocal HashMaps
+            nonlocal hashReduced
+            nonlocal transposition
             explored += 1
-            if time.time()-start > 60:
-                #print("stop",time.time()-start)
-                return (agent.evaluate(init_board, current_board, player,None),None)
+
+
+            if depth==max_depth or time.time()-start > 60:
+                return (agent.evaluate(current_board, player),None)
             if(step+depth < 20 and current_board.get_actions()==[]):
                 return (current_board.get_score()*player*1000,None)
+            if depth>=1:
+                h = hash(tuple(map(tuple, current_board.m)))
+                if h in HashMaps[step]:
+                    hashReduced += 1
+                    return HashMaps[step][h]
+                else :
+                    h2 = hash(tuple(map(lambda e : tuple(reversed(e)) , reversed(current_board.m))))
+                    if h2 in HashMaps[step]:
+                        
+                        transposition += 1
+                        return HashMaps[step][h2]
+            else:
+
+                h2 = hash(tuple(map(lambda e : tuple(reversed(e)) , reversed(current_board.m))))
+                if h2 in HashMaps[step]:
+                    transposition += 1
+                    return HashMaps[step][h2]
+                
             v = -math.inf
             m = None
             actions = [a for a in current_board.get_actions()]
@@ -51,22 +83,43 @@ class Heuristic2ActionAgent(GeneticAgent):
                     alpha = max(alpha, v)
                 if(alpha >= beta):
                     return (v,m)
+            if len(HashMaps[step])<100000:
+                if depth==0:
+                    h = hash(tuple(map(tuple, current_board.m)))
+                HashMaps[step][h] = (v,m)
             return (v,m)
         
         def min_value(init_board, current_board, agent, player, alpha, beta, depth, max_depth):
             nonlocal start
             nonlocal explored
             nonlocal step
+            nonlocal HashMaps
+            nonlocal hashReduced
+            nonlocal transposition
             explored += 1
-            if time.time()-start > 60:
-                #print("stop",time.time()-start)
-                return (agent.evaluate(init_board, current_board, player,None),None)
+            if depth==max_depth or time.time()-start > 60:
+                return (agent.evaluate(current_board, player),None)
             if(step+depth < 20 and current_board.get_actions()==[]):
                 return (current_board.get_score()*player*1000,None)
+            if depth>=1:
+                    h = hash(tuple(map(tuple, current_board.m)))
+                    if h in HashMaps[step]:
+                        hashReduced += 1
+                        return HashMaps[step][h]
+                    else :
+                        h2 = hash(tuple(map(lambda e : tuple(reversed(e)) , reversed(current_board.m))))
+                        if h2 in HashMaps[step]:
+                            transposition += 1
+                            return HashMaps[step][h2]
+            else:
+                h2 = hash(tuple(map(lambda e : tuple(reversed(e)) , reversed(current_board.m))))
+                if h2 in HashMaps[step]:
+                    transposition += 1
+                    return HashMaps[step][h2]
             v = math.inf
             m = None
             actions = [a for a in current_board.get_actions()]
-            actions.sort(key=lambda x: lambda_x(agent, init_board, current_board, x, player), reverse=True)
+            actions.sort(key=lambda x: lambda_x(agent, init_board, current_board, x, player), reverse=False)
             for a in actions:
                 current_board.play_action(a)
                 nV = max_value(init_board, current_board, agent, player, alpha, beta, depth+1, max_depth)[0]
@@ -77,23 +130,28 @@ class Heuristic2ActionAgent(GeneticAgent):
                     beta = min(beta, v)
                 if(alpha >= beta):
                     return (v,m)
+            if len(HashMaps[step])<100000:
+                if depth==0:
+                    h = hash(tuple(map(tuple, current_board.m)))
+                HashMaps[step][h] = (v,m)
             return (v,m)
     
+
         board = dict_to_improved_board(percepts)
         init_board = dict_to_improved_board(percepts)
         max_depth = 30
-        size = len([a for a in board.get_actions()])
-        """while pow(size,max_depth) > 1000000:
-            max_depth -= 1"""
+        
 
         v , m = max_value(board, init_board, agent, player, -math.inf, math.inf, 0, max_depth)
         print("time",time.time()-start)
         print("step", step,"explored", explored)
+        print("step", step,"explored", explored,"time",time.time()-start,"hashReduced",hashReduced,"transposition",transposition)
+
         return m
 
 
     def default_agent(self):
-        return Genetic_mult_actions_heuristique()
+        return Genetic_single_loop_heuristic()
 
     def generate_stats_file(self):
         dfs = generate_dataframes(self.save_path)
