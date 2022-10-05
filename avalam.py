@@ -202,31 +202,34 @@ class Board:
         return score
 
 class ImprovedBoard(Board):
-    last_move = []
+    last_action = []
     
-    def __init__(self, percepts=Board.initial_board, max_height=Board.max_height,invert=False, last_move=[]):
-        self.last_move = last_move
+    def __init__(self, percepts=Board.initial_board, max_height=Board.max_height,invert=False, last_action=[]):
+        self.last_action = last_action
         super().__init__(percepts, max_height, invert)
     
     def play_action(self, action):
         if not self.is_action_valid(action):
             print(self)
             print(action)
-            print(self.last_move)
-        self.last_move.append((action, self.m[action[0]][action[1]], self.m[action[2]][action[3]]))
+            print(self.last_action)
+        self.last_action.append((action, self.m[action[0]][action[1]], self.m[action[2]][action[3]]))
         return super().play_action(action)
 
     def undo_action(self):
-        if len(self.last_move):
-            action, s, e = self.last_move.pop()
+        if len(self.last_action):
+            action, s, e = self.last_action.pop()
             self.m[action[0]][action[1]] = s
             self.m[action[2]][action[3]] = e
         else:
             raise Exception("No move to undo")
+    def undo_all_actions(self):
+        while len(self.last_action):
+            self.undo_action()
 
     def clone(self):
         """Return a clone of this object."""
-        return ImprovedBoard(self.m, last_move=self.last_move.copy())
+        return ImprovedBoard(self.m, last_action=self.last_action.copy())
 
 def dict_to_improved_board(dictio):
     board = ImprovedBoard()

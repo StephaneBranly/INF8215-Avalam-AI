@@ -19,17 +19,14 @@ class GeneticAgent(EvolvedAgent):
         if self.mode == "train":
             self.matchs = [m for m in itertools.combinations(range(self.individu), 2)]
             self.load_agents_of_pool()
-
         elif self.mode == "play":
             if self.individu == -1:
                 self.load_best_individu(self.current_gen)
             else:
                 self.current_agent.load_from_json(f"{self.save_path}/gen{self.current_gen}.json", self.individu)
                 self.current_individu = self.individu
-
         elif self.mode == "evaluate":
             self.load_best_individu(self.current_gen)
-
         if self.mode == "stats":
             self.current_agent.load_from_json(f"{self.save_path}/gen0.json", 0)
             self.generate_stats_file()
@@ -42,7 +39,8 @@ class GeneticAgent(EvolvedAgent):
             individu = scores.index(max(scores))
             self.current_individu = individu
             self.current_agent.load_from_json(f"{self.save_path}/gen{gen}.json", individu)
-        except:
+        except BaseException as e:
+            print(f"BaseException raised: {e}")
             print('No more generation')
 
     def load_agents_of_pool(self):
