@@ -1,5 +1,5 @@
 # Agent
-Back to [readme menu](../readme.md)
+Back to [readme menu](../README.md)
 
 Interface for an Arlecchino agent
 ## Attributes

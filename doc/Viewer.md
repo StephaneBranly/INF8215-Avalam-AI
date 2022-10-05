@@ -1,5 +1,5 @@
 # Viewer
-Back to [readme menu](../readme.md)
+Back to [readme menu](../README.md)
 
 Interface for an Avalam viewer and human agent.
 ## Attributes

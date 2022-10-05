@@ -1,5 +1,5 @@
 # RandomAgent
-Back to [readme menu](../readme.md)
+Back to [readme menu](../README.md)
 
 ## Attributes
 ### hasEvolded()

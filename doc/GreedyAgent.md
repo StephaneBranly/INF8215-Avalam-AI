@@ -1,5 +1,5 @@
 # GreedyAgent
-Back to [readme menu](../readme.md)
+Back to [readme menu](../README.md)
 
 ## Attributes
 ### play(percepts,player,step,time_left,game_id,pool_id)

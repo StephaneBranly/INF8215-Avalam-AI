@@ -24,6 +24,7 @@ click EvolvedAgent href "https://github.com/StephaneBranly/Avalam-AI/blob/main/d
 EvolvedAgent <|-- GreedyAgent
 EvolvedAgent <|-- RandomAgent
 EvolvedAgent <|-- GeneticAgent
+EvolvedAgent <|-- MonteCarloAgent
 EvolvedAgent <|-- Viewer
 class Viewer {
   +init_viewer(board,game) 
@@ -41,6 +42,22 @@ class ConsoleViewer {
   +finished(steps,winner,reason) 
 }
 click ConsoleViewer href "https://github.com/StephaneBranly/Avalam-AI/blob/main/doc/ConsoleViewer.md" "Detail of the class ConsoleViewer"
+class MonteCarloAgent {
+  +play(percepts,player,step,time_left,game_id,pool_id) 
+  +tree_to_mermaid(state) 
+  +tree_to_mermaid_rec(state) 
+  +state_to_string(state) 
+  +mcts(board,player,iterations) 
+  +node_dict(parent,action_made) 
+  +select(state,board) 
+  +expand(n_leaf,board) 
+  +simulate(board,player) 
+  +backpropagate(v,n_child,board) 
+  +best_action(state) 
+  +uct_score(node) 
+  +get_agent_id() 
+}
+click MonteCarloAgent href "https://github.com/StephaneBranly/Avalam-AI/blob/main/doc/MonteCarloAgent.md" "Detail of the class MonteCarloAgent"
 class GeneticAgent {
   +setup(agent,parser,args) 
   +load_best_individu(gen) 

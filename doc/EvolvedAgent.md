@@ -1,5 +1,5 @@
 # EvolvedAgent
-Back to [readme menu](../readme.md)
+Back to [readme menu](../README.md)
 
 Evolved agent. This agent has new functions used by the game engine to notify the agent of the competition state.
 ## Attributes

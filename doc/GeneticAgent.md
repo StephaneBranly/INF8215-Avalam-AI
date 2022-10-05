@@ -1,5 +1,5 @@
 # GeneticAgent
-Back to [readme menu](../readme.md)
+Back to [readme menu](../README.md)
 
 ## Attributes
 ### setup(agent,parser,args)

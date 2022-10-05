@@ -1,5 +1,5 @@
 # ConsoleViewer
-Back to [readme menu](../readme.md)
+Back to [readme menu](../README.md)
 
 Simple console viewer.
 ## Attributes
