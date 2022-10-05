@@ -72,7 +72,8 @@ class Genetic_1_action_heuristique(Heuristic):
         with open(filename) as fp:
             listObj = json.load(fp)
         self._parameters = listObj["gen"][index]["parameters"]
-        self._functions = [f for f in default_functions if f.__name__ in listObj["gen"][index]["functions"]]
+        if "functions" in listObj["gen"][index]:
+            self._functions = [f for f in default_functions if f.__name__ in listObj["gen"][index]["functions"]]
 
 class Genetic_mult_actions_heuristique(Genetic_1_action_heuristique):
     def __init__(self, functions=default_mult_functions, parameters=None):

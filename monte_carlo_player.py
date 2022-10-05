@@ -12,7 +12,7 @@ class MonteCarloAgent(EvolvedAgent):
         board = dict_to_improved_board(percepts)
         start_time = time.time()
         action = self.mcts(board, player, 5000)
-        # print(f"Action: {action} for step {step} | Time: {time.time() - start_time}")
+        print(f"Action: {action} for step {step} | Time: {time.time() - start_time}")
         return action
 
     def tree_to_mermaid(self, state):
@@ -45,7 +45,8 @@ class MonteCarloAgent(EvolvedAgent):
 
     def mcts(self, board, player, iterations=300):
         tree = self.node_dict()
-        for i in range(iterations):
+        start = time.time()
+        while time.time()-start <= 20:
             n_leaf = self.select(tree, board)
             n_child = self.expand(n_leaf, board)
             if n_child is None:
