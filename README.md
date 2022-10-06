@@ -77,6 +77,7 @@ GeneticAgent <|-- ObservationNN1actionAgent
 GeneticAgent <|-- Heuristic1ActionAgent
 GeneticAgent <|-- Heuristic2ActionAgent
 class Heuristic2ActionAgent {
+  +get_agent_id() 
   +play_agent(agent,percepts,player,step,time_left) 
   +default_agent() 
   +generate_stats_file() 
