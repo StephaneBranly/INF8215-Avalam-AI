@@ -6,13 +6,15 @@ import time
 class MonteCarloAgent(EvolvedAgent):
     def __init__(self):
         self.c = math.sqrt(2)
+        self.tree = None
+        self.root_board = None
     
     """A monte carlo agent."""
     def play(self, percepts, player, step, time_left, game_id=None, pool_id=None): 
         board = dict_to_improved_board(percepts)
         start_time = time.time()
-        action = self.mcts(board, player, 5000)
-        print(f"Action: {action} for step {step} | Time: {time.time() - start_time}")
+        action, iterations = self.mcts(board, player, time_limit=30)
+        print(f"Action: {action} for step {step} \t| Time: {time.time() - start_time}\t| Iterations: {iterations}")
         return action
 
     def tree_to_mermaid(self, state):
@@ -28,38 +30,66 @@ class MonteCarloAgent(EvolvedAgent):
         stack = [(state, 0, id_)]
 
         while len(stack):
-            current = stack.pop()
-           
+            current = stack.pop()  
             for child in current[0]["childs"]:
-                if child["n"] != 0:
-                    id_ += 1
-                    child_state = (child, current[1] + 1, id_)
-
-                    mermaid += f"{self.state_to_string(current)} -->|{','.join([str(a) for a in child['action_made']])}| {self.state_to_string(child_state)}\n"
-                    stack.append(child_state)
+                id_ += 1
+                child_state = (child, current[1] + 1, id_)
+                mermaid += f"{self.state_to_string(current)} -->|{','.join([str(a) for a in child['action_made']])}| {self.state_to_string(child_state)}\n"
+                stack.append(child_state)
         return mermaid
 
     def state_to_string(self, state):
         """Return a string representing the state."""
         return f"id{state[2]}((u = {str(state[0]['u'])} n = {str(state[0]['n'])}))"
 
-    def mcts(self, board, player, iterations=300):
-        tree = self.node_dict()
+    def mcts(self, board, player, iterations=None, time_limit=None):
+        if self.tree: # if we already have a tree, we can reuse it . But we need to update the board with the opponent's action
+            comparaison_board = self.root_board
+            for child in self.tree['childs']:
+                comparaison_board.play_action(child['action_made'])
+                if comparaison_board.get_hash() == board.get_hash():
+                    tree = child
+                    print(f"\tOpponent has player action {child['action_made']}\t| Saved {tree['n']} iterations")
+                    tree['action_made'] = None
+                    break
+                comparaison_board.undo_action()
+        else:
+            tree = self.node_dict(player=player)
         start = time.time()
-        while time.time()-start <= 40:
-            n_leaf = self.select(tree, board)
-            n_child = self.expand(n_leaf, board)
-            if n_child is None:
-                with open("tree.mermaid", "w") as f:
-                    f.write(self.tree_to_mermaid(tree))
-                return self.best_action(tree)
-            v = self.simulate(board, player)
-            self.backpropagate(v, n_child, board)
-        return self.best_action(tree)
+        i = 0
+        def can_continue():
+            if iterations:
+                return i < iterations
+            if time_limit:
+                return time.time() - start < time_limit
+            raise Exception("No stop condition for MCTS !")
+
+        while can_continue():
+            try:
+                i += 1
+                n_leaf = self.select(tree, board)
+                n_child = self.expand(n_leaf, board)
+                if n_child is None:
+                    with open("tree.mermaid", "w") as f:
+                        f.write(self.tree_to_mermaid(tree))
+                    return self.best_action(tree)
+                v = self.simulate(board, player, n_child["player"])
+                self.backpropagate(v, n_child, board)
+            except Exception as e:       
+                raise e
+
+        best_action = self.best_action(tree)
+        for child in tree["childs"]:
+            if child['action_made'] == best_action:
+                self.tree = child
+                self.root_board = board.clone()
+                self.root_board.play_action(best_action)
+                break
+        return best_action, tree['n']
     
-    def node_dict(self, parent=None, action_made=None):
+    def node_dict(self, player=None, parent=None, action_made=None):
         """Return a dictionary representing a node in the tree."""
-        return { "u": 0, "n": 0, "childs": [], "parent": parent, "action_made": action_made }
+        return { "u": 0, "n": 0, "childs": [], "parent": parent, "action_made": action_made, "player": player if player else -parent["player"] }
 
     def select(self, state, board):
         """Select the best node to expand. The board is updated to the state of the node."""
@@ -89,17 +119,39 @@ class MonteCarloAgent(EvolvedAgent):
         actions = list(board.get_actions())
         n_child = None
         for a in actions:
-            n_child = self.node_dict(n_leaf, a)
+            n_child = self.node_dict(parent=n_leaf, action_made=a)
             n_leaf["childs"].append(n_child)
         if n_child:
             board.play_action(n_child['action_made'])
         return n_child
 
-    def simulate(self, board, player):
+    def simulate(self, board, player, current_player):
         """Simulate a game from the current state of the board. Return the score of the player. The board is updated to the state of the end of the game."""
-        while not board.is_finished():
+        def play(board: ImprovedBoard, player: int):
             actions = list(board.get_actions())
-            board.play_action(random.choice(actions))
+            def predict_score(board, action):
+                board.play_action(action)
+                score = int(board.m[action[2]][action[3]])
+                board.undo_action()
+                return score
+
+            def decision(probability):
+                return random.random() < probability
+
+            order = [player*5,player*4,player*3,player*2,-player*2,-player*3,-player*4,-player*5]
+            srt = {b: i for i, b in enumerate(order)}
+            sorted_actions = sorted(actions, key=lambda a: srt[predict_score(board, a)])
+            
+            if decision(0.8):
+                action = sorted_actions[0]   
+            else :
+                action = random.choice(actions)   
+            return action
+        
+        while not board.is_finished():
+            action = play(board, current_player)
+            board.play_action(action)
+            current_player = -current_player
         return board.get_score() * player
 
     def backpropagate(self, v, n_child, board):
@@ -133,3 +185,4 @@ class MonteCarloAgent(EvolvedAgent):
 
 if __name__ == "__main__":
     agent_main(MonteCarloAgent())
+
