@@ -41,6 +41,7 @@ from genetic_observation_NN_player import ObservationNN1actionAgent
 from heuristic_genetic_1_action_player import Heuristic1ActionAgent
 from heuristic_genetic_2_action_player import Heuristic2ActionAgent
 from monte_carlo_player import MonteCarloAgent
+from step_analyst_player import StepAnalystPlayer
 
 class TimeCreditExpired(Exception):
     """An agent has expired its time credit."""
@@ -553,7 +554,8 @@ if __name__ == "__main__":
            
             genetic_agent1.setup(None, None, paramsEvaluate1)
             genetic_agent2.setup(None, None, paramsEvaluate2)
-            agents = [MonteCarloAgent(), GreedyAgent()]
+            # agents = [MonteCarloAgent(), GreedyAgent()]
+            agents = [StepAnalystPlayer(), StepAnalystPlayer()]
             
         def compute_pool_results(history):
             winners=[-1 if score<0 else 1 if score>0 else 0 for score in history]
