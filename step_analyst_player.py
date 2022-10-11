@@ -2,7 +2,7 @@ from avalam import *
 from greedy_player import GreedyAgent
 
 class StepAnalystPlayer(EvolvedAgent):
-    def __init__(self, agent=GreedyAgent(0.999)):
+    def __init__(self, agent=GreedyAgent(0.95)):
         self.agent = agent
         self.step_analysed = 0
         self.player_1_step = False
