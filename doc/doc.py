@@ -9,6 +9,7 @@ sys.path.append(parentdir)
 
 import inspect
 from game import Agent
+from heuristic.heuristic import Heuristic
 import re 
 
 repo_path = "https://github.com/StephaneBranly/Avalam-AI"
@@ -27,8 +28,8 @@ def generate_class_uml(class_):
     str += f"""click {class_.__name__} href "{repo_path}/blob/main/doc/{class_.__name__}.md" "Detail of the class {class_.__name__}\"\n"""
     return str
 
-def generate_class_diagram(module):
-    stack = [module]
+def generate_class_diagram(modules):
+    stack = modules
     visited = []
     uml = "classDiagram\n"
     while stack:
@@ -82,4 +83,4 @@ def create_class_documentation(class_md, classname):
     f.close()
 
 if __name__ == "__main__":
-    generate_class_diagram(Agent)
+    generate_class_diagram([Agent, Heuristic])
