@@ -14,4 +14,4 @@ def greedy_play(board, player, step, time_left):
     srt = {b: i for i, b in enumerate(order)}
     sorted_actions = sorted(actions, key=lambda a: srt[predict_score(board, a)])
     
-    return sorted_actions[random.randint(0, len(sorted_actions)*10//100)]
+    return sorted_actions[random.randint(0, len(sorted_actions)*5//100)]

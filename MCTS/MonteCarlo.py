@@ -31,13 +31,14 @@ class MonteCarlo:
                 return time.time() - start < time_limit
             raise Exception("No stop condition for MCTS !")
 
+        current_tree = tree if tree else self.node_dict(player=player)
         while can_continue():
             try:
                 i += 1
-                n_leaf = self.select(tree, board)
+                n_leaf = self.select(current_tree, board)
                 n_child = self.expand(n_leaf, board)
                 if n_child is None:
-                    return self.best_action(tree)
+                    return self.best_action(current_tree)
                 v = self.simulate(board, player, n_child["player"])
                 self.backpropagate(v, n_child, board)
             except Exception as e:       
@@ -46,15 +47,16 @@ class MonteCarlo:
         # if step == 1:
         #     self.save_tree(tree)
         #     raise Exception("Saved tree")
-
-        best_action = self.best_action(tree)
-        for child in tree["childs"]:
-            if child['action_made'] == best_action:
-                new_tree = child
-                new_board = board.clone()
-                new_board.play_action(best_action)
-                break
-        return best_action, tree['n'], new_tree, new_board
+        new_tree, new_board = None, None
+        best_action = self.best_action(current_tree)
+        if tree:
+            for child in current_tree["childs"]:
+                if child['action_made'] == best_action:
+                    new_tree = child
+                    new_board = board.clone()
+                    new_board.play_action(best_action)
+                    break
+        return best_action, current_tree['n'], new_tree, new_board
     
     def node_dict(self, player=None, parent=None, action_made=None):
         """Return a dictionary representing a node in the tree."""
