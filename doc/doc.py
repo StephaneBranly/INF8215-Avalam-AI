@@ -49,6 +49,13 @@ def generate_class_diagram(modules):
 
     update_readme_class_diagram(uml)
 
+def clean_doc_description(doc):
+    str = re.sub(r'[^\S\r\n]+', ' ', doc)
+    str = re.sub(r'\n\s', '\n', str)
+    str = re.sub(r'(Arguments|Returns|Return|Example)\s?:', r'#### \1:', str)
+    str = re.sub(r'(.*)\s?--\s?(.*)', r'* ```\1```: \2', str)
+    return str.replace("\t", "\n")
+
 def generate_class_documentation(class_):
     str = f"# {class_.__name__}\n"
     str += f"Back to [readme menu](../README.md)\n\n"
@@ -59,14 +66,15 @@ def generate_class_documentation(class_):
         if attr.startswith("__"):
             continue
         if not inspect.isfunction(class_.__dict__[attr]):
-            str += f"### {attr}\n"
+            str += f"### ```{attr}```\n"
             if class_.__dict__[attr].__doc__:
-                str += f"{class_.__dict__[attr].__doc__}\n"
+                str += f"{clean_doc_description(class_.__dict__[attr].__doc__)}\n"
         else:
             args = inspect.getfullargspec(class_.__dict__[attr]).args[1:]
-            str += f"### {attr}({','.join(args)})\n"
+            str += f"### ```{attr}({','.join(args)})```\n"
             if class_.__dict__[attr].__doc__:
-                str += f"{class_.__dict__[attr].__doc__}\n"
+                str += f"{clean_doc_description(class_.__dict__[attr].__doc__)}\n"
+        str += "\n----\n\n"
     return str
 
 def update_readme_class_diagram(uml):
