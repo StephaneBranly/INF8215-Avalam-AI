@@ -2,8 +2,6 @@
 Generates mermaid code for all classes in a module
 """
 
-import sys
- 
 import os, sys
 currentdir = os.path.dirname(os.path.realpath(__file__))
 parentdir = os.path.dirname(currentdir)
@@ -11,6 +9,7 @@ sys.path.append(parentdir)
 
 import inspect
 from game import Agent
+from heuristic.heuristic import Heuristic
 import re 
 
 repo_path = "https://github.com/StephaneBranly/Avalam-AI"
@@ -29,18 +28,23 @@ def generate_class_uml(class_):
     str += f"""click {class_.__name__} href "{repo_path}/blob/main/doc/{class_.__name__}.md" "Detail of the class {class_.__name__}\"\n"""
     return str
 
-def generate_class_diagram(module):
-    stack = [module]
-
+def generate_class_diagram(modules):
+    stack = modules
+    visited = []
     uml = "classDiagram\n"
     while stack:
         class_ = stack.pop()
-        uml += generate_class_uml(class_)
-        class_documentation = generate_class_documentation(class_)
-        create_class_documentation(class_documentation, class_.__name__)
-        for subclass in class_.__subclasses__():
-            uml += f"{class_.__name__} <|-- {subclass.__name__}\n"
-            stack.append(subclass)
+
+        if class_.__name__ not in visited:
+            visited.append(class_.__name__)
+            uml += generate_class_uml(class_)
+            class_documentation = generate_class_documentation(class_)
+            create_class_documentation(class_documentation, class_.__name__)
+            for subclass in class_.__subclasses__():
+                uml += f"{class_.__name__} <|-- {subclass.__name__}\n"
+                stack.append(subclass)
+            for parentclass in class_.__bases__:
+                stack.append(parentclass)
 
     update_readme_class_diagram(uml)
 
@@ -79,4 +83,4 @@ def create_class_documentation(class_md, classname):
     f.close()
 
 if __name__ == "__main__":
-    generate_class_diagram(Agent)
+    generate_class_diagram([Agent, Heuristic])

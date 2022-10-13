@@ -41,6 +41,7 @@ from genetic_observation_NN_player import ObservationNN1actionAgent
 from heuristic_genetic_1_action_player import Heuristic1ActionAgent
 from heuristic_genetic_2_action_player import Heuristic2ActionAgent
 from monte_carlo_player import MonteCarloAgent
+from step_analyst_player import StepAnalystPlayer
 
 class TimeCreditExpired(Exception):
     """An agent has expired its time credit."""
@@ -353,12 +354,15 @@ class GameThread(threading.Thread):
         self.pool_id=pool_id
         self.nb_games_to_finish = nb_games_to_finish
         self.available_actions = []
+        self.credits = credits
+        self.winner = None
         threading.Thread.__init__(self)
 
     def run(self):
         self.play()
 
     def play(self):
+        winner = None
         try:
             while not self.board.is_finished():
                 self.step += 1
@@ -369,16 +373,25 @@ class GameThread(threading.Thread):
                     'rows': self.board.rows,
                     'max_height': self.board.max_height,
                 }
+                start = time.time()
                 if self.agents[agent].hasEvolved():
-                    action = self.agents[agent].play(board_dict, self.player, self.step, 0, self.game_id, self.pool_id)
+                    action = self.agents[agent].play(board_dict, self.player, self.step, self.credits[agent], self.game_id, self.pool_id)
                 else:
-                    action = self.agents[agent].play(board_dict, self.player, self.step, 0)
+                    action = self.agents[agent].play(board_dict, self.player, self.step, self.credits[agent])
+                end = time.time()
+                t = end - start
+                if self.credits[agent] != None:
+                    self.credits[agent] -= t
+                    if self.credits[agent] < -0.5:
+                        winner = -self.player
+                        break
                 self.board.play_action(action)
                 self.player = -self.player
         except e:
+            winner = -self.player
             pass
-        else:
-            reason = ""
+        reason = ""
+        if winner == None:
             winner = self.board.get_score()
             
         for i in range(2):
@@ -386,10 +399,11 @@ class GameThread(threading.Thread):
                 agents[i].finished(self.step, winner, reason, 1 if i==0 else -1, self.game_id, self.pool_id)
         register_history_available_actions(self.available_actions)
         self.nb_games_to_finish['nb'] -= 1
+        self.winner = winner
         print(f"Game progression: {int(100*(self.nb_games_to_finish['nb_games']-self.nb_games_to_finish['nb'])/self.nb_games_to_finish['nb_games'])}%\t\tPool progression: {progress_bar(self.pool_id, self.nb_games_to_finish['nb_pool'])}   ", end='\r')
            
     def get_scores(self):
-        return self.board.get_score()
+        return self.winner
 
     def get_steps(self):
         return self.step
@@ -540,7 +554,8 @@ if __name__ == "__main__":
            
             genetic_agent1.setup(None, None, paramsEvaluate1)
             genetic_agent2.setup(None, None, paramsEvaluate2)
-            agents = [genetic_agent1, genetic_agent2]
+            # agents = [MonteCarloAgent(), MonteCarloAgent()]
+            agents = [StepAnalystPlayer(MonteCarloAgent()), StepAnalystPlayer(MonteCarloAgent())]
             
         def compute_pool_results(history):
             winners=[-1 if score<0 else 1 if score>0 else 0 for score in history]
@@ -584,9 +599,9 @@ if __name__ == "__main__":
             
             if args.multithreading:
                 nb_games_to_finish = { 'nb': args.games, 'nb_games': args.games, 'nb_pool': args.pool }
-
                 threads = []
                 for i in range(args.games):
+                    credits = [args.time, args.time]
                     t = GameThread(agents, viewer, credits, i, p, nb_games_to_finish)
                     threads.append(t)
                     t.start()
@@ -598,6 +613,7 @@ if __name__ == "__main__":
             else:
                 for i in range(args.games):
                     board = Board()
+                    credits = [args.time, args.time]
                     game = Game(agents, board, viewer, credits, i, p)
 
                     if args.gui:

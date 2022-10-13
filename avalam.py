@@ -231,6 +231,10 @@ class ImprovedBoard(Board):
         """Return a clone of this object."""
         return ImprovedBoard(self.m, last_action=self.last_action.copy())
     
+    def get_hash(self):
+        """Return a hash of this object."""
+        return hash(str(self.m))
+
     def get_useful_towers(self):
         useful_towers = []
         for i in range(self.rows):

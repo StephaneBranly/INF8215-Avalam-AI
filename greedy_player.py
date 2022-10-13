@@ -23,12 +23,13 @@ from avalam import *
 
 class GreedyAgent(EvolvedAgent):
 
-    def __init__(self):
+    def __init__(self, probability=0.8):
 
-        self.probability = 0.8
+        self.probability = probability
     
     """A dumb random agent."""
-    def play(self, percepts, player, step, time_left, game_id=None, pool_id=None):        
+    def play(self, percepts, player, step, time_left, game_id=None, pool_id=None):       
+
         board = dict_to_board(percepts)
         actions = list(board.get_actions())
         # print('step', step, 'player', player, 'actions', len(actions))

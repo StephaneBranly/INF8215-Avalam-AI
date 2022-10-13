@@ -1,135 +1,67 @@
-import math
+from MCTS.MonteCarlo import MonteCarlo
+from MCTS.simulate_functions import greedy_play
 from avalam import *
-import random   
 import time
 
-class MonteCarloAgent(EvolvedAgent):
+class MonteCarloAgent(EvolvedAgent, MonteCarlo):
     def __init__(self):
-        self.c = math.sqrt(2)
+        self.games = {}
+        self.game_time_limit = None
+        self.step_time_to_play = [0.0,0.09799554565701558,0.10192195690157249,0.006124721603563479,0.0861968549796156,0.102728285077951,0.10745486313337216,0.08658129175946548,0.07629586488060569,0.04315144766146994,0.07542224810716365,0.03814031180400891,0.06086196854979614,0.08324053452115812,0.07920792079207921,0.06876391982182628,0.058823529411764684,0.07488864142538976,0.008736167734420491,0.004454342984409803,0.049213744903902144,0.07711581291759464,0.05241700640652301,0.01503340757238307,0.02242283051834597,0.07461024498886415,0.046010483401281305,0.07321826280623607,0.02853814793244029,0.06570155902004453,0.0378567268491555,0.005011135857461028,0.03581828771112405,0.0626391982182628,0.033488642981945246,0.012806236080178168,0.03523587652882935,0.006124721603563479,0.004076878276062888,0.0016703786191536762]
+        MonteCarlo.__init__(self, play_fn=greedy_play)
+        EvolvedAgent.__init__(self)
     
     """A monte carlo agent."""
     def play(self, percepts, player, step, time_left, game_id=None, pool_id=None): 
+        if time_left:
+            if step in [1,2]:
+                self.game_time_limit = time_left
+            #     time_to_play = -3
+            # else:
+            #     time_to_play = 0
+            time_to_play = self.step_time_to_play[step] * self.game_time_limit
+            # if player == -1:
+            time_to_play = self.game_time_limit / 18
+        print(f"Player {player} \t| step {step} \t| time to play {time_to_play}")
         board = dict_to_improved_board(percepts)
         start_time = time.time()
-        action = self.mcts(board, player, 5000)
-        print(f"Action: {action} for step {step} | Time: {time.time() - start_time}")
+
+        # if game_id not in self.games:
+        #     # case of first turn, we need to initialize the tree
+        #     self.games[game_id] = {
+        #         "board": board,
+        #         "tree": self.node_dict(player=player),
+        #         # "tree": self.load_tree()
+        #     }
+        #     # if step==2:
+        #     #     # if we play second, we need to play the first action in the tree to have the right tree
+        #     #     new_tree, _ = self.go_down_tree(self.games[game_id]["tree"], ImprovedBoard(), board)
+        #     #     self.games[game_id]['tree'] = new_tree
+        # else:        
+        #     new_tree, action_made = self.go_down_tree(self.games[game_id]["tree"], self.games[game_id]["board"], board)
+        #     # print(f"\tOpponent has player action {action_made}\t| Saved {new_tree['n']} iterations")
+        #     self.games[game_id]['tree'] = new_tree
+
+        # self.games[game_id]['tree']['action_made'] = None
+
+        # We compute the time we have to play
+        
+        # else:
+
+        action, iterations, new_tree, new_board = self.mcts(board.clone(), player, step, time_limit=time_to_play) # , tree=self.games[game_id]['tree']
+        # self.games[game_id]['tree'] = new_tree
+        # self.games[game_id]['board'] = new_board
+        # Time left: {time_left-time.time() + start_time}\t
+        # print(f"| Action: {action} for step {step} \t| Time: {time.time() - start_time}\t| Iterations: {iterations}")
         return action
 
-    def tree_to_mermaid(self, state):
-        """Return a mermaid graph of the tree."""
-        mermaid = "graph TD\n"
-        mermaid += self.tree_to_mermaid_rec(state)
-        return mermaid
-
-    def tree_to_mermaid_rec(self, state):
-        """Return a mermaid graph of the tree."""
-        mermaid = ""
-        id_ = 0
-        stack = [(state, 0, id_)]
-
-        while len(stack):
-            current = stack.pop()
-           
-            for child in current[0]["childs"]:
-                if child["n"] != 0:
-                    id_ += 1
-                    child_state = (child, current[1] + 1, id_)
-
-                    mermaid += f"{self.state_to_string(current)} -->|{','.join([str(a) for a in child['action_made']])}| {self.state_to_string(child_state)}\n"
-                    stack.append(child_state)
-        return mermaid
-
-    def state_to_string(self, state):
-        """Return a string representing the state."""
-        return f"id{state[2]}((u = {str(state[0]['u'])} n = {str(state[0]['n'])}))"
-
-    def mcts(self, board, player, iterations=300):
-        tree = self.node_dict()
-        start = time.time()
-        while time.time()-start <= 40:
-            n_leaf = self.select(tree, board)
-            n_child = self.expand(n_leaf, board)
-            if n_child is None:
-                with open("tree.mermaid", "w") as f:
-                    f.write(self.tree_to_mermaid(tree))
-                return self.best_action(tree)
-            v = self.simulate(board, player)
-            self.backpropagate(v, n_child, board)
-        return self.best_action(tree)
-    
-    def node_dict(self, parent=None, action_made=None):
-        """Return a dictionary representing a node in the tree."""
-        return { "u": 0, "n": 0, "childs": [], "parent": parent, "action_made": action_made }
-
-    def select(self, state, board):
-        """Select the best node to expand. The board is updated to the state of the node."""
-        if state['action_made']:
-            board.play_action(state["action_made"])
-
-        # If node is leaf, return it
-        if not len(state["childs"]):
-            return state
-
-        # Else, select the best child
-        best_score, best_child = -math.inf, None
-        for child in state["childs"]:
-            if child["n"] == 0:
-                return self.select(child, board)
-
-            # Calculate the score of the child
-            score = self.uct_score(child)
-            if score > best_score:
-                best_score, best_child = score, child
-        return self.select(best_child, board)
-
-    def expand(self, n_leaf, board):
-        """Expand the leaf node n_leaf. The board is updated to the state of the child node."""
-        if board.is_finished():
-            return n_leaf
-        actions = list(board.get_actions())
-        n_child = None
-        for a in actions:
-            n_child = self.node_dict(n_leaf, a)
-            n_leaf["childs"].append(n_child)
-        if n_child:
-            board.play_action(n_child['action_made'])
-        return n_child
-
-    def simulate(self, board, player):
-        """Simulate a game from the current state of the board. Return the score of the player. The board is updated to the state of the end of the game."""
-        while not board.is_finished():
-            actions = list(board.get_actions())
-            board.play_action(random.choice(actions))
-        return board.get_score() * player
-
-    def backpropagate(self, v, n_child, board):
-        """Backpropagate the value v to the root of the tree."""
-        current_node = n_child
-        while current_node:
-            current_node["n"] += 1
-            current_node["u"] += v
-            current_node = current_node["parent"]
-        board.undo_all_actions()
-        return current_node
-
-    def best_action(self, state):
-        """Return the best action to play from the current state."""
-        best_score, best_action = -math.inf, None
-        for child in state["childs"]:
-            score = self.uct_score(child)
-            if score > best_score:
-                best_score, best_action = score, child['action_made']
-        return best_action
-
-    def uct_score(self, node):
-        """Return the UCT score of the node."""
-        if node["n"] == 0:
-            return -math.inf
-        return node["u"] + self.c * math.sqrt(math.log(node['parent']["n"]) / node["n"])
-
+    def pool_ended(self, pool_results, player, pool_id=None):
+        self.games = {}
+        return super().pool_ended(pool_results, player, pool_id)
 
     def get_agent_id(self):
         return "Monte Carlo Agent"
 
 if __name__ == "__main__":
     agent_main(MonteCarloAgent())
+
