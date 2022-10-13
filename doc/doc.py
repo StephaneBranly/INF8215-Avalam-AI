@@ -2,8 +2,6 @@
 Generates mermaid code for all classes in a module
 """
 
-import sys
- 
 import os, sys
 currentdir = os.path.dirname(os.path.realpath(__file__))
 parentdir = os.path.dirname(currentdir)
@@ -31,16 +29,21 @@ def generate_class_uml(class_):
 
 def generate_class_diagram(module):
     stack = [module]
-
+    visited = []
     uml = "classDiagram\n"
     while stack:
         class_ = stack.pop()
-        uml += generate_class_uml(class_)
-        class_documentation = generate_class_documentation(class_)
-        create_class_documentation(class_documentation, class_.__name__)
-        for subclass in class_.__subclasses__():
-            uml += f"{class_.__name__} <|-- {subclass.__name__}\n"
-            stack.append(subclass)
+
+        if class_.__name__ not in visited:
+            visited.append(class_.__name__)
+            uml += generate_class_uml(class_)
+            class_documentation = generate_class_documentation(class_)
+            create_class_documentation(class_documentation, class_.__name__)
+            for subclass in class_.__subclasses__():
+                uml += f"{class_.__name__} <|-- {subclass.__name__}\n"
+                stack.append(subclass)
+            for parentclass in class_.__bases__:
+                stack.append(parentclass)
 
     update_readme_class_diagram(uml)
 
