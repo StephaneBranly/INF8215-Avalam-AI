@@ -4,7 +4,8 @@ import numpy as np
 import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
-
+import imageio
+import os
 def generate_scores_fig(df):
     length = df.shape[0]
     fig = plt.figure(figsize=(20, df.shape[0]+2))
@@ -104,6 +105,71 @@ def generate_summary_file(path=''):
         fig3 = generate_win_rate_fig(pool_df)
         pdf.savefig(fig3)
 
+def generate_board_fig(board, step, player, action, scores, pool, game, players):
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 14), gridspec_kw={'height_ratios': [2, 1]})
+    fig.suptitle(f"Pool {pool} | Game {game}", fontsize=16)
+    mask = np.array([ [ True,  True,  False, False,  True,  True,  True,  True,  True],
+                        [ True,  False, False,  False, False,  True,  True,  True,  True],
+                        [ True, False,  False, False,  False, False,  False,  True,  True],
+                        [ True,  False, False,  False, False,  False, False,  False, False],
+                        [ False, False,  False, False,  True, False,  False, False,  False],
+                        [False,  False, False,  False, False,  False, False,  False,  True],
+                        [ True,  True,  False, False,  False, False,  False, False,  True],
+                        [ True,  True,  True,  True, False,  False, False,  False,  True],
+                        [ True,  True,  True,  True,  True, False,  False,  True,  True] ])
+
+    sns.heatmap(board, annot=True, cmap='coolwarm', cbar=False, linewidths=1, linecolor='black', square=True, mask=mask, vmin=-5, vmax=5, ax=ax1, annot_kws={"size": 20})
+    step_to_display = f" {step}" if step < 10 else f"{step}"
+    player_to_display = f" {player}" if player == 1 else f"{player}"
+    ax1.set_title(f"Step {step_to_display} | Player {player_to_display} | Action {action}")
+    ax1.arrow(y=action[0]+.5, x=action[1]+.5, dy=action[2]-action[0], dx=action[3]-action[1], color='red' if player==1 else 'blue', head_width=.4, head_length=.4, length_includes_head=True)
+    xs = range(len(scores))
+    positive = [True if x > 0 else False for x in scores]
+    negative = [False if x > 0 else True for x in scores]
+    sns.lineplot(x=xs, y=scores, ax=ax2, marker='o', color='grey', linewidth=1)
+    ax2.fill_between(xs, scores, where=positive, interpolate=True, color='red')
+    ax2.fill_between(xs, scores, where=negative, interpolate=True, color='blue')
+    rect_p1=mpatches.Rectangle((0,0),40,20, alpha=0.1,facecolor="red")
+    rect_m1=mpatches.Rectangle((0,-20),40,20, alpha=0.1,facecolor="blue")
+    plt.gca().add_patch(rect_p1)
+    plt.gca().add_patch(rect_m1)
+    ax2.set_xlim((0,40))
+    ax2.set_ylim((-20,20))
+    ax2.set_title('Score evolution')
+    ax2.set_xticks(range(40))
+    ax2.set_xticklabels(range(40), rotation=90)
+    ax2.set_yticks(np.arange(-20, 22, 2))
+    ax2.set_xlabel('Step')
+    ax2.set_ylabel('Score')
+    ax2.text(step+0.4, scores[-1]+0.2, f"{scores[-1]}", fontsize = 14, color='black', ha='center')
+    ax2.add_line(plt.axhline(y=0, color='grey', linestyle='--'))
+    ax2.add_line(plt.axvline(x=step, color='grey', linestyle='--'))
+    ax2.text(39, 19, str(players[0]), color='red', ha="right", va="top", fontsize=14)
+    ax2.text(39, -19, str(players[1]), color='blue', ha="right", va="bottom", fontsize=14)
+    return fig
+
+def generate_board_history_fig(board, history, players, path='', pool_id=0, game_id=0):
+    filenames = []
+    scores = [0]
+    player = 1
+    for i, action in enumerate(history):
+        board.play_action(action)
+        scores.append(board.get_score())
+        fig = generate_board_fig(board.m, i+1, player, action, scores, pool_id, game_id, players)
+        filename = f"{path}gif/board_history_{i}_{pool_id}_{game_id}.png"
+        plt.savefig(filename, fig=fig)
+        player = -player
+        filenames.append(filename)
+        plt.clf()
+        plt.close()
+
+    with imageio.get_writer(f"{path}gif/game_history_p{pool_id}_g{game_id}.gif", mode='I', fps=3) as writer:
+        for filename in filenames:
+            image = imageio.imread(filename)
+            writer.append_data(image)
+    # Remove files
+    for filename in set(filenames):
+        os.remove(filename)
 
 if __name__ == '__main__':
     generate_summary_file()
