@@ -2,5 +2,11 @@
 Back to [readme menu](../README.md)
 
 ## Attributes
-### evaluate(board,player,action)
-### interprete_params()
+### ```evaluate(board,player,action)```
+
+----
+
+### ```interprete_params()```
+
+----
+

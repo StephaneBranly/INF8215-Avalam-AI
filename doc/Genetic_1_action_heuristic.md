@@ -2,5 +2,11 @@
 Back to [readme menu](../README.md)
 
 ## Attributes
-### evaluate(board,player,action)
-### get_default_agent()
+### ```evaluate(board,player,action)```
+
+----
+
+### ```get_default_agent()```
+
+----
+
