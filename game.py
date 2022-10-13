@@ -27,11 +27,12 @@ import xmlrpc.client
 import pickle
 import subprocess
 import threading
+from MCTS.simulate_functions import one_action_heuristic, random_play
 
 from avalam import *
 
 
-from stats.stats import generate_summary_file
+from stats.stats import generate_board_history_fig, generate_summary_file
 
 # Agent classes for multithreading
 from greedy_player import GreedyAgent
@@ -167,7 +168,7 @@ class Trace:
 
         """
         self.time_limits = [t for t in time_limits]
-        self.initial_board = board.clone()
+        self.initial_board = board
         self.actions = []
         self.winner = 0
         self.reason = ""
@@ -227,7 +228,7 @@ class Game:
 
         """
         self.agents = agents
-        self.board = board
+        self.board = board.clone()
         self.viewer = viewer if viewer is not None else Viewer()
         self.credits = credits
         self.step = 0
@@ -252,8 +253,13 @@ class Game:
                 logging.debug("Asking player %d to play step %d",
                               self.player, self.step)
                 self.viewer.playing(self.step, self.player)
+                board_dict = {
+                    'm': self.board.m,
+                    'rows': self.board.rows,
+                    'max_height': self.board.max_height,
+                }
                 action, t = self.timed_exec("play",
-                                            self.board,
+                                            board_dict,
                                             self.player,
                                             self.step)
                 
@@ -354,6 +360,7 @@ class GameThread(threading.Thread):
         self.pool_id=pool_id
         self.nb_games_to_finish = nb_games_to_finish
         self.available_actions = []
+        self.action_history = []
         self.credits = credits
         self.winner = None
         threading.Thread.__init__(self)
@@ -386,6 +393,7 @@ class GameThread(threading.Thread):
                         winner = -self.player
                         break
                 self.board.play_action(action)
+                self.action_history.append(action)
                 self.player = -self.player
         except e:
             winner = -self.player
@@ -408,6 +416,12 @@ class GameThread(threading.Thread):
     def get_steps(self):
         return self.step
 
+    def get_history(self):
+        return self.action_history
+
+    def get_id(self):
+        return self.game_id
+
 if __name__ == "__main__":
     import argparse
 
@@ -421,11 +435,11 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         usage="%(prog)s [options] AGENT1 AGENT2\n" +
               "       %(prog)s [options] -r FILE")
-    parser.add_argument("agent1", nargs='?', default='human',
+    parser.add_argument("agent1", nargs='?', default=None,
                         help="path to the first agent (Player 1) or" +
                              " keyword 'human' (default: human)",
                         metavar="AGENT1")
-    parser.add_argument("agent2", nargs='?', default='human',
+    parser.add_argument("agent2", nargs='?', default=None,
                         help="path to the second agent (Player 2) or" +
                              " keyword 'human' (default: human)",
                         metavar="AGENT2")
@@ -438,6 +452,8 @@ if __name__ == "__main__":
                         metavar="N")
     parser.add_argument("-S", "--stats", action="store_true", default=False,
                         help="store stats about winners")
+    parser.add_argument("-f", "--gif", action="store_true", default=False,
+                        help="generate gifs of the games")
     parser.add_argument("-G", "--games", type=int, default=1,
                         help="repeat the game N times in each pool (default: 1)",
                         metavar="N")
@@ -522,43 +538,57 @@ if __name__ == "__main__":
         # Normal play mode
         credits = [None, None]
         agents = []
-        if not args.multithreading:
-            agents = [args.agent1, args.agent2]
-            for i in range(2):
-                if agents[i] == 'human':
-                    agents[i] = viewer
-                else:
-                    agents[i] = connect_agent(agents[i])
-                    credits[i] = args.time
-        else:
-            genetic_agent1 = Heuristic2ActionAgent()
-            genetic_agent2 = Heuristic2ActionAgent()
-            paramsTrain = {
-                'individu': 10,
-                'generation': 0,
-                'mode': "train",
-                'save': "NN_MT10",
-                'rate': 2,
-                'keep': 30,
-            }
-            paramsEvaluate1 = {
-                "mode": "evaluate",
-                "save": "NN_MT_2A",
-                "generation": 6,
-            }
-            paramsEvaluate2 = {
-                "mode": "evaluate",
-                "save": "NN_MT_2A",
-                "generation": 6,
-            }
-           
-            genetic_agent1.setup(None, None, paramsEvaluate1)
-            genetic_agent2.setup(None, None, paramsEvaluate2)
-            # agents = [MonteCarloAgent(), MonteCarloAgent()]
-            agents = [StepAnalystPlayer(MonteCarloAgent()), StepAnalystPlayer(MonteCarloAgent())]
-            
+        agents = [args.agent1, args.agent2]
+        for i in range(2):
+            if agents[i] == 'human':
+                agents[i] = viewer
+            elif agents[i] != None:
+                agents[i] = connect_agent(agents[i])
+                credits[i] = args.time
+            else:
+                agents[i] = RandomAgent()
+
+        genetic_agent1 = Heuristic2ActionAgent()
+        genetic_agent2 = Heuristic2ActionAgent()
+        paramsTrain = {
+            'individu': 10,
+            'generation': 0,
+            'mode': "train",
+            'save': "NN_MT10",
+            'rate': 2,
+            'keep': 30,
+        }
+        paramsEvaluate1 = {
+            "mode": "evaluate",
+            "save": "NN_MT_2A",
+            "generation": 6,
+        }
+        paramsEvaluate2 = {
+            "mode": "evaluate",
+            "save": "NN_MT_2A",
+            "generation": 6,
+        }
+        
+        genetic_agent1.setup(None, None, paramsEvaluate1)
+        genetic_agent2.setup(None, None, paramsEvaluate2)
+        agents = [MonteCarloAgent(), MonteCarloAgent()]
+        agents = [StepAnalystPlayer(MonteCarloAgent()), StepAnalystPlayer(MonteCarloAgent())]        
+
+        def get_agent_names():
+            if agents[0].hasEvolved():
+                agent_p1 = agents[0].get_agent_id()
+            else:
+                agent_p1 = "Agent +1"
+            if agents[1].hasEvolved():
+                agent_m1 = agents[1].get_agent_id()
+            else:
+                agent_m1 = "Agent -1"
+            return [agent_p1, agent_m1]
+
         def compute_pool_results(history):
             winners=[-1 if score<0 else 1 if score>0 else 0 for score in history]
+            if len(winners) == 0:
+                return [0, 0, 0]
             return [winners.count(-1)/len(winners),winners.count(0)/len(winners),winners.count(1)/len(winners)]
 
         def play(game):
@@ -579,6 +609,9 @@ if __name__ == "__main__":
                 viewer.replay(game.trace, args.speed, show_end=True)
             game_history['scores'].append(game.trace.winner)
             game_history['steps'].append(game.step)
+            if args.gif:
+                actions_history = [a[1] for a in game.trace.actions]
+                generate_board_history_fig(ImprovedBoard(), actions_history, get_agent_names(), "stats/", p, game.game_id)
 
         def progress_bar(i, n):
             return"[%-20s] %d%%" % ('='*int(20*i/n), 100*i/n)
@@ -610,6 +643,17 @@ if __name__ == "__main__":
                 for t in threads:
                     game_history['scores'].append(t.get_scores())
                     game_history['steps'].append(t.get_steps())
+                    if args.gif:
+                        if agents[0].hasEvolved():
+                            agent_p1 = agents[0].get_agent_id()
+                        else:
+                            agent_p1 = "Agent +1"
+                        if agents[1].hasEvolved():
+                            agent_m1 = agents[1].get_agent_id()
+                        else:
+                            agent_m1 = "Agent -1"
+                        generate_board_history_fig(ImprovedBoard(), t.get_history(), get_agent_names(), "stats/", p, t.get_id())
+
             else:
                 for i in range(args.games):
                     board = Board()
@@ -625,14 +669,7 @@ if __name__ == "__main__":
                 pool_results = compute_pool_results(game_history['scores'])
                 pool_history.append(pool_results)
                 if args.stats:
-                    if agents[0].hasEvolved():
-                        agent_p1 = agents[0].get_agent_id()
-                    else:
-                        agent_p1 = "Agent +1"
-                    if agents[1].hasEvolved():
-                        agent_m1 = agents[1].get_agent_id()
-                    else:
-                        agent_m1 = "Agent -1"
+                    [agent_p1, agent_m1] = get_agent_names()
                     f = open("stats/game_results.csv", "a")
                     f.write(f"{p};{agent_m1};{agent_p1};{game_history['scores']};{game_history['steps']}\n")
                     f.close()
