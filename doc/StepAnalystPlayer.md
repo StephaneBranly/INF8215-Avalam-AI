@@ -1,4 +1,4 @@
-# MonteCarloAgent
+# StepAnalystPlayer
 Back to [readme menu](../README.md)
 
 ## Attributes
