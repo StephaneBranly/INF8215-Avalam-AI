@@ -44,7 +44,8 @@ def generate_class_diagram(modules):
                 uml += f"{class_.__name__} <|-- {subclass.__name__}\n"
                 stack.append(subclass)
             for parentclass in class_.__bases__:
-                stack.append(parentclass)
+                if parentclass.__name__ != "object":
+                    stack.append(parentclass)
 
     update_readme_class_diagram(uml)
 
