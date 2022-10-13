@@ -1,4 +1,2 @@
 Pool id;Agent -1;Agent 1;Pct Agent -1;Pct Draw;Pct Agent 1
-0;Random Agent;Monte Carlo Agent;1.0;0.0;0.0
-1;Random Agent;Monte Carlo Agent;1.0;0.0;0.0
-2;Random Agent;Monte Carlo Agent;1.0;0.0;0.0
+0;Step Analyst Player 0 | False;Step Analyst Player 0 | True;1.0;0.0;0.0

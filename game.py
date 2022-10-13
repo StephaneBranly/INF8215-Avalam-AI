@@ -27,6 +27,7 @@ import xmlrpc.client
 import pickle
 import subprocess
 import threading
+from MCTS.simulate_functions import one_action_heuristic, random_play
 
 from avalam import *
 
@@ -570,21 +571,19 @@ if __name__ == "__main__":
         
         genetic_agent1.setup(None, None, paramsEvaluate1)
         genetic_agent2.setup(None, None, paramsEvaluate2)
-        agents = [MonteCarloAgent(), RandomAgent()]
-        # agents = [StepAnalystPlayer(), StepAnalystPlayer()]
+        agents = [MonteCarloAgent(), MonteCarloAgent()]
+        agents = [StepAnalystPlayer(MonteCarloAgent()), StepAnalystPlayer(MonteCarloAgent())]        
 
-
-
-
-        if agents[0].hasEvolved():
-            agent_p1 = agents[0].get_agent_id()
-        else:
-            agent_p1 = "Agent +1"
-        if agents[1].hasEvolved():
-            agent_m1 = agents[1].get_agent_id()
-        else:
-            agent_m1 = "Agent -1"
-        agent_names = [agent_p1, agent_m1]
+        def get_agent_names():
+            if agents[0].hasEvolved():
+                agent_p1 = agents[0].get_agent_id()
+            else:
+                agent_p1 = "Agent +1"
+            if agents[1].hasEvolved():
+                agent_m1 = agents[1].get_agent_id()
+            else:
+                agent_m1 = "Agent -1"
+            return [agent_p1, agent_m1]
 
         def compute_pool_results(history):
             winners=[-1 if score<0 else 1 if score>0 else 0 for score in history]
@@ -612,7 +611,7 @@ if __name__ == "__main__":
             game_history['steps'].append(game.step)
             if args.gif:
                 actions_history = [a[1] for a in game.trace.actions]
-                generate_board_history_fig(ImprovedBoard(), actions_history, agent_names, "stats/", p, game.game_id)
+                generate_board_history_fig(ImprovedBoard(), actions_history, get_agent_names(), "stats/", p, game.game_id)
 
         def progress_bar(i, n):
             return"[%-20s] %d%%" % ('='*int(20*i/n), 100*i/n)
@@ -653,7 +652,7 @@ if __name__ == "__main__":
                             agent_m1 = agents[1].get_agent_id()
                         else:
                             agent_m1 = "Agent -1"
-                        generate_board_history_fig(ImprovedBoard(), t.get_history(), agent_names, "stats/", p, t.get_id())
+                        generate_board_history_fig(ImprovedBoard(), t.get_history(), get_agent_names(), "stats/", p, t.get_id())
 
             else:
                 for i in range(args.games):
@@ -670,6 +669,7 @@ if __name__ == "__main__":
                 pool_results = compute_pool_results(game_history['scores'])
                 pool_history.append(pool_results)
                 if args.stats:
+                    [agent_p1, agent_m1] = get_agent_names()
                     f = open("stats/game_results.csv", "a")
                     f.write(f"{p};{agent_m1};{agent_p1};{game_history['scores']};{game_history['steps']}\n")
                     f.close()
