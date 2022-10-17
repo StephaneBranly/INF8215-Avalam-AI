@@ -48,7 +48,11 @@ class GeneticHeuristic(Heuristic):
     def mutate(self,mutation_rate):
         for i in range(len(self._parameters)):
             if random.random() < mutation_rate:
-                self._parameters[i] *= random.uniform(-1,1)
+                self._parameters[i] += random.uniform(-1,1)
+                if self._parameters[i] > 1:
+                    self._parameters[i] = 1
+                elif self._parameters[i] < -1:
+                    self._parameters[i] = -1
 
     def crossover(self,other):
         new_parameters = []
