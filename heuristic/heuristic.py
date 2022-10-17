@@ -121,8 +121,7 @@ class Genetic_single_loop_heuristic(Genetic_heuristic):
 
     def evaluate(self,board,player):
         score = 0
-        for i in range(9):
-            for j in range(9):
+        for (i,j) in board.get_real_board():
                 for k in range(len(self._functions)):
                     score += self._parameters[k]*self._functions[k](board,player,i,j)
         for i in range(len(self._functions),len(self._whole_board_functions)+len(self._functions)):

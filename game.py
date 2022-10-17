@@ -517,8 +517,8 @@ if __name__ == "__main__":
                     agents[i] = connect_agent(agents[i])
                     credits[i] = args.time
         else:
-            genetic_agent1 = Heuristic2ActionAgent()
-            genetic_agent2 = Heuristic2ActionAgent()
+            genetic_agent1 = Heuristic1ActionAgent()
+            genetic_agent2 = Heuristic2ActionAgent(only_useful=False)
             paramsTrain = {
                 'individu': 10,
                 'generation': 0,
@@ -529,8 +529,8 @@ if __name__ == "__main__":
             }
             paramsEvaluate1 = {
                 "mode": "evaluate",
-                "save": "NN_MT_2A",
-                "generation": 6,
+                "save": "NN_MT5",
+                "generation": 5,
             }
             paramsEvaluate2 = {
                 "mode": "evaluate",

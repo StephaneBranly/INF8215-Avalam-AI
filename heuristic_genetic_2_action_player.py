@@ -53,7 +53,7 @@ class Heuristic2ActionAgent(GeneticAgent):
             explored += 1
 
 
-            if depth==max_depth or time.time()-start > 30:
+            if depth==max_depth :#or time.time()-start > 3000000:
                 return (agent.evaluate(current_board, player),None)
             if(step+depth > 20 and len([a for a in current_board.get_actions()])==0):
                 return (current_board.get_score()*player*1000,None)
@@ -107,7 +107,7 @@ class Heuristic2ActionAgent(GeneticAgent):
             nonlocal hashReduced
             nonlocal transposition
             explored += 1
-            if depth==max_depth or time.time()-start > 30:
+            if depth==max_depth :#or time.time()-start > 3000:
                 return (agent.evaluate(current_board, player),None)
             if(step+depth > 20 and len([a for a in current_board.get_actions()])==0):
                 
@@ -155,7 +155,7 @@ class Heuristic2ActionAgent(GeneticAgent):
         board = dict_to_improved_board(percepts)
         init_board = dict_to_improved_board(percepts)
 
-        max_depth = 3
+        max_depth = 5
         
 
         v , m = max_value(board, init_board, agent, player, -math.inf, math.inf, 0, max_depth)
