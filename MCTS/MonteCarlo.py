@@ -118,7 +118,7 @@ class MonteCarlo:
         """Return the best action to play from the current state."""
         best_score, best_action = -math.inf, None
         for child in state["childs"]:
-            score = self.node_score_fn(child)
+            score = child['n']
             if score > best_score:
                 best_score, best_action = score, child['action_made']
         return best_action

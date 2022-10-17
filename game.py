@@ -571,7 +571,7 @@ if __name__ == "__main__":
         
         genetic_agent1.setup(None, None, paramsEvaluate1)
         genetic_agent2.setup(None, None, paramsEvaluate2)
-        agents = [genetic_agent1, MonteCarloAgent()]
+        # agents = [genetic_agent1, MonteCarloAgent()]
         # agents = [StepAnalystPlayer(MonteCarloAgent()), StepAnalystPlayer(MonteCarloAgent())]        
 
         def get_agent_names():
