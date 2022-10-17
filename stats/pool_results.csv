@@ -1,2 +1,2 @@
 Pool id;Agent -1;Agent 1;Pct Agent -1;Pct Draw;Pct Agent 1
-0;Step Analyst Player 0 | False;Step Analyst Player 0 | True;1.0;0.0;0.0
+0;Monte Carlo Agent | greedy_play;Genetic Agent #6 gen2 NN_MT10;0.0;0.0;1.0

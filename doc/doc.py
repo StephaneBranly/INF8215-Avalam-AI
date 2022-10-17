@@ -3,13 +3,15 @@ Generates mermaid code for all classes in a module
 """
 
 import os, sys
+
 currentdir = os.path.dirname(os.path.realpath(__file__))
 parentdir = os.path.dirname(currentdir)
 sys.path.append(parentdir)
 
 import inspect
 from game import Agent
-from heuristic.heuristic import Heuristic
+from avalam import ImprovedBoard
+from heuristic.Heuristic import Heuristic
 import re 
 
 repo_path = "https://github.com/StephaneBranly/Avalam-AI"
@@ -92,4 +94,4 @@ def create_class_documentation(class_md, classname):
     f.close()
 
 if __name__ == "__main__":
-    generate_class_diagram([Agent, Heuristic])
+    generate_class_diagram([Agent, Heuristic, ImprovedBoard])

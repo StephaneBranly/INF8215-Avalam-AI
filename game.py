@@ -27,6 +27,7 @@ import xmlrpc.client
 import pickle
 import subprocess
 import threading
+from MCTS.MonteCarlo import MonteCarlo
 from MCTS.simulate_functions import one_action_heuristic, random_play
 
 from avalam import *
@@ -37,7 +38,6 @@ from stats.stats import generate_board_history_fig, generate_summary_file
 # Agent classes for multithreading
 from greedy_player import GreedyAgent
 from random_player import RandomAgent
-from genetic_player import GeneticAgent
 from genetic_observation_NN_player import ObservationNN1actionAgent
 from heuristic_genetic_1_action_player import Heuristic1ActionAgent
 from heuristic_genetic_2_action_player import Heuristic2ActionAgent
@@ -548,7 +548,7 @@ if __name__ == "__main__":
             else:
                 agents[i] = RandomAgent()
 
-        genetic_agent1 = Heuristic2ActionAgent()
+        genetic_agent1 = Heuristic1ActionAgent()
         genetic_agent2 = Heuristic2ActionAgent()
         paramsTrain = {
             'individu': 10,
@@ -560,8 +560,8 @@ if __name__ == "__main__":
         }
         paramsEvaluate1 = {
             "mode": "evaluate",
-            "save": "NN_MT_2A",
-            "generation": 6,
+            "save": "NN_MT10",
+            "generation": 2,
         }
         paramsEvaluate2 = {
             "mode": "evaluate",
@@ -571,8 +571,8 @@ if __name__ == "__main__":
         
         genetic_agent1.setup(None, None, paramsEvaluate1)
         genetic_agent2.setup(None, None, paramsEvaluate2)
-        agents = [MonteCarloAgent(), MonteCarloAgent()]
-        agents = [StepAnalystPlayer(MonteCarloAgent()), StepAnalystPlayer(MonteCarloAgent())]        
+        agents = [genetic_agent1, MonteCarloAgent()]
+        # agents = [StepAnalystPlayer(MonteCarloAgent()), StepAnalystPlayer(MonteCarloAgent())]        
 
         def get_agent_names():
             if agents[0].hasEvolved():

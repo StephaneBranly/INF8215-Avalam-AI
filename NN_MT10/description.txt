@@ -1,0 +1,5 @@
+Class     : Heuristic1ActionAgent
+Heuristic : Genetic1Action
+Individu  : 10
+Keep      : 30
+Mutation  : 2

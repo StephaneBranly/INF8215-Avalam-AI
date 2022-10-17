@@ -1,9 +1,9 @@
 import math
 import time
-from heuristic.observation_function import finish_tower, isolate_tower, ennemy_isolate_tower, use_token, cover_token, create_tower4, create_tower3, create_tower2
+from heuristic.GeneticSingleLoop import GeneticSingleLoop
 from avalam import *
 from genetic_player import GeneticAgent
-from heuristic.heuristic import *
+from heuristic.Heuristic import *
 from matplotlib.backends.backend_pdf import PdfPages
 import numpy as np
 
@@ -163,20 +163,16 @@ class Heuristic2ActionAgent(GeneticAgent):
 
         return m
 
-
-    def default_agent(self):
-        return Genetic_single_loop_heuristic()
-
     def generate_stats_file(self):
         dfs = generate_dataframes(self.save_path)
         with PdfPages(f"{self.save_path}/stats.pdf") as pdf:
             fig = generate_header_page(self.save_path)
             pdf.savefig(fig)
             for param in range(len(dfs)):
-                if len(self.default_agent().interprete_params()) <= param:
+                if len(self.default_heuristic().interprete_params()) <= param:
                     function_name = None
                 else:
-                    function_name = self.default_agent().interprete_params()[param]
+                    function_name = self.default_heuristic().interprete_params()[param]
                 fig = plot_param_evolution(dfs, param, function_name)
                 pdf.savefig(fig)
 
