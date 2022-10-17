@@ -548,13 +548,13 @@ if __name__ == "__main__":
             else:
                 agents[i] = RandomAgent()
 
-        genetic_agent1 = Heuristic2ActionAgent()
+        genetic_agent1 = Heuristic1ActionAgent()
         genetic_agent2 = Heuristic2ActionAgent()
         paramsTrain = {
             'individu': 10,
             'generation': 0,
             'mode': "train",
-            'save': "NN_MT10",
+            'save': "MCTS",
             'rate': 2,
             'keep': 30,
         }
@@ -569,10 +569,10 @@ if __name__ == "__main__":
             "generation": 6,
         }
         
-        genetic_agent1.setup(None, None, paramsEvaluate1)
+        genetic_agent1.setup(None, None, paramsTrain)
         genetic_agent2.setup(None, None, paramsEvaluate2)
-        agents = [MonteCarloAgent(), MonteCarloAgent()]
-        agents = [StepAnalystPlayer(MonteCarloAgent()), StepAnalystPlayer(MonteCarloAgent())]        
+        agents = [genetic_agent1, genetic_agent1]
+        # agents = [StepAnalystPlayer(MonteCarloAgent()), StepAnalystPlayer(MonteCarloAgent())]        
 
         def get_agent_names():
             if agents[0].hasEvolved():

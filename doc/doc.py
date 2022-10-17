@@ -9,6 +9,7 @@ sys.path.append(parentdir)
 
 import inspect
 from game import Agent
+from avalam import ImprovedBoard
 from heuristic.heuristic import Heuristic
 import re 
 
@@ -92,4 +93,4 @@ def create_class_documentation(class_md, classname):
     f.close()
 
 if __name__ == "__main__":
-    generate_class_diagram([Agent, Heuristic])
+    generate_class_diagram([Agent, Heuristic, ImprovedBoard])

@@ -125,8 +125,8 @@ class Genetic_single_loop_heuristic(Genetic_heuristic):
             for j in range(9):
                 for k in range(len(self._functions)):
                     score += self._parameters[k]*self._functions[k](board,player,i,j)
-        for i in range(len(self._functions),len(self._whole_board_functions)+len(self._functions)):
-            score += self._parameters[i]*self._whole_board_functions[i-len(self._parameters)]([board,board],player,(0,0))
+        # for i in range(len(self._functions),len(self._whole_board_functions)+len(self._functions)):
+        #     score += self._parameters[i]*self._whole_board_functions[i-len(self._parameters)]([board,board],player,(0,0))
         return score
 
     def get_default_agent(self):

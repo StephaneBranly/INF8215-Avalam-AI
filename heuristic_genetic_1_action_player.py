@@ -1,6 +1,7 @@
+from MCTS.observation_function_mcts import *
 from avalam import *
 from genetic_player import GeneticAgent
-from heuristic.heuristic import Genetic_1_action_heuristic
+from heuristic.heuristic import Genetic_1_action_heuristic, Genetic_single_loop_heuristic
 from matplotlib.backends.backend_pdf import PdfPages
 
 from heuristic.stats import generate_dataframes, generate_header_page, plot_param_evolution 
@@ -10,12 +11,14 @@ class Heuristic1ActionAgent(GeneticAgent):
         """
         here define the action of your agent
         """
-        board = dict_to_board(percepts)
+        board = dict_to_improved_board(percepts)
         best_action = ()
         best_score = -99999999
 
         for action in board.get_actions():
-            current_score = agent.evaluate(board, player, action)
+            board.play_action(action)
+            current_score = agent.evaluate(board, player)
+            board.undo_action()
             if current_score > best_score:
                 best_score = current_score
                 best_action = action
@@ -23,7 +26,8 @@ class Heuristic1ActionAgent(GeneticAgent):
         return best_action
 
     def default_agent(self):
-        return Genetic_1_action_heuristic(functions=[isolate_tower, ennemy_isolate_tower, mult_create_tower5,mult_create_tower4, mult_create_tower3, mult_create_tower2, enemy_mult_create_tower5, enemy_mult_create_tower4, enemy_mult_create_tower3, enemy_mult_create_tower2,score_after_action, remaining_actions])
+        return Genetic_single_loop_heuristic(whole_board_functions=[count_neighbour_size_0, count_neighbour_size_p1, count_neighbour_size_m1, count_neighbour_size_p2, count_neighbour_size_m2, count_neighbour_size_p3, count_neighbour_size_m3, count_neighbour_size_p4, count_neighbour_size_m4, count_neighbour_size_p5, count_neighbour_size_m5])
+        # return Genetic_1_action_heuristic(functions=[isolate_tower, ennemy_isolate_tower, mult_create_tower5,mult_create_tower4, mult_create_tower3, mult_create_tower2, enemy_mult_create_tower5, enemy_mult_create_tower4, enemy_mult_create_tower3, enemy_mult_create_tower2,score_after_action, remaining_actions])
 
     def generate_stats_file(self):
         dfs = generate_dataframes(self.save_path)

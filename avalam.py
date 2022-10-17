@@ -203,6 +203,15 @@ class Board:
 
 class ImprovedBoard(Board):
     last_action = []
+    mask = [ [ True,  True,  False, False,  True,  True,  True,  True,  True],
+                        [ True,  False, False,  False, False,  True,  True,  True,  True],
+                        [ True, False,  False, False,  False, False,  False,  True,  True],
+                        [ True,  False, False,  False, False,  False, False,  False, False],
+                        [ False, False,  False, False,  True, False,  False, False,  False],
+                        [False,  False, False,  False, False,  False, False,  False,  True],
+                        [ True,  True,  False, False,  False, False,  False, False,  True],
+                        [ True,  True,  True,  True, False,  False, False,  False,  True],
+                        [ True,  True,  True,  True,  True, False,  False,  True,  True] ]
     
     def __init__(self, percepts=Board.initial_board, max_height=Board.max_height,invert=False, last_action=[]):
         self.last_action = last_action
@@ -248,8 +257,9 @@ class ImprovedBoard(Board):
                 if useful:
                     useful_towers.append((i, j))
         return useful_towers
-                        
-                
+
+    def is_wall(self, i, j):
+        return not self.mask[i][j]
 
 def dict_to_improved_board(dictio):
     board = ImprovedBoard()
