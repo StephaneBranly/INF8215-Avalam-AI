@@ -2,6 +2,22 @@
 Back to [readme menu](../README.md)
 
 ## Attributes
-### play_agent(agent,percepts,player,step,time_left)
-### default_agent()
-### generate_stats_file()
+### ```get_agent_id()```
+
+----
+
+### ```play_agent(agent,percepts,player,step,time_left)```
+a = [(5,0,4,1),(4,1,4,0),(0,3,1,2),(1,2,1,1),(1,4,2,3),(2,3,2,4),(2,1,3,2),(3,2,2,2),(8,5,7,4),(7,4,7,5),(2,5,3,4),(0,2,1,3),(3,4,4,3),(2,6,3,7),(3,7,3,8),(4,8,5,7),(5,7,6,7),(8,6,7,7),(1,3,2,2),(3,3,4,2),(4,2,5,2),(7,7,6,6),(4,7,5,6),(5,6,5,5),(7,6,6,5),(6,5,6,4),(4,5,3,6),(3,6,4,6),(6,2,6,3),(4,0,3,1)]
+if step<=len(a):
+return a[step-1]
+
+----
+
+### ```default_agent()```
+
+----
+
+### ```generate_stats_file()```
+
+----
+
