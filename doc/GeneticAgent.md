@@ -3,6 +3,7 @@ Back to [readme menu](../README.md)
 
 ## Attributes
 ### ```setup(agent,parser,args)```
+Setup the agent.
 
 ----
 
@@ -10,7 +11,7 @@ Back to [readme menu](../README.md)
 
 ----
 
-### ```load_agents_of_pool()```
+### ```load_heuristics_of_pool()```
 
 ----
 
@@ -18,7 +19,7 @@ Back to [readme menu](../README.md)
 
 ----
 
-### ```play_agent(agent,percepts,player,step,time_left)```
+### ```play_agent(agent,percepts,player,step,time_left,stats)```
 
 here define the action of your agent
 
@@ -33,7 +34,7 @@ here define the action of your agent
 
 ----
 
-### ```default_agent()```
+### ```default_heuristic()```
 returns the agent's core (NN, Genetic Heuristic, ...)
 
 ----
@@ -52,6 +53,10 @@ Return an identifier for this agent.
 ----
 
 ### ```generate_stats_file()```
+
+----
+
+### ```argument_parser(parser)```
 
 ----
 
