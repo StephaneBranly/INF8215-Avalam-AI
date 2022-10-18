@@ -4,7 +4,6 @@ Generates mermaid code for all classes in a module
 
 import os, sys
 
-from heuristic.Heuristic import Heuristic
 
 currentdir = os.path.dirname(os.path.realpath(__file__))
 parentdir = os.path.dirname(currentdir)
@@ -13,6 +12,7 @@ sys.path.append(parentdir)
 import inspect
 from game import Agent
 from avalam import ImprovedBoard
+from heuristic.Heuristic import Heuristic
 
 import re 
 
