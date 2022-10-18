@@ -14,6 +14,7 @@ class ImprovedBoard {
   +clone() 
   +get_hash() 
   +get_useful_towers() 
+  +get_real_board(not_zero) 
 }
 click ImprovedBoard href "https://github.com/StephaneBranly/Avalam-AI/blob/main/doc/ImprovedBoard.md" "Detail of the class ImprovedBoard"
 class Board {

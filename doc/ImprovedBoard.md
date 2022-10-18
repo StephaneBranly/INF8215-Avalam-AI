@@ -35,3 +35,7 @@ Return a hash of this object.
 
 ----
 
+### ```get_real_board(not_zero)```
+
+----
+
