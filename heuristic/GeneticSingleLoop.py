@@ -17,7 +17,7 @@ class GeneticSingleLoop(GeneticHeuristic):
         """
         super().__init__(functions, parameters, all_functions=all_single_loop_functions)
 
-    def evaluate(self,board,player):
+    def evaluate(self,board,player,action):
         """
             Evaluate the board for the player in a single loop
         """

@@ -20,7 +20,7 @@ class GeneticHeuristic(Heuristic):
 
         self._all_functions = all_functions
 
-    def evaluate(self):
+    def evaluate(self, boards, player, action):
         pass
 
     def clone(self):
