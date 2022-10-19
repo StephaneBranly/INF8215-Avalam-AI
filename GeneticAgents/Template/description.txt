@@ -1,4 +1,4 @@
-Class     : AlphaBetaGeneticAgent
+Class     : AlphaBetaIDSGeneticAgent
 Heuristic : GeneticSingleLoop
 Functions : single_loop_isolated_tower,enemy_single_loop_isolated_tower,single_loop_tower5,single_loop_tower4,single_loop_tower3,single_loop_tower2,enemy_single_loop_tower5,enemy_single_loop_tower4,enemy_single_loop_tower3,enemy_single_loop_tower2
 Individu  : 10

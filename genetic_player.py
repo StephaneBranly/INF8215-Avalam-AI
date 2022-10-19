@@ -94,7 +94,7 @@ class GeneticAgent(EvolvedAgent):
             self.load_agent(a, self.current_gen)
 
     def play(self, percepts, player, step, time_left, game_id=None, pool_id=None):
-        print_stats = True
+        print_stats = False
         start = time.time()
         if self.mode == "train":
             if player == -1:

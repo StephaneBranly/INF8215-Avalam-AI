@@ -27,6 +27,7 @@ import xmlrpc.client
 import pickle
 import subprocess
 import threading
+
 # from MCTS.MonteCarlo import MonteCarlo
 # from MCTS.simulate_functions import one_action_heuristic, random_play
 
@@ -43,6 +44,8 @@ from genetic_observation_NN_player import ObservationNN1actionAgent
 from alpha_beta_genetic_agent import AlphaBetaGeneticAgent
 from monte_carlo_player import MonteCarloAgent
 from step_analyst_player import StepAnalystPlayer
+from alpha_beta_genetic_agent_IDS import AlphaBetaIDSGeneticAgent
+from best_move_genetic_agent import BestMoveGeneticAgent
 
 class TimeCreditExpired(Exception):
     """An agent has expired its time credit."""
@@ -548,26 +551,26 @@ if __name__ == "__main__":
             else:
                 agents[i] = RandomAgent()
 
-        genetic_agent1 = AlphaBetaGeneticAgent()
-        # genetic_agent2 = Heuristic2ActionAgent()
+        genetic_agent1 = AlphaBetaIDSGeneticAgent()
+        genetic_agent2 = AlphaBetaIDSGeneticAgent()
         paramsTrain = {
             'mode': "train",
-            'save': "Template",
+            'save': "fullObs",
         }
         paramsEvaluate1 = {
             "mode": "evaluate",
-            "save": "Template",
+            "save": "oldAlphaBeta",
             "generation": 0,
         }
         paramsEvaluate2 = {
             "mode": "evaluate",
-            "save": "NN_MT_2A",
-            "generation": 6,
+            "save": "fullObs",
+            "generation": 0,
         }
         
         genetic_agent1.setup(None, None, paramsEvaluate1)
-        # genetic_agent2.setup(None, None, paramsEvaluate2)
-        agents = [genetic_agent1, MonteCarloAgent()]
+        genetic_agent2.setup(None, None, paramsEvaluate2)
+        agents = [genetic_agent1,genetic_agent2]
         # agents = [StepAnalystPlayer(MonteCarloAgent()), StepAnalystPlayer(MonteCarloAgent())]        
 
         def get_agent_names():

@@ -1,8 +1,8 @@
 from heuristic.GeneticHeuristic import GeneticHeuristic
 from heuristic.observation_function import *
 
-all_single_loop_functions = [single_loop_isolated_tower, enemy_single_loop_isolated_tower, single_loop_tower5, single_loop_tower4, single_loop_tower3, single_loop_tower2, enemy_single_loop_tower5, enemy_single_loop_tower4, enemy_single_loop_tower3, enemy_single_loop_tower2]
-
+all_single_loop_functions = [single_loop_isolated_tower,enemy_single_loop_isolated_tower,single_loop_tower5,single_loop_tower4,single_loop_tower3,single_loop_tower2,enemy_single_loop_tower5,enemy_single_loop_tower4,enemy_single_loop_tower3,enemy_single_loop_tower2,single_loop_isolated_tower5,single_loop_isolated_tower4,single_loop_isolated_tower3,single_loop_isolated_tower2,enemy_single_loop_isolated_tower5,enemy_single_loop_isolated_tower4,enemy_single_loop_isolated_tower3,enemy_single_loop_isolated_tower2,wineable_tower,enemy_wineable_tower,enemy_wineable_tower,score,enemy_score,remaining_actions]
+all_whole_board_functions = [score, enemy_score, remaining_actions]
 """
     This genetic Agent use a single loop to evaluate the board.
 """
@@ -20,12 +20,22 @@ class GeneticSingleLoop(GeneticHeuristic):
     def evaluate(self,board,player,action):
         """
             Evaluate the board for the player in a single loop
+            We consider that the first functions are single loop and the lasts are whole board
         """
         score = 0
-        for i in range(9):
-            for j in range(9):
+        start_index_whole_board = len(self._functions)
+        for (i,j) in board.get_real_board():
                 for k in range(len(self._functions)):
+
+                    if self._functions[k] in all_whole_board_functions:
+                        start_index_whole_board = k
+                        break
+
                     score += self._parameters[k]*self._functions[k](board,player,i,j)
+
+        for k in range(start_index_whole_board,len(self._functions)):
+            score += self._parameters[k]*self._functions[k](board,player)
+
         return score
 
     def clone(self):
