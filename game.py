@@ -565,7 +565,7 @@ if __name__ == "__main__":
         paramsEvaluate2 = {
             "mode": "evaluate",
             "save": "fullObs",
-            "generation": 0,
+            "generation": 6,
         }
         
         genetic_agent1.setup(None, None, paramsEvaluate1)

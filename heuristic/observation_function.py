@@ -91,8 +91,6 @@ def remaining_actions(boards,player,action):
 def score(board,player):
     return board.get_score()*player
 
-def enemy_score(board,player):
-    return board.get_score()*-player
 
 def remaining_actions(board,player):
     return sum(1 for _ in board.get_actions())

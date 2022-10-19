@@ -1,3 +1,4 @@
+import random
 from avalam import *
 from genetic_player import GeneticAgent
 from heuristic.Heuristic import *

@@ -1,1 +1,7 @@
 Pool id;Agent -1;Agent 1;Pct Agent -1;Pct Draw;Pct Agent 1
+6;Genetic Agent Training;Genetic Agent Training;0.2705128205128205;0.09871794871794871;0.6307692307692307
+0;Genetic Agent #0 gen0 testByHand;Genetic Agent #0 gen0 oldAlphaBeta;0.0;0.0;1.0
+1;Genetic Agent #0 gen1 testByHand;Genetic Agent #0 gen1 oldAlphaBeta;0.0;0.0;1.0
+7;Genetic Agent Training;Genetic Agent Training;0.2833333333333333;0.10512820512820513;0.6115384615384616
+8;Genetic Agent Training;Genetic Agent Training;0.1858974358974359;0.06153846153846154;0.7525641025641026
+9;Genetic Agent Training;Genetic Agent Training;0.07435897435897436;0.05384615384615385;0.8717948717948718

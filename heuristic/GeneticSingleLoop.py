@@ -1,8 +1,8 @@
 from heuristic.GeneticHeuristic import GeneticHeuristic
 from heuristic.observation_function import *
 
-all_single_loop_functions = [single_loop_isolated_tower,enemy_single_loop_isolated_tower,single_loop_tower5,single_loop_tower4,single_loop_tower3,single_loop_tower2,enemy_single_loop_tower5,enemy_single_loop_tower4,enemy_single_loop_tower3,enemy_single_loop_tower2,single_loop_isolated_tower5,single_loop_isolated_tower4,single_loop_isolated_tower3,single_loop_isolated_tower2,enemy_single_loop_isolated_tower5,enemy_single_loop_isolated_tower4,enemy_single_loop_isolated_tower3,enemy_single_loop_isolated_tower2,wineable_tower,enemy_wineable_tower,enemy_wineable_tower,score,enemy_score,remaining_actions]
-all_whole_board_functions = [score, enemy_score, remaining_actions]
+all_single_loop_functions = [single_loop_isolated_tower,enemy_single_loop_isolated_tower,single_loop_tower5,single_loop_tower4,single_loop_tower3,single_loop_tower2,enemy_single_loop_tower5,enemy_single_loop_tower4,enemy_single_loop_tower3,enemy_single_loop_tower2,single_loop_isolated_tower5,single_loop_isolated_tower4,single_loop_isolated_tower3,single_loop_isolated_tower2,enemy_single_loop_isolated_tower5,enemy_single_loop_isolated_tower4,enemy_single_loop_isolated_tower3,enemy_single_loop_isolated_tower2,wineable_tower,enemy_wineable_tower,score,remaining_actions]
+all_whole_board_functions = [score, remaining_actions]
 """
     This genetic Agent use a single loop to evaluate the board.
 """
@@ -32,7 +32,7 @@ class GeneticSingleLoop(GeneticHeuristic):
                         break
 
                     score += self._parameters[k]*self._functions[k](board,player,i,j)
-
+        #print(start_index_whole_board,len(self._functions),len(self._parameters))
         for k in range(start_index_whole_board,len(self._functions)):
             score += self._parameters[k]*self._functions[k](board,player)
 
