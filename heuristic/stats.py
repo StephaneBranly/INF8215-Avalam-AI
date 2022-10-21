@@ -17,7 +17,7 @@ def generate_dataframes(save_path):
     gen = 0
     while gen >= 0:
         try:
-            filename = f"{save_path}/gen{gen}.json"
+            filename = f"GeneticAgents/{save_path}/gen{gen}.json"
             with open(filename) as f:
                 listObj = json.load(f)
                 nb_ind = len(listObj['gen'])

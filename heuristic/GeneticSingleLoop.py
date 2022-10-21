@@ -25,17 +25,17 @@ class GeneticSingleLoop(GeneticHeuristic):
         score = 0
         start_index_whole_board = len(self._functions)
         for (i,j) in board.get_real_board():
+                isolated = not board.is_tower_movable(i,j)
                 for k in range(len(self._functions)):
 
                     if self._functions[k] in all_whole_board_functions:
                         start_index_whole_board = k
                         break
 
-                    score += self._parameters[k]*self._functions[k](board,player,i,j)
+                    score += self._parameters[k]*self._functions[k](board,player,i,j,isolated)
         #print(start_index_whole_board,len(self._functions),len(self._parameters))
         for k in range(start_index_whole_board,len(self._functions)):
             score += self._parameters[k]*self._functions[k](board,player)
-
         return score
 
     def clone(self):

@@ -141,93 +141,101 @@ def enemy_mult_create_tower3(boards,player,action):
 def enemy_mult_create_tower2(boards,player,action):
     return mult_create_tower2(boards,-player,action)
 
-def single_loop_tower5(board,player,i,j):
+def single_loop_tower5(board,player,i,j,isolated = None):
     if board.m[i][j]*player == 5:
         return 1
     else:
         return 0
 
-def single_loop_tower4(board,player,i,j):
+def single_loop_tower4(board,player,i,j,isolated = None):
     if board.m[i][j]*player == 4:
         return 1
     else:
         return 0
 
-def single_loop_tower3(board,player,i,j):
+def single_loop_tower3(board,player,i,j,isolated = None):
     if board.m[i][j]*player == 3:
         return 1
     else:
         return 0
 
-def single_loop_tower2(board,player,i,j):
+def single_loop_tower2(board,player,i,j,isolated = None):
     if board.m[i][j]*player == 2:
         return 1
     else:
         return 0
 
-def enemy_single_loop_tower5(board,player,i,j):
+def enemy_single_loop_tower5(board,player,i,j,isolated = None):
     return single_loop_tower5(board,-player,i,j)
 
-def enemy_single_loop_tower4(board,player,i,j):
+def enemy_single_loop_tower4(board,player,i,j,isolated = None):
     return single_loop_tower4(board,-player,i,j)
 
-def enemy_single_loop_tower3(board,player,i,j):
+def enemy_single_loop_tower3(board,player,i,j,isolated = None):
     return single_loop_tower3(board,-player,i,j)
 
-def enemy_single_loop_tower2(board,player,i,j):
+def enemy_single_loop_tower2(board,player,i,j,isolated = None):
     return single_loop_tower2(board,-player,i,j)
 
-def single_loop_isolated_tower(board,player,i,j):
-    if board.is_tower_movable(i,j):
+def single_loop_isolated_tower(board,player,i,j,isolated = None):
+    if isolated is None:
+        isolated = not board.is_tower_movable(i,j)
+    if isolated:
         return 1
     else:
         return 0
 
-def enemy_single_loop_isolated_tower(board,player,i,j):
-    return single_loop_isolated_tower(board,-player,i,j)
+def enemy_single_loop_isolated_tower(board,player,i,j,isolated = None):
+    return single_loop_isolated_tower(board,-player,i,j,isolated)
 
-def single_loop_isolated_tower_heigt(board,player,i,j,height):
-    if board.m[i][j]*player == height and board.is_tower_movable(i,j):
+def single_loop_isolated_tower_heigt(board,player,i,j,height,isolated = None):
+    if isolated is None:
+        isolated = not board.is_tower_movable(i,j)
+    if board.m[i][j]*player == height and isolated:
         return 1
     else:
         return 0
 
-def single_loop_isolated_tower5(board,player,i,j):
-    return single_loop_isolated_tower_heigt(board,player,i,j,5)
+def single_loop_isolated_tower5(board,player,i,j,isolated = None):
+    return single_loop_isolated_tower_heigt(board,player,i,j,5,isolated)
 
-def single_loop_isolated_tower4(board,player,i,j):
-    return single_loop_isolated_tower_heigt(board,player,i,j,4)
+def single_loop_isolated_tower4(board,player,i,j,isolated = None):
+    return single_loop_isolated_tower_heigt(board,player,i,j,4,isolated)
 
-def single_loop_isolated_tower3(board,player,i,j):
-    return single_loop_isolated_tower_heigt(board,player,i,j,3)
+def single_loop_isolated_tower3(board,player,i,j,isolated = None):
+    return single_loop_isolated_tower_heigt(board,player,i,j,3,isolated)
 
-def single_loop_isolated_tower2(board,player,i,j):
-    return single_loop_isolated_tower_heigt(board,player,i,j,2)
+def single_loop_isolated_tower2(board,player,i,j,isolated = None):
+    return single_loop_isolated_tower_heigt(board,player,i,j,2,isolated)
 
-def enemy_single_loop_isolated_tower5(board,player,i,j):
-    return single_loop_isolated_tower5(board,-player,i,j)
+def enemy_single_loop_isolated_tower5(board,player,i,j,isolated = None):
+    return single_loop_isolated_tower5(board,-player,i,j,isolated)
 
-def enemy_single_loop_isolated_tower4(board,player,i,j):
-    return single_loop_isolated_tower4(board,-player,i,j)
+def enemy_single_loop_isolated_tower4(board,player,i,j,isolated = None):
+    return single_loop_isolated_tower4(board,-player,i,j,isolated)
 
-def enemy_single_loop_isolated_tower3(board,player,i,j):
-    return single_loop_isolated_tower3(board,-player,i,j)
+def enemy_single_loop_isolated_tower3(board,player,i,j,isolated = None):
+    return single_loop_isolated_tower3(board,-player,i,j,isolated)
 
-def enemy_single_loop_isolated_tower2(board,player,i,j):
-    return single_loop_isolated_tower2(board,-player,i,j)
+def enemy_single_loop_isolated_tower2(board,player,i,j,isolated = None):
+    return single_loop_isolated_tower2(board,-player,i,j,isolated)
 
-def movable_tower(board,player,i,j):
-    if board.m[i][j]*player > 0 and board.is_tower_movable(i,j):
+def movable_tower(board,player,i,j,isolated = None):
+    if isolated is None:
+        isolated = not board.is_tower_movable(i,j)
+    if board.m[i][j]*player > 0 and not isolated:
         return 1
     else:
         return 0
 
-def enemy_movable_tower(board,player,i,j):
-    return movable_tower(board,-player,i,j)
+def enemy_movable_tower(board,player,i,j,isolated = None):
+    return movable_tower(board,-player,i,j,isolated)
 
 # note : check if wineable by creating a tower of 5 not by isolating
-def wineable_tower(board,player,i,j):
+def wineable_tower(board,player,i,j,isolated = None):
     total = 0
+    if(abs(board.m[i][j]) == 5 or abs(board.m[i][j]) == 0):
+        return 0
     for k in range(i-1,i+2):
         for l in range(j-1,j+2):
             if k>=0 and k<9 and l>=0 and l<9:
@@ -235,5 +243,5 @@ def wineable_tower(board,player,i,j):
                     total += 1
     return total
 
-def enemy_wineable_tower(board,player,i,j):
+def enemy_wineable_tower(board,player,i,j,isolated = None):
     return wineable_tower(board,-player,i,j)

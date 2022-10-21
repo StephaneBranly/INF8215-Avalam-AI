@@ -74,11 +74,12 @@ class AlphaBeta(Strategy):
         v = -math.inf
         m = None
 
-        if self.only_useful:
+        actions = [a for a in board.get_actions()]
+        if self.only_useful and len(actions)>50:
             useful_towers = board.get_useful_towers()
-            actions = [a for a in board.get_actions() if (a[0],a[1]) in useful_towers or (a[2],a[3]) in useful_towers]
-        else:
-            actions = [a for a in board.get_actions()]
+            if(len(useful_towers)>0):
+                actions = [a for a in actions if (a[0],a[1]) in useful_towers or (a[2],a[3]) in useful_towers]
+
         
         actions.sort(key=lambda x: self.evaluate_state(heuristic, board, x, player), reverse=True)
         explored = 1
@@ -125,11 +126,11 @@ class AlphaBeta(Strategy):
         v = math.inf
         m = None
 
-        if self.only_useful:
+        actions = [a for a in board.get_actions()]
+        if self.only_useful and len(actions)>50:
             useful_towers = board.get_useful_towers()
-            actions = [a for a in board.get_actions() if (a[0],a[1]) in useful_towers or (a[2],a[3]) in useful_towers]
-        else:
-            actions = [a for a in board.get_actions()]
+            if(len(useful_towers)>0):
+                actions = [a for a in actions if (a[0],a[1]) in useful_towers or (a[2],a[3]) in useful_towers]
 
         actions.sort(key=lambda x: self.evaluate_state(heuristic, board, x, player), reverse=False)
         explored = 1

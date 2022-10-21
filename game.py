@@ -551,26 +551,27 @@ if __name__ == "__main__":
             else:
                 agents[i] = RandomAgent()
 
-        genetic_agent1 = AlphaBetaIDSGeneticAgent()
-        genetic_agent2 = AlphaBetaIDSGeneticAgent()
+        genetic_agent1 = BestMoveGeneticAgent()
+        #genetic_agent2 = AlphaBetaIDSGeneticAgent(only_useful=True)
         paramsTrain = {
             'mode': "train",
-            'save': "fullObs",
+            'save': "fullObsInit",
+            'generation':23
         }
         paramsEvaluate1 = {
             "mode": "evaluate",
-            "save": "oldAlphaBeta",
+            "save": "fun",
             "generation": 0,
         }
         paramsEvaluate2 = {
             "mode": "evaluate",
-            "save": "fullObs",
-            "generation": 6,
+            "save": "notUsefull",
+            "generation": 0,
         }
         
-        genetic_agent1.setup(None, None, paramsEvaluate1)
-        genetic_agent2.setup(None, None, paramsEvaluate2)
-        agents = [genetic_agent1,genetic_agent2]
+        genetic_agent1.setup(None, None, paramsTrain)
+        #genetic_agent2.setup(None, None, paramsEvaluate2)
+        agents = [genetic_agent1,genetic_agent1]
         # agents = [StepAnalystPlayer(MonteCarloAgent()), StepAnalystPlayer(MonteCarloAgent())]        
 
         def get_agent_names():

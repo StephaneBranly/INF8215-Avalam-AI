@@ -243,11 +243,12 @@ class ImprovedBoard(Board):
         useful_towers = []
         for (i,j) in self.get_real_board():
                 useful = False
-                for k in range(i-1, i+2):
-                    for l in range(j-1, j+2):
-                        if l > 0 and k > 0 and l < 9 and k < 9:
-                            if self.m[k][l] != 1 and self.m[k][l] != -1:
-                                useful = True
+                if self.m[i][j] != 0:
+                    for k in range(i-1, i+2):
+                        for l in range(j-1, j+2):
+                            if l > 0 and k > 0 and l < 9 and k < 9:
+                                if (self.m[k][l] == 0 and (k,l) in self.get_real_board()) or self.m[k][l] not in [0, 1, -1]:
+                                    useful = True
                 if useful:
                     useful_towers.append((i, j))
         return useful_towers
