@@ -52,10 +52,7 @@ class MonteCarlo(Strategy):
                 self.backpropagate(v, n_child, board)
             except Exception as e:       
                 raise e
-        
-        # if step == 1:
-        #     self.save_tree(tree)
-        #     raise Exception("Saved tree")
+
         new_tree, new_board = None, None
         best_action = self.best_action(current_tree)
         if tree:
@@ -94,6 +91,8 @@ class MonteCarlo(Strategy):
 
     def expand(self, n_leaf, board):
         """Expand the leaf node n_leaf. The board is updated to the state of the child node."""
+        if n_leaf['n'] == 0:
+            return n_leaf
         if board.is_finished():
             return n_leaf
         actions = list(board.get_actions())

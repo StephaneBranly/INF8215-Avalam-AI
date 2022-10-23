@@ -203,8 +203,6 @@ class Board:
         return score
 
 class ImprovedBoard(Board):
-    last_action = []
-
     mask = [ [ True,  True,  False, False,  True,  True,  True,  True,  True],
                         [ True,  False, False,  False, False,  True,  True,  True,  True],
                         [ True, False,  False, False,  False, False,  False,  True,  True],
@@ -215,29 +213,32 @@ class ImprovedBoard(Board):
                         [ True,  True,  True,  True, False,  False, False,  False,  True],
                         [ True,  True,  True,  True,  True, False,  False,  True,  True] ]
     
-    number_of_towers = {
-        -5: 0,
-        -4: 0,
-        -3: 0,
-        -2: 0,
-        -1: 0,
-        0: 0,
-        1: 0,
-        2: 0,
-        3: 0,
-        4: 0,
-        5: 0
-    }
+    
 
     def __init__(self, percepts=Board.initial_board, max_height=Board.max_height,invert=False, last_action=[]):
         self.last_action = last_action
         self.real_board = [( 0 , 2 ),( 0 , 3 ),( 1 , 1 ),( 1 , 2 ),( 1 , 3 ),( 1 , 4 ),( 2 , 1 ),( 2 , 2 ),( 2 , 3 ),( 2 , 4 ),( 2 , 5 ),( 2 , 6 ),( 3 , 1 ),( 3 , 2 ),( 3 , 3 ),( 3 , 4 ),( 3 , 5 ),( 3 , 6 ),( 3 , 7 ),( 3 , 8 ),( 4 , 0 ),( 4 , 1 ),( 4 , 2 ),( 4 , 3 ),( 4 , 5 ),( 4 , 6 ),( 4 , 7 ),( 4 , 8 ),( 5 , 0 ),( 5 , 1 ),( 5 , 2 ),( 5 , 3 ),( 5 , 4 ),( 5 , 5 ),( 5 , 6 ),( 5 , 7 ),( 6 , 2 ),( 6 , 3 ),( 6 , 4 ),( 6 , 5 ),( 6 , 6 ),( 6 , 7 ),( 7 , 4 ),( 7 , 5 ),( 7 , 6 ),( 7 , 7 ),( 8 , 5 ),( 8 , 6 )]
+        self.number_of_towers = {
+            -5: 0,
+            -4: 0,
+            -3: 0,
+            -2: 0,
+            -1: 0,
+            0: 0,
+            1: 0,
+            2: 0,
+            3: 0,
+            4: 0,
+            5: 0
+        }
         super().__init__(percepts, max_height, invert)
 
         for i in range(self.rows):
             for j in range(self.columns):
                 if (i, j) in self.real_board:
                     self.number_of_towers[self.m[i][j]] += 1
+
+
     
     def play_action(self, action):
         if not self.is_action_valid(action):
@@ -301,25 +302,23 @@ class ImprovedBoard(Board):
     def get_number_of_tower_height(self, height):
         return self.number_of_towers[height]
 
-    # def get_score(self):
-    #     print(self)
-    #     print(self.number_of_towers)
-    #     score = self.number_of_towers[-5] * -1
-    #     score += self.number_of_towers[5] * 1
-    #     score += self.number_of_towers[-4] * -1
-    #     score += self.number_of_towers[4] * 1
-    #     score += self.number_of_towers[-3] * -1
-    #     score += self.number_of_towers[3] * 1
-    #     score += self.number_of_towers[-2] * -1
-    #     score += self.number_of_towers[2] * 1
-    #     score += self.number_of_towers[-1] * -1
-    #     score += self.number_of_towers[1] * 1
-    #     if score == 0:
-    #         if self.number_of_towers[-5] > self.number_of_towers[5]:
-    #             return self.number_of_towers[-5] * -1
-    #         elif self.number_of_towers[-5] < self.number_of_towers[5]:
-    #             return self.number_of_towers[5] * 1
-    #     return score
+    def get_score(self):
+        score = self.number_of_towers[-5] * -1
+        score += self.number_of_towers[5] * 1
+        score += self.number_of_towers[-4] * -1
+        score += self.number_of_towers[4] * 1
+        score += self.number_of_towers[-3] * -1
+        score += self.number_of_towers[3] * 1
+        score += self.number_of_towers[-2] * -1
+        score += self.number_of_towers[2] * 1
+        score += self.number_of_towers[-1] * -1
+        score += self.number_of_towers[1] * 1
+        if score == 0:
+            if self.number_of_towers[-5] > self.number_of_towers[5]:
+                return self.number_of_towers[-5] * -1
+            elif self.number_of_towers[-5] < self.number_of_towers[5]:
+                return self.number_of_towers[5] * 1
+        return score
 
 def dict_to_improved_board(dictio):
     board = ImprovedBoard()

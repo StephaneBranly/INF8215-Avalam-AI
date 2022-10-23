@@ -575,11 +575,11 @@ if __name__ == "__main__":
         }
         
 
-        genetic_agent2.setup(None, None, paramsEvaluate2)
+        genetic_agent1.setup(None, None, paramsEvaluate2)
         #genetic_agent2.setup(None, None, paramsEvaluate2)
         # agents = [genetic_agent2, SecretAgent()]
         # //MonteCarloAgent(play_fn=one_action_heuristic)
-        agents = [RandomAgent(), MonteCarloAgent(play_fn=one_action_heuristic)]
+        agents = [MonteCarloAgent(play_fn=one_action_heuristic), genetic_agent1]
 
         # agents = [StepAnalystPlayer(MonteCarloAgent()), StepAnalystPlayer(MonteCarloAgent())]        
 
