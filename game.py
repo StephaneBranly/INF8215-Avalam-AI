@@ -44,8 +44,12 @@ from genetic_observation_NN_player import ObservationNN1actionAgent
 from alpha_beta_genetic_agent import AlphaBetaGeneticAgent
 from monte_carlo_player import MonteCarloAgent
 from step_analyst_player import StepAnalystPlayer
+
 from alpha_beta_genetic_agent_IDS import AlphaBetaIDSGeneticAgent
 from best_move_genetic_agent import BestMoveGeneticAgent
+
+from strategies.simulate_functions import one_action_heuristic, one_action_simple_h
+
 
 class TimeCreditExpired(Exception):
     """An agent has expired its time credit."""
@@ -569,9 +573,11 @@ if __name__ == "__main__":
             "generation": 0,
         }
         
+
         genetic_agent1.setup(None, None, paramsTrain)
         #genetic_agent2.setup(None, None, paramsEvaluate2)
         agents = [genetic_agent1,genetic_agent1]
+
         # agents = [StepAnalystPlayer(MonteCarloAgent()), StepAnalystPlayer(MonteCarloAgent())]        
 
         def get_agent_names():
