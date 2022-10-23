@@ -52,68 +52,80 @@ def one_action_heuristic(board, player, step, time_left):
 
     def fullObsInit_evaluate(board, player, action):
         score = 0
-        _, _, dx, dy = action
-        real_board = board.get_real_board()
-        for x in range(-1, 1):
-            for y in range(-1, 1):
-                i = dx + x
-                j = dy + y
-                if (i, j) in real_board:
-                    isolated_tower = not board.is_tower_movable(i,j)
-                    tower_height = board.m[i][j]
-                    # single_loop_isolated_tower
-                    score += (1 if isolated_tower else 0) * 0.96 
+        # _, _, dx, dy = action
+        # real_board = board.get_real_board()
+        score += board.get_number_of_tower_height(5 * player) * 0.9
+        score += board.get_number_of_tower_height(4 * player) * -0.69
+        score += board.get_number_of_tower_height(3 * player) * 1
+        score += board.get_number_of_tower_height(2 * player) * -0.6
+        score += board.get_number_of_tower_height(1 * player) * 0
+        score += board.get_number_of_tower_height(0 * player) * 0
+        score += board.get_number_of_tower_height(-1 * player) * 0
+        score += board.get_number_of_tower_height(-2 * player) * -0.62
+        score += board.get_number_of_tower_height(-3 * player) * 0.23
+        score += board.get_number_of_tower_height(-4 * player) * 0.66
+        score += board.get_number_of_tower_height(-5 * player) * -0.93
+        score += board.get_score() * player
+        # for x in range(-1, 1):
+        #     for y in range(-1, 1):
+        #         i = dx + x
+        #         j = dy + y
+        #         if (i, j) in real_board:
+        #             isolated_tower = not board.is_tower_movable(i,j)
+        #             tower_height = board.m[i][j]
+        #             # single_loop_isolated_tower
+        #             score += (1 if isolated_tower else 0) * 0.96 
 
-                    # single_loop_tower5
-                    score += (1 if tower_height * player == 5 else 0) * 0.9
+        #             # single_loop_tower5
+        #             score += (1 if tower_height * player == 5 else 0) * 0.9
 
-                    # single_loop_tower4
-                    score += (1 if tower_height * player == 4 else 0) * -0.69
+        #             # single_loop_tower4
+        #             score += (1 if tower_height * player == 4 else 0) * -0.69
             
-                    # single_loop_tower3
-                    score += (1 if tower_height * player == 3 else 0) * 1
+        #             # single_loop_tower3
+        #             score += (1 if tower_height * player == 3 else 0) * 1
 
-                    # single_loop_tower2
-                    score += (1 if tower_height * player == 2 else 0) * -0.6
+        #             # single_loop_tower2
+        #             score += (1 if tower_height * player == 2 else 0) * -0.6
 
-                    # enemy_single_loop_tower5
-                    score += (1 if tower_height * player == -5 else 0) * -0.93
+        #             # enemy_single_loop_tower5
+        #             score += (1 if tower_height * player == -5 else 0) * -0.93
 
-                    # enemy_single_loop_tower4
-                    score += (1 if tower_height * player == -4 else 0) * 0.66
+        #             # enemy_single_loop_tower4
+        #             score += (1 if tower_height * player == -4 else 0) * 0.66
 
-                    # enemy_single_loop_tower3
-                    score += (1 if tower_height * player == -3 else 0) * 0.23
+        #             # enemy_single_loop_tower3
+        #             score += (1 if tower_height * player == -3 else 0) * 0.23
 
-                    # enemy_single_loop_tower2
-                    score += (1 if tower_height * player == -2 else 0) * -0.62
+        #             # enemy_single_loop_tower2
+        #             score += (1 if tower_height * player == -2 else 0) * -0.62
 
-                    # single_loop_isolated_tower_5
-                    score += (1 if tower_height * player == 5 and isolated_tower else 0) * 0.68 * 2
+        #             # single_loop_isolated_tower_5
+        #             score += (1 if tower_height * player == 5 and isolated_tower else 0) * 0.68 * 2
 
-                    # single_loop_isolated_tower_4
-                    score += (1 if tower_height * player == 4 and isolated_tower else 0) * 0.91 * 2
+        #             # single_loop_isolated_tower_4
+        #             score += (1 if tower_height * player == 4 and isolated_tower else 0) * 0.91 * 2
 
-                    # single_loop_isolated_tower_3
-                    score += (1 if tower_height * player == 3 and isolated_tower else 0) * 1 * 2
+        #             # single_loop_isolated_tower_3
+        #             score += (1 if tower_height * player == 3 and isolated_tower else 0) * 1 * 2
 
-                    # single_loop_isolated_tower_2
-                    score += (1 if tower_height * player == 2 and isolated_tower else 0) * 0.64 * 2
+        #             # single_loop_isolated_tower_2
+        #             score += (1 if tower_height * player == 2 and isolated_tower else 0) * 0.64 * 2
 
-                    # enemy_single_loop_isolated_tower_5
-                    score += (1 if tower_height * player == -5 and isolated_tower else 0) * -0.68 * 2
+        #             # enemy_single_loop_isolated_tower_5
+        #             score += (1 if tower_height * player == -5 and isolated_tower else 0) * -0.68 * 2
 
-                    # enemy_single_loop_isolated_tower_4
-                    score += (1 if tower_height * player == -4 and isolated_tower else 0) * -0.93 * 2
+        #             # enemy_single_loop_isolated_tower_4
+        #             score += (1 if tower_height * player == -4 and isolated_tower else 0) * -0.93 * 2
 
-                    # enemy_single_loop_isolated_tower_3
-                    score += (1 if tower_height * player == -3 and isolated_tower else 0) * -0.73 * 2
+        #             # enemy_single_loop_isolated_tower_3
+        #             score += (1 if tower_height * player == -3 and isolated_tower else 0) * -0.73 * 2
 
-                    # enemy_single_loop_isolated_tower_2
-                    score += (1 if tower_height * player == -2 and isolated_tower else 0) * -0.22 * 2
+        #             # enemy_single_loop_isolated_tower_2
+        #             score += (1 if tower_height * player == -2 and isolated_tower else 0) * -0.22 * 2
 
-                    # enemy_winable_tower
-                    score += (1 if tower_height * player < 0 and not isolated_tower else 0) * -0.93 * 2
+        #             # enemy_winable_tower
+        #             score += (1 if tower_height * player < 0 and not isolated_tower else 0) * -0.93 * 2
 
         return score
 
