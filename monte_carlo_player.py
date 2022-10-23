@@ -1,5 +1,5 @@
-from MCTS.MonteCarlo import MonteCarlo
-from MCTS.simulate_functions import greedy_play
+from strategies.MonteCarlo import MonteCarlo
+from strategies.simulate_functions import greedy_play
 from avalam import *
 import time
 
@@ -23,6 +23,8 @@ class MonteCarloAgent(EvolvedAgent, MonteCarlo):
             time_to_play = self.step_time_to_play[step] * self.game_time_limit
             # if player == -1:
             time_to_play = self.game_time_limit / 20
+        else:
+            time_to_play = 5
         # print(f"Player {player} \t| step {step} \t| time to play {time_to_play}")
         board = dict_to_improved_board(percepts)
         start_time = time.time()
@@ -48,12 +50,12 @@ class MonteCarloAgent(EvolvedAgent, MonteCarlo):
         # We compute the time we have to play
         
         # else:
-
-        action, iterations, new_tree, new_board = self.mcts(board.clone(), player, step, time_limit=time_to_play) # , tree=self.games[game_id]['tree']
+        
+        action = self.use_strategy(board.clone(), player, step, time_to_play=time_to_play,stats=True) # , tree=self.games[game_id]['tree']
         # self.games[game_id]['tree'] = new_tree
         # self.games[game_id]['board'] = new_board
         # Time left: {time_left-time.time() + start_time}\t
-        print(f"Time left: {time_left-time.time() + start_time}\t| Action: {action} for step {step} \t| Time: {time.time() - start_time}\t| Iterations: {iterations}")
+        print(f"Action: {action} for step {step} \t| Time: {time.time() - start_time}\t")
         return action
 
     def pool_ended(self, pool_results, player, pool_id=None):

@@ -27,9 +27,11 @@ import xmlrpc.client
 import pickle
 import subprocess
 import threading
-from MCTS.simulate_functions import one_action_heuristic, random_play
+# from MCTS.MonteCarlo import MonteCarlo
+# from MCTS.simulate_functions import one_action_heuristic, random_play
 
 from avalam import *
+from genetic_player import GeneticAgent
 
 
 from stats.stats import generate_board_history_fig, generate_summary_file
@@ -37,10 +39,8 @@ from stats.stats import generate_board_history_fig, generate_summary_file
 # Agent classes for multithreading
 from greedy_player import GreedyAgent
 from random_player import RandomAgent
-from genetic_player import GeneticAgent
 from genetic_observation_NN_player import ObservationNN1actionAgent
-from heuristic_genetic_1_action_player import Heuristic1ActionAgent
-from heuristic_genetic_2_action_player import Heuristic2ActionAgent
+from alpha_beta_genetic_agent import AlphaBetaGeneticAgent
 from monte_carlo_player import MonteCarloAgent
 from step_analyst_player import StepAnalystPlayer
 
@@ -551,8 +551,6 @@ if __name__ == "__main__":
         genetic_agent1 = Heuristic1ActionAgent()
         genetic_agent2 = Heuristic2ActionAgent()
         paramsTrain = {
-            'individu': 10,
-            'generation': 0,
             'mode': "train",
             'save': "MCTS",
             'rate': 2,
@@ -560,8 +558,8 @@ if __name__ == "__main__":
         }
         paramsEvaluate1 = {
             "mode": "evaluate",
-            "save": "NN_MT_2A",
-            "generation": 6,
+            "save": "Template",
+            "generation": 0,
         }
         paramsEvaluate2 = {
             "mode": "evaluate",
