@@ -6,15 +6,19 @@ Back to [readme menu](../README.md)
 
 ----
 
-### ```evaluate_state(heuristic,init_board,board,action,player)```
+### ```evaluate_state(heuristic,board,action,player)```
 
 ----
 
-### ```max_value(init_board,current_board,heuristic,player,alpha,beta,depth,max_depth,hash_maps,start,step,time_to_play,explored,hash_reduced,transposition)```
+### ```check_already_visited(board,depth,hash_maps)```
 
 ----
 
-### ```min_value(init_board,current_board,heuristic,player,alpha,beta,depth,max_depth,hash_maps,start,step,time_to_play,explored,hash_reduced,transposition)```
+### ```max_value(board,heuristic,player,alpha,beta,depth,max_depth,hash_maps,start,step,time_to_play)```
+
+----
+
+### ```min_value(board,heuristic,player,alpha,beta,depth,max_depth,hash_maps,start,step,time_to_play)```
 
 ----
 
