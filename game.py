@@ -27,6 +27,7 @@ import xmlrpc.client
 import pickle
 import subprocess
 import threading
+
 # from MCTS.MonteCarlo import MonteCarlo
 # from MCTS.simulate_functions import one_action_heuristic, random_play
 
@@ -43,7 +44,12 @@ from genetic_observation_NN_player import ObservationNN1actionAgent
 from alpha_beta_genetic_agent import AlphaBetaGeneticAgent
 from monte_carlo_player import MonteCarloAgent
 from step_analyst_player import StepAnalystPlayer
+
+from alpha_beta_genetic_agent_IDS import AlphaBetaIDSGeneticAgent
+from best_move_genetic_agent import BestMoveGeneticAgent
+
 from strategies.simulate_functions import one_action_heuristic, one_action_simple_h
+
 
 class TimeCreditExpired(Exception):
     """An agent has expired its time credit."""
@@ -549,28 +555,29 @@ if __name__ == "__main__":
             else:
                 agents[i] = RandomAgent()
 
-        # genetic_agent1 = Heuristic1ActionAgent()
-        # genetic_agent2 = Heuristic2ActionAgent()
+        genetic_agent1 = BestMoveGeneticAgent()
+        #genetic_agent2 = AlphaBetaIDSGeneticAgent(only_useful=True)
         paramsTrain = {
             'mode': "train",
-            'save': "MCTS",
-            'rate': 2,
-            'keep': 30,
+            'save': "fullObsInit",
+            'generation':23
         }
         paramsEvaluate1 = {
             "mode": "evaluate",
-            "save": "Template",
+            "save": "fun",
             "generation": 0,
         }
         paramsEvaluate2 = {
             "mode": "evaluate",
-            "save": "NN_MT_2A",
-            "generation": 6,
+            "save": "notUsefull",
+            "generation": 0,
         }
         
-        # genetic_agent1.setup(None, None, paramsTrain)
-        # genetic_agent2.setup(None, None, paramsEvaluate2)
-        agents = [MonteCarloAgent(), MonteCarloAgent(play_fn=one_action_heuristic)]
+
+        genetic_agent1.setup(None, None, paramsTrain)
+        #genetic_agent2.setup(None, None, paramsEvaluate2)
+        agents = [genetic_agent1,genetic_agent1]
+
         # agents = [StepAnalystPlayer(MonteCarloAgent()), StepAnalystPlayer(MonteCarloAgent())]        
 
         def get_agent_names():

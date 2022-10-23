@@ -16,119 +16,145 @@ class AlphaBeta(Strategy):
             hashMaps.append({})
 
 
-        init_board = board.clone()
+        max_depth = 3
 
-        max_depth = 4
         heuristic = other_params['heuristic']
 
-        _, m, explored, hash_reduced, transposition = self.max_value(board, init_board, heuristic, player, -math.inf, math.inf, 0, max_depth, hashMaps, start, step, time_to_play, 0, 0, 0)
-        if stats:
-            print(f"AlphaBeta hash_reduced {hash_reduced} | transposition {transposition}")
+        _, m, explored, hash_reduced, transposition = self.max_value(board, heuristic, player, -math.inf, math.inf, 0, max_depth, hashMaps, start, step, time_to_play)
+
+        print(f"AlphaBeta, Step {step} | hash_reduced {hash_reduced} | transposition {transposition} | explored {explored} | time {time.time()-start}")
+
         return m
 
-    def evaluate_state(self, heuristic, init_board, board, action, player):
+    def evaluate_state(self, heuristic, board, action, player):
         board.play_action(action)
         score = heuristic.evaluate(board, player, action)
         board.undo_action()
         return score
 
-    def max_value(self, init_board, current_board, heuristic, player, alpha, beta, depth, max_depth, hash_maps, start, step, time_to_play, explored, hash_reduced, transposition):
-        explored += 1
+    def check_already_visited(self, board, depth, hash_maps):
 
-        if depth==max_depth or time.time()-start > time_to_play:
-            return (heuristic.evaluate(current_board, player, None),None, explored, hash_reduced, transposition)
-        if(step+depth > 20 and len([a for a in current_board.get_actions()])==0):
-            return (current_board.get_score()*player*1000,None, explored, hash_reduced, transposition)
-        if depth>=1:
-            h = hash(tuple(map(tuple, current_board.m)))
+        # etats deja vus
+        if depth >= 1:
+            h = hash(tuple(map(tuple, board.m)))
             if h in hash_maps[depth]:
-                hash_reduced += 1
-                return hash_maps[depth][h]
-            else :
-                h2 = hash(tuple(map(lambda e : tuple(reversed(e)) , reversed(current_board.m))))
-                if h2 in hash_maps[depth]:
-                    
-                    transposition += 1
-                    return hash_maps[depth][h2]
-        else:
+                #print("hashReduced")
+                return (hash_maps[depth][h][0],hash_maps[depth][h][1],1,1,0)
+        
+        # transposition
+        h2 = hash(tuple(map(lambda e : tuple(reversed(e)) , reversed(board.m))))
+        if h2 in hash_maps[depth]:
+            #print("transposition")
+            return (hash_maps[depth][h2][0],hash_maps[depth][h2][1],1,0,1)
 
-            h2 = hash(tuple(map(lambda e : tuple(reversed(e)) , reversed(current_board.m))))
-            if h2 in hash_maps[depth]:
-                transposition += 1
-                return hash_maps[depth][h2]
-            
+        return None
+
+    def max_value(self, board, heuristic, player, alpha, beta, depth, max_depth, hash_maps, start, step, time_to_play):
+
+        # temp ecoulé ou prof max atteinte
+        if depth==max_depth or time.time()-start > time_to_play:
+            v = heuristic.evaluate(board, player, None)
+            h = hash(tuple(map(tuple, board.m)))
+            hash_maps[depth][h] = (v,None) 
+            #print("max depth")
+            return (v,None, 1, 0, 0)
+        
+        # fin de partie
+        if(board.is_finished()):
+            v = board.get_score()*player*1000
+            h = hash(tuple(map(tuple, board.m)))
+            hash_maps[depth][h] = (v,None) 
+            #print("fin de partie")
+            return (v,None, 1, 0, 0)
+
+        alreadyVisited = self.check_already_visited(board, depth, hash_maps)
+        if alreadyVisited is not None:
+            return alreadyVisited
+        
         v = -math.inf
         m = None
-        if self.only_useful:
-            useful_towers = current_board.get_useful_towers()
-            actions = [a for a in current_board.get_actions() if (a[0],a[1]) in useful_towers or (a[2],a[3]) in useful_towers]
-        else:
-            actions = [a for a in current_board.get_actions()]
-        actions.sort(key=lambda x: self.evaluate_state(heuristic, init_board, current_board, x, player), reverse=True)
+
+        actions = [a for a in board.get_actions()]
+        if self.only_useful and len(actions)>50:
+            useful_towers = board.get_useful_towers()
+            if(len(useful_towers)>0):
+                actions = [a for a in actions if (a[0],a[1]) in useful_towers or (a[2],a[3]) in useful_towers]
+
+        
+        actions.sort(key=lambda x: self.evaluate_state(heuristic, board, x, player), reverse=True)
+        explored = 1
+        hash_reduced = 0
+        transposition = 0
+
         for a in actions:
-            current_board.play_action(a)
-            nV, _, dexplored, dhash_reduced, dtransposition = self.min_value(init_board, current_board, heuristic, player, alpha, beta, depth+1, max_depth, hash_maps, start, step, time_to_play, explored, hash_reduced, transposition)
+            board.play_action(a)
+            nV, _, dexplored, dhash_reduced, dtransposition = self.min_value(board, heuristic, player, alpha, beta, depth+1, max_depth, hash_maps, start, step, time_to_play)
             explored += dexplored
             hash_reduced += dhash_reduced
             transposition += dtransposition
-            current_board.undo_action()
+            board.undo_action()
             if nV > v:
                 v = nV
                 m = a
                 alpha = max(alpha, v)
             if v >= beta:
+                #print("beta cut")
                 return (v,m, explored, hash_reduced, transposition)
+        # memorisation
         if len(hash_maps[depth])<100000:
-            if depth==0:
-                h = hash(tuple(map(tuple, current_board.m)))
-            hash_maps[depth][h] = (v,m, explored, hash_reduced, transposition)
+            h = hash(tuple(map(tuple, board.m)))
+            hash_maps[depth][h] = (v,m)
+        #print("all actions explored")
         return (v,m, explored, hash_reduced, transposition)
     
-    def min_value(self, init_board, current_board, heuristic, player, alpha, beta, depth, max_depth, hash_maps, start, step, time_to_play, explored, hash_reduced, transposition):
-        explored += 1
+    def min_value(self, board, heuristic, player, alpha, beta, depth, max_depth, hash_maps, start, step, time_to_play):
+        
+        # temp ecoulé ou prof max atteinte
         if depth==max_depth or time.time()-start > time_to_play:
-            return (heuristic.evaluate(current_board, player, None),None, explored, hash_reduced, transposition)
-        if(step+depth > 20 and len([a for a in current_board.get_actions()])==0):
-            return (current_board.get_score()*player*1000,None, explored, hash_reduced, transposition)
-        if depth>=1:
-            h = hash(tuple(map(tuple, current_board.m)))
-            if h in hash_maps[depth]:
-                hash_reduced += 1
-                return hash_maps[depth][h]
-            else :
-                h2 = hash(tuple(map(lambda e : tuple(reversed(e)) , reversed(current_board.m))))
-                if h2 in hash_maps[depth]:
-                    transposition += 1
-                    return hash_maps[depth][h2]
-        else:
-            h2 = hash(tuple(map(lambda e : tuple(reversed(e)) , reversed(current_board.m))))
-            if h2 in hash_maps[depth]:
-                transposition += 1
-                return hash_maps[depth][h2]
+            #print("max depth")
+            return (heuristic.evaluate(board, player, None),None, 1, 0, 0)
+
+        # fin de partie
+        if(board.is_finished()):
+            #print("fin de partie")
+            return (board.get_score()*player*1000,None, 1, 0, 0)
+
+        alreadyVisited = self.check_already_visited(board, depth, hash_maps)
+        if alreadyVisited is not None:
+            return alreadyVisited
+
         v = math.inf
         m = None
-        if self.only_useful:
-            useful_towers = current_board.get_useful_towers()
-            actions = [a for a in current_board.get_actions() if (a[0],a[1]) in useful_towers or (a[2],a[3]) in useful_towers]
-        else:
-            actions = [a for a in current_board.get_actions()]
-        actions.sort(key=lambda x: self.evaluate_state(heuristic, init_board, current_board, x, player), reverse=False)
+
+        actions = [a for a in board.get_actions()]
+        if self.only_useful and len(actions)>50:
+            useful_towers = board.get_useful_towers()
+            if(len(useful_towers)>0):
+                actions = [a for a in actions if (a[0],a[1]) in useful_towers or (a[2],a[3]) in useful_towers]
+
+        actions.sort(key=lambda x: self.evaluate_state(heuristic, board, x, player), reverse=False)
+        explored = 1
+        hash_reduced = 0
+        transposition = 0
         for a in actions:
-            current_board.play_action(a)
-            nV, _, dexplored, dhash_reduced, dtransposition = self.max_value(init_board, current_board, heuristic, player, alpha, beta, depth+1, max_depth, hash_maps, start, step, time_to_play, explored, hash_reduced, transposition)
+            board.play_action(a)
+            nV, _, dexplored, dhash_reduced, dtransposition = self.max_value(board, heuristic, player, alpha, beta, depth+1, max_depth, hash_maps, start, step, time_to_play)
             explored += dexplored
             hash_reduced += dhash_reduced
             transposition += dtransposition
-            current_board.undo_action()
+            board.undo_action()
             if nV < v:
                 v = nV
                 m = a
                 beta = min(beta, v)
             if alpha >= v:
+                #print("alpha cut")
                 return (v,m, explored, hash_reduced, transposition)
+
+        # memorisation
         if len(hash_maps[depth])<100000:
-            if depth==0:
-                h = hash(tuple(map(tuple, current_board.m)))
-            hash_maps[depth][h] = (v,m, explored, hash_reduced, transposition)
+            h = hash(tuple(map(tuple, board.m)))
+            hash_maps[depth][h] = (v,m)
+        #print("all actions explored")
         return (v,m, explored, hash_reduced, transposition)
 

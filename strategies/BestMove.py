@@ -1,5 +1,5 @@
 import math
-import Strategy
+from .Strategy import Strategy
 
 class BestMove(Strategy):
     def __init__(self):
@@ -8,9 +8,10 @@ class BestMove(Strategy):
     def use_strategy(self, board, player, step, time_to_play, stats=False, other_params=None):
         best_action = ()
         best_score = -math.inf
-        
         for action in board.get_actions():
-            current_score = self.evaluate(board, player, action)
+            board.play_action(action)
+            current_score = other_params["heuristic"].evaluate(board, player, action)
+            board.undo_action()
             if current_score > best_score:
                 best_score = current_score
                 best_action = action

@@ -94,7 +94,7 @@ class GeneticAgent(EvolvedAgent):
             self.load_agent(a, self.current_gen)
 
     def play(self, percepts, player, step, time_left, game_id=None, pool_id=None):
-        print_stats = True
+        print_stats = False
         start = time.time()
         if self.mode == "train":
             if player == -1:
@@ -134,7 +134,7 @@ class GeneticAgent(EvolvedAgent):
             if heuristic.__name__ == self.heuristic:
                 h = heuristic()
                 h.set_functions([f for f in h._all_functions if f.__name__ in self.functions])
-                h.set_parameters([random.uniform(-1,1) for _ in range(len(self.functions))])
+                h.set_parameters([random.uniform(-1,1) for _ in range(len(h._functions))])
                 return h
         error = f"heuristic {self.heuristic} not found in {[h.__name__ for h in available_heuristics]}"
         raise Exception(error)
@@ -195,7 +195,7 @@ class GeneticAgent(EvolvedAgent):
                 fig = plot_param_evolution(dfs, param, function_name)
                 pdf.savefig(fig)
 
-    def argument_parser(agent, parser):
+    def argument_parser(self,agent, parser):
         parser.add_argument("-I", "--individu", default=-1, help="play : index of indiv if -1 take best | number of indiv per gen", type=int)
         parser.add_argument("-G", "--generation", default=0, help="play : index of gen | train : number of gen", type=int)
         parser.add_argument("-M", "--mode", default="train", help="train | play | evaluate | stats", type=str)
