@@ -65,7 +65,7 @@ def one_action_heuristic(board, player, step, time_left):
         score += board.get_number_of_tower_height(-3 * player) * 0.23
         score += board.get_number_of_tower_height(-4 * player) * 0.66
         score += board.get_number_of_tower_height(-5 * player) * -0.93
-        score += board.get_score() * player
+        # score += board.get_score() * player
         # for x in range(-1, 1):
         #     for y in range(-1, 1):
         #         i = dx + x

@@ -33,6 +33,7 @@ import threading
 
 from avalam import *
 from genetic_player import GeneticAgent
+from secret_agent import SecretAgent
 
 
 from stats.stats import generate_board_history_fig, generate_summary_file
@@ -556,7 +557,7 @@ if __name__ == "__main__":
                 agents[i] = RandomAgent()
 
         genetic_agent1 = BestMoveGeneticAgent()
-        #genetic_agent2 = AlphaBetaIDSGeneticAgent(only_useful=True)
+        genetic_agent2 = AlphaBetaIDSGeneticAgent(only_useful=True)
         paramsTrain = {
             'mode': "train",
             'save': "fullObsInit",
@@ -568,15 +569,17 @@ if __name__ == "__main__":
             "generation": 0,
         }
         paramsEvaluate2 = {
-            "mode": "evaluate",
-            "save": "notUsefull",
-            "generation": 0,
+            'mode': "evaluate",
+            'save': "fullObsInit",
+            'generation': 40
         }
         
 
-        genetic_agent1.setup(None, None, paramsTrain)
+        genetic_agent2.setup(None, None, paramsEvaluate2)
         #genetic_agent2.setup(None, None, paramsEvaluate2)
-        agents = [genetic_agent1,genetic_agent1]
+        # agents = [genetic_agent2, SecretAgent()]
+        # //MonteCarloAgent(play_fn=one_action_heuristic)
+        agents = [RandomAgent(), MonteCarloAgent(play_fn=one_action_heuristic)]
 
         # agents = [StepAnalystPlayer(MonteCarloAgent()), StepAnalystPlayer(MonteCarloAgent())]        
 

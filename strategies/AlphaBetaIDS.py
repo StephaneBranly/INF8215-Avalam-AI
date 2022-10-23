@@ -22,8 +22,9 @@ class AlphaBetaIDS(AlphaBeta):
         start = time.time()
         
         heuristic = other_params['heuristic']
+        max_step = other_params['max_step']
         max_depth = 0
-        while(time.time()-start<time_to_play and max_depth<20):
+        while(time.time()-start<time_to_play and max_depth<max_step):
             new_start = time.time()
             max_depth+=1
             hashMaps = []

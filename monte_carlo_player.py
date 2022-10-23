@@ -24,7 +24,7 @@ class MonteCarloAgent(EvolvedAgent, MonteCarlo):
             # if player == -1:
             time_to_play = self.game_time_limit / 20
         else:
-            time_to_play = 5
+            time_to_play = 1
         # print(f"Player {player} \t| step {step} \t| time to play {time_to_play}")
         board = dict_to_improved_board(percepts)
         start_time = time.time()
