@@ -8,13 +8,17 @@ Some ideas available [here](https://md.picasoft.net/s/4HP7m5HFT)
 classDiagram
 class ImprovedBoard {
  last_action
+ mask
+ number_of_towers
   +play_action(action) 
   +undo_action() 
   +undo_all_actions() 
   +clone() 
   +get_hash() 
   +get_useful_towers() 
+  +is_wall(i,j) 
   +get_real_board(not_zero) 
+  +get_number_of_tower_height(height) 
 }
 click ImprovedBoard href "https://github.com/StephaneBranly/Avalam-AI/blob/main/doc/ImprovedBoard.md" "Detail of the class ImprovedBoard"
 class Board {
