@@ -247,7 +247,7 @@ class ImprovedBoard(Board):
                     for k in range(i-1, i+2):
                         for l in range(j-1, j+2):
                             if l > 0 and k > 0 and l < 9 and k < 9:
-                                if (self.m[k][l] == 0 and (k,l) in self.get_real_board()) or self.m[k][l] not in [0, 1, -1]:
+                                if (self.m[k][l] == 0 and not self.mask[k][l]) or self.m[k][l] not in [0, 1, -1]:
                                     useful = True
                 if useful:
                     useful_towers.append((i, j))

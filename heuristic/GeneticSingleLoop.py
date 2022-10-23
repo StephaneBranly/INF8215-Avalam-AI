@@ -17,14 +17,14 @@ class GeneticSingleLoop(GeneticHeuristic):
         """
         super().__init__(functions, parameters, all_functions=all_single_loop_functions)
 
-    def evaluate(self,board,player,action):
+    def evaluate(self,board,player,action,state = None):
         """
             Evaluate the board for the player in a single loop
             We consider that the first functions are single loop and the lasts are whole board
         """
         score = 0
         start_index_whole_board = len(self._functions)
-        for (i,j) in board.get_real_board():
+        for (i,j) in board.get_real_board(not_zero=True):
                 isolated = not board.is_tower_movable(i,j)
                 for k in range(len(self._functions)):
 

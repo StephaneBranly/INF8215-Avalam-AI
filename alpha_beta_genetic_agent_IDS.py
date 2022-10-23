@@ -12,7 +12,7 @@ class AlphaBetaIDSGeneticAgent(GeneticAgent, AlphaBetaIDS):
 
     def play_agent(self, agent, percepts, player, step, time_left, stats=False):
         board = dict_to_improved_board(percepts)
-        action = self.use_strategy(board, player, step, 30, other_params={'heuristic': agent}, stats=stats)
+        action = self.use_strategy(board, player, step, 60, other_params={'heuristic': agent}, stats=stats)
         # print("step", step,"explored", explored,"time",time.time()-start,"hashReduced",hashReduced,"transposition",transposition)
         return action
 

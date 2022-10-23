@@ -17,6 +17,9 @@ class BestMoveGeneticAgent(GeneticAgent, BestMove):
         # print("step", step,"explored", explored,"time",time.time()-start,"hashReduced",hashReduced,"transposition",transposition)
         return action
 
+    def get_agent_id(self):
+        return super().get_agent_id() + "_BestMove"
+
 if __name__ == "__main__":
     agent = BestMoveGeneticAgent()
     agent_main(agent, agent.argument_parser, agent.setup)
