@@ -163,7 +163,7 @@ def generate_board_history_fig(board, history, players, path='', pool_id=0, game
         plt.clf()
         plt.close()
 
-    with imageio.get_writer(f"{path}gif/game_history_p{pool_id}_g{game_id}.gif", mode='I', fps=3) as writer:
+    with imageio.get_writer(f"{path}gif/game_history_p{pool_id}_g{game_id}.gif", mode='I', fps=1) as writer:
         for filename in filenames:
             image = imageio.imread(filename)
             writer.append_data(image)

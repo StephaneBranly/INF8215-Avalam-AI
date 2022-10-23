@@ -56,7 +56,7 @@ Return an identifier for this agent.
 
 ----
 
-### ```argument_parser(parser)```
+### ```argument_parser(agent,parser)```
 
 ----
 

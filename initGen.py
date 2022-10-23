@@ -87,8 +87,7 @@ for i in range(size):
     parameters.append(negativRandom())
     # score
     parameters.append(positivRandom())
-    # remaining actions
-    parameters.append(fullRandom())
+
 
 for i in range(size):
     indiv = heuristic.clone()
@@ -135,8 +134,7 @@ for i in range(size):
     parameters.append(0)
     # score
     parameters.append(positivRandom())
-    # remaining actions
-    parameters.append(fullRandom())
+
 
     indiv.set_parameters(parameters)
     indiv.set_functions(functions)

@@ -8,13 +8,17 @@ Some ideas available [here](https://md.picasoft.net/s/4HP7m5HFT)
 classDiagram
 class ImprovedBoard {
  last_action
+ mask
+ number_of_towers
   +play_action(action) 
   +undo_action() 
   +undo_all_actions() 
   +clone() 
   +get_hash() 
   +get_useful_towers() 
+  +is_wall(i,j) 
   +get_real_board(not_zero) 
+  +get_number_of_tower_height(height) 
 }
 click ImprovedBoard href "https://github.com/StephaneBranly/Avalam-AI/blob/main/doc/ImprovedBoard.md" "Detail of the class ImprovedBoard"
 class Board {
@@ -88,9 +92,10 @@ class EvolvedAgent {
 }
 click EvolvedAgent href "https://github.com/StephaneBranly/Avalam-AI/blob/main/doc/EvolvedAgent.md" "Detail of the class EvolvedAgent"
 EvolvedAgent <|-- GeneticAgent
+EvolvedAgent <|-- MonteCarloAgent
+EvolvedAgent <|-- SecretAgent
 EvolvedAgent <|-- GreedyAgent
 EvolvedAgent <|-- RandomAgent
-EvolvedAgent <|-- MonteCarloAgent
 EvolvedAgent <|-- StepAnalystPlayer
 EvolvedAgent <|-- Viewer
 class Viewer {
@@ -115,6 +120,23 @@ class StepAnalystPlayer {
   +get_agent_id() 
 }
 click StepAnalystPlayer href "https://github.com/StephaneBranly/Avalam-AI/blob/main/doc/StepAnalystPlayer.md" "Detail of the class StepAnalystPlayer"
+class RandomAgent {
+  +hasEvolded() 
+  +play(percepts,player,step,time_left,game_id,pool_id) 
+  +get_agent_id() 
+}
+click RandomAgent href "https://github.com/StephaneBranly/Avalam-AI/blob/main/doc/RandomAgent.md" "Detail of the class RandomAgent"
+class GreedyAgent {
+  +play(percepts,player,step,time_left,game_id,pool_id) 
+  +get_agent_id() 
+}
+click GreedyAgent href "https://github.com/StephaneBranly/Avalam-AI/blob/main/doc/GreedyAgent.md" "Detail of the class GreedyAgent"
+class SecretAgent {
+  +hasEvolded() 
+  +play(percepts,player,step,time_left,game_id,pool_id) 
+  +get_agent_id() 
+}
+click SecretAgent href "https://github.com/StephaneBranly/Avalam-AI/blob/main/doc/SecretAgent.md" "Detail of the class SecretAgent"
 class MonteCarloAgent {
   +play(percepts,player,step,time_left,game_id,pool_id) 
   +pool_ended(pool_results,player,pool_id) 
@@ -144,15 +166,18 @@ class Strategy {
   +use_strategy(board,player,step,time_to_play,stats,other_params) 
 }
 click Strategy href "https://github.com/StephaneBranly/Avalam-AI/blob/main/doc/Strategy.md" "Detail of the class Strategy"
-Strategy <|-- AlphaBeta
+Strategy <|-- BestMove
 Strategy <|-- MonteCarlo
+Strategy <|-- AlphaBeta
 class AlphaBeta {
   +use_strategy(board,player,step,time_to_play,stats,other_params) 
-  +evaluate_state(heuristic,init_board,board,action,player) 
-  +max_value(init_board,current_board,heuristic,player,alpha,beta,depth,max_depth,hash_maps,start,step,time_to_play,explored,hash_reduced,transposition) 
-  +min_value(init_board,current_board,heuristic,player,alpha,beta,depth,max_depth,hash_maps,start,step,time_to_play,explored,hash_reduced,transposition) 
+  +evaluate_state(heuristic,board,action,player) 
+  +check_already_visited(board,depth,hash_maps) 
+  +max_value(board,heuristic,player,alpha,beta,depth,max_depth,hash_maps,start,step,time_to_play) 
+  +min_value(board,heuristic,player,alpha,beta,depth,max_depth,hash_maps,start,step,time_to_play) 
 }
 click AlphaBeta href "https://github.com/StephaneBranly/Avalam-AI/blob/main/doc/AlphaBeta.md" "Detail of the class AlphaBeta"
+AlphaBeta <|-- AlphaBetaIDS
 AlphaBeta <|-- AlphaBetaGeneticAgent
 class AlphaBetaGeneticAgent {
   +play_agent(agent,percepts,player,step,time_left,stats) 
@@ -171,9 +196,11 @@ class GeneticAgent {
   +pool_ended(pool_results,player,pool_id) 
   +get_agent_id() 
   +generate_stats_file() 
-  +argument_parser(parser) 
+  +argument_parser(agent,parser) 
 }
 click GeneticAgent href "https://github.com/StephaneBranly/Avalam-AI/blob/main/doc/GeneticAgent.md" "Detail of the class GeneticAgent"
+GeneticAgent <|-- BestMoveGeneticAgent
+GeneticAgent <|-- AlphaBetaIDSGeneticAgent
 GeneticAgent <|-- ObservationNN1actionAgent
 GeneticAgent <|-- AlphaBetaGeneticAgent
 class ObservationNN1actionAgent {
@@ -181,15 +208,23 @@ class ObservationNN1actionAgent {
   +default_agent() 
 }
 click ObservationNN1actionAgent href "https://github.com/StephaneBranly/Avalam-AI/blob/main/doc/ObservationNN1actionAgent.md" "Detail of the class ObservationNN1actionAgent"
-class RandomAgent {
-  +hasEvolded() 
-  +play(percepts,player,step,time_left,game_id,pool_id) 
-  +get_agent_id() 
+class AlphaBetaIDSGeneticAgent {
+  +play_agent(agent,percepts,player,step,time_left,stats) 
 }
-click RandomAgent href "https://github.com/StephaneBranly/Avalam-AI/blob/main/doc/RandomAgent.md" "Detail of the class RandomAgent"
-class GreedyAgent {
-  +play(percepts,player,step,time_left,game_id,pool_id) 
-  +get_agent_id() 
+click AlphaBetaIDSGeneticAgent href "https://github.com/StephaneBranly/Avalam-AI/blob/main/doc/AlphaBetaIDSGeneticAgent.md" "Detail of the class AlphaBetaIDSGeneticAgent"
+class AlphaBetaIDS {
+  +loopingIDS(board,heuristic,player,max_depth,hashMaps,start,step,time_to_play,last) 
+  +use_strategy(board,player,step,time_to_play,stats,other_params) 
 }
-click GreedyAgent href "https://github.com/StephaneBranly/Avalam-AI/blob/main/doc/GreedyAgent.md" "Detail of the class GreedyAgent"
+click AlphaBetaIDS href "https://github.com/StephaneBranly/Avalam-AI/blob/main/doc/AlphaBetaIDS.md" "Detail of the class AlphaBetaIDS"
+AlphaBetaIDS <|-- AlphaBetaIDSGeneticAgent
+class BestMoveGeneticAgent {
+  +play_agent(agent,percepts,player,step,time_left,stats) 
+}
+click BestMoveGeneticAgent href "https://github.com/StephaneBranly/Avalam-AI/blob/main/doc/BestMoveGeneticAgent.md" "Detail of the class BestMoveGeneticAgent"
+class BestMove {
+  +use_strategy(board,player,step,time_to_play,stats,other_params) 
+}
+click BestMove href "https://github.com/StephaneBranly/Avalam-AI/blob/main/doc/BestMove.md" "Detail of the class BestMove"
+BestMove <|-- BestMoveGeneticAgent
 ```
