@@ -54,18 +54,18 @@ def one_action_heuristic(board, player, step, time_left):
         score = 0
         # _, _, dx, dy = action
         # real_board = board.get_real_board()
-        score += board.get_number_of_tower_height(5 * player) * 0.9
-        score += board.get_number_of_tower_height(4 * player) * -0.69
-        score += board.get_number_of_tower_height(3 * player) * 1
-        score += board.get_number_of_tower_height(2 * player) * -0.6
-        score += board.get_number_of_tower_height(1 * player) * 0
+        score += board.get_number_of_tower_height(5 * player) * 0.84
+        score += board.get_number_of_tower_height(4 * player) * 0.05
+        score += board.get_number_of_tower_height(3 * player) * -0.74
+        score += board.get_number_of_tower_height(2 * player) * -0.17
+        score += board.get_number_of_tower_height(1 * player) * 0.8
         score += board.get_number_of_tower_height(0 * player) * 0
-        score += board.get_number_of_tower_height(-1 * player) * 0
-        score += board.get_number_of_tower_height(-2 * player) * -0.62
-        score += board.get_number_of_tower_height(-3 * player) * 0.23
-        score += board.get_number_of_tower_height(-4 * player) * 0.66
-        score += board.get_number_of_tower_height(-5 * player) * -0.93
-        score += board.get_score() * player
+        score += board.get_number_of_tower_height(-1 * player) * 0.04
+        score += board.get_number_of_tower_height(-2 * player) * 0.03
+        score += board.get_number_of_tower_height(-3 * player) * 0.09
+        score += board.get_number_of_tower_height(-4 * player) * -0.59
+        score += board.get_number_of_tower_height(-5 * player) * -0.99
+        score += board.get_score() * player * 0.77
         # for x in range(-1, 1):
         #     for y in range(-1, 1):
         #         i = dx + x

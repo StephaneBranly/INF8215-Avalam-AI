@@ -557,7 +557,7 @@ if __name__ == "__main__":
                 agents[i] = RandomAgent()
 
         genetic_agent1 = BestMoveGeneticAgent()
-        genetic_agent2 = AlphaBetaIDSGeneticAgent(only_useful=True)
+        genetic_agent2 = BestMoveGeneticAgent()
         paramsTrain = {
             'mode': "train",
             'save': "fullObsInit",
@@ -573,13 +573,24 @@ if __name__ == "__main__":
             'save': "fullObsInit",
             'generation': 40
         }
+
+        paramsTrainMCTSHeuristic = {
+            'mode': "train",
+            'save': "mctsSimulation",
+        }
+
+        paramsEvaluateMCTSHeuristic = {
+            'mode': "evaluate",
+            'save': "mctsSimulation",
+            'generation': 49
+        }
         
 
-        genetic_agent1.setup(None, None, paramsEvaluate2)
-        #genetic_agent2.setup(None, None, paramsEvaluate2)
-        # agents = [genetic_agent2, SecretAgent()]
+        # genetic_agent1.setup(None, None, paramsEvaluateMCTSHeuristic)
+        genetic_agent2.setup(None, None, paramsEvaluate2)
+        agents = [MonteCarloAgent(play_fn=one_action_heuristic), genetic_agent2]
         # //MonteCarloAgent(play_fn=one_action_heuristic)
-        agents = [MonteCarloAgent(play_fn=one_action_heuristic), genetic_agent1]
+        # agents = [MonteCarloAgent(play_fn=one_action_heuristic), genetic_agent1]
 
         # agents = [StepAnalystPlayer(MonteCarloAgent()), StepAnalystPlayer(MonteCarloAgent())]        
 
