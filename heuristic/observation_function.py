@@ -285,3 +285,33 @@ def board_tower2_enemy(board, player):
 def board_tower1_enemy(board, player):
     return board_tower1(board, -player)
 
+def board_isolated_tower5(board, player):
+    return board.get_number_of_isolated_tower_height(5 * player)
+
+def board_isolated_tower4(board, player):
+    return board.get_number_of_isolated_tower_height(4 * player)
+
+def board_isolated_tower3(board, player):
+    return board.get_number_of_isolated_tower_height(3 * player)
+
+def board_isolated_tower2(board, player):
+    return board.get_number_of_isolated_tower_height(2 * player)
+
+def board_isolated_tower1(board, player):
+    return board.get_number_of_isolated_tower_height(1 * player)
+
+def board_isolated_tower5_enemy(board, player):
+    return board_isolated_tower5(board, -player)
+
+def board_isolated_tower4_enemy(board, player):
+    return board_isolated_tower4(board, -player)
+
+def board_isolated_tower3_enemy(board, player):
+    return board_isolated_tower3(board, -player)
+
+def board_isolated_tower2_enemy(board, player):
+    return board_isolated_tower1(board, -player)
+
+def board_isolated_tower1_enemy(board, player):
+    return board_isolated_tower1(board, -player)
+

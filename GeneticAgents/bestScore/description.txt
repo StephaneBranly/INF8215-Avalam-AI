@@ -1,0 +1,6 @@
+Class     : BestMoveGeneticAgent
+Heuristic : GeneticBoardEvaluation
+Functions : board_score
+Individu  : 40
+Keep      : 30
+Mutation  : 2

@@ -1,7 +1,7 @@
 from heuristic.GeneticHeuristic import GeneticHeuristic
 from heuristic.observation_function import *
 
-all_board_evaluation_functions = [board_score,board_tower5,board_tower4,board_tower3,board_tower2,board_tower1,board_tower5_enemy,board_tower4_enemy,board_tower3_enemy,board_tower2_enemy,board_tower1_enemy]
+all_board_evaluation_functions = [board_score,board_tower5,board_tower4,board_tower3,board_tower2,board_tower1,board_tower5_enemy,board_tower4_enemy,board_tower3_enemy,board_tower2_enemy,board_tower1_enemy,board_isolated_tower5,board_isolated_tower4,board_isolated_tower3,board_isolated_tower2,board_isolated_tower1,board_isolated_tower5_enemy,board_isolated_tower4_enemy,board_isolated_tower3_enemy,board_isolated_tower2_enemy,board_isolated_tower1_enemy]
 """
     This genetic Agent use board functions.
 """
