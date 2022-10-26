@@ -213,7 +213,7 @@ class ImprovedBoard(Board):
             [True , True , True , True , False, False, False, False, True ],
             [True , True , True , True , True , False, False, True , True ]]
 
-    def __init__(self, percepts=Board.initial_board, max_height=Board.max_height,invert=False, last_action=None):
+    def __init__(self, percepts=Board.initial_board, max_height=Board.max_height, invert=False, last_action=None, compute_isolated_towers=False):
         self.last_action = last_action if last_action else []
         self.real_board = [( 0 , 2 ),( 0 , 3 ),( 1 , 1 ),( 1 , 2 ),( 1 , 3 ),( 1 , 4 ),( 2 , 1 ),( 2 , 2 ),( 2 , 3 ),( 2 , 4 ),( 2 , 5 ),( 2 , 6 ),( 3 , 1 ),( 3 , 2 ),( 3 , 3 ),( 3 , 4 ),( 3 , 5 ),( 3 , 6 ),( 3 , 7 ),( 3 , 8 ),( 4 , 0 ),( 4 , 1 ),( 4 , 2 ),( 4 , 3 ),( 4 , 5 ),( 4 , 6 ),( 4 , 7 ),( 4 , 8 ),( 5 , 0 ),( 5 , 1 ),( 5 , 2 ),( 5 , 3 ),( 5 , 4 ),( 5 , 5 ),( 5 , 6 ),( 5 , 7 ),( 6 , 2 ),( 6 , 3 ),( 6 , 4 ),( 6 , 5 ),( 6 , 6 ),( 6 , 7 ),( 7 , 4 ),( 7 , 5 ),( 7 , 6 ),( 7 , 7 ),( 8 , 5 ),( 8 , 6 )]
         self.actions_by_tower = [[0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -241,6 +241,8 @@ class ImprovedBoard(Board):
             4: 0,
             5: 0
         }
+
+        self.compute_isolated_towers = compute_isolated_towers
         self.number_of_isolated_towers = {
             -5: 0,
             -4: 0,
@@ -258,9 +260,10 @@ class ImprovedBoard(Board):
         for i in range(self.rows):
             for j in range(self.columns):
                 if (i, j) in self.real_board:
-                    self.actions_by_tower[i][j]=len([_ for _ in self.get_tower_actions(i, j)])
-                    if self.actions_by_tower[i][j] == 0:
-                        self.number_of_isolated_towers[self.m[i][j]] += 1
+                    if self.compute_isolated_towers:
+                        self.actions_by_tower[i][j]=len([_ for _ in self.get_tower_actions(i, j)])
+                        if self.actions_by_tower[i][j] == 0:
+                            self.number_of_isolated_towers[self.m[i][j]] += 1
                     self.number_of_towers[self.m[i][j]] += 1
 
 
@@ -277,19 +280,20 @@ class ImprovedBoard(Board):
         self.number_of_towers[self.m[action[2]][action[3]]] -= 1
 
         ## Available actions count
-        for i in range(-1,2):
-            for j in range(-1,2):
-                a = (action[2] + i, action[3] + j, action[2], action[3])
-                if self.is_action_valid(a):
-                    self.actions_by_tower[action[2]+i][action[3]+j] -= 1
-                    if self.actions_by_tower[action[2]+i][action[3]+j] == 0:
-                        self.number_of_isolated_towers[self.m[action[2]+i][action[3]+j]] += 1
+        if self.compute_isolated_towers:
+            for i in range(-1,2):
+                for j in range(-1,2):
+                    a = (action[2] + i, action[3] + j, action[2], action[3])
+                    if self.is_action_valid(a):
+                        self.actions_by_tower[action[2]+i][action[3]+j] -= 1
+                        if self.actions_by_tower[action[2]+i][action[3]+j] == 0:
+                            self.number_of_isolated_towers[self.m[action[2]+i][action[3]+j]] += 1
 
-                a = (action[0] + i, action[1] + j, action[0], action[1])
-                if self.is_action_valid(a):
-                    self.actions_by_tower[action[0]+i][action[1]+j] -= 1
-                    if self.actions_by_tower[action[0]+i][action[1]+j] == 0:
-                        self.number_of_isolated_towers[self.m[action[0]+i][action[1]+j]] += 1
+                    a = (action[0] + i, action[1] + j, action[0], action[1])
+                    if self.is_action_valid(a):
+                        self.actions_by_tower[action[0]+i][action[1]+j] -= 1
+                        if self.actions_by_tower[action[0]+i][action[1]+j] == 0:
+                            self.number_of_isolated_towers[self.m[action[0]+i][action[1]+j]] += 1
         
         ## Save action
         self.last_action.append((action, self.m[action[0]][action[1]], self.m[action[2]][action[3]]))
@@ -302,12 +306,13 @@ class ImprovedBoard(Board):
         self.number_of_towers[self.m[action[2]][action[3]]] += 1
         
         ## Available actions count
-        target_actions = self.get_tower_actions(action[2], action[3])
-        self.actions_by_tower[action[0]][action[1]] = 0
-        self.actions_by_tower[action[2]][action[3]] = 0
-        for a in target_actions:
-            self.actions_by_tower[a[2]][a[3]] += 1
-            self.actions_by_tower[action[2]][action[3]] += 1
+        if self.compute_isolated_towers:
+            target_actions = self.get_tower_actions(action[2], action[3])
+            self.actions_by_tower[action[0]][action[1]] = 0
+            self.actions_by_tower[action[2]][action[3]] = 0
+            for a in target_actions:
+                self.actions_by_tower[a[2]][a[3]] += 1
+                self.actions_by_tower[action[2]][action[3]] += 1
         
         return r
 
@@ -320,11 +325,12 @@ class ImprovedBoard(Board):
             self.number_of_towers[self.m[action[2]][action[3]]] -= 1
 
             ## Available actions count
-            for i in range(-1,2):
-                for j in range(-1,2):
-                    a = (action[2] + i, action[3] + j, action[2], action[3])
-                    if self.is_action_valid(a):
-                        self.actions_by_tower[action[2]+i][action[3]+j] -= 1
+            if self.compute_isolated_towers:
+                for i in range(-1,2):
+                    for j in range(-1,2):
+                        a = (action[2] + i, action[3] + j, action[2], action[3])
+                        if self.is_action_valid(a):
+                            self.actions_by_tower[action[2]+i][action[3]+j] -= 1
 
             # Undo Action
             self.m[action[0]][action[1]] = s
@@ -336,21 +342,22 @@ class ImprovedBoard(Board):
             self.number_of_towers[e] += 1
 
             ## Available actions count
-            target_actions = self.get_tower_actions(action[2], action[3])
-            self.actions_by_tower[action[2]][action[3]] = 0
-            for a in target_actions:
-                if self.actions_by_tower[a[2]][a[3]] == 0:
-                    self.number_of_isolated_towers[self.m[a[2]][a[3]]] -= 1
-                self.actions_by_tower[a[2]][a[3]] += 1
-                self.actions_by_tower[action[2]][action[3]] += 1
-            
-            from_actions = self.get_tower_actions(action[0], action[1])
-            self.actions_by_tower[action[0]][action[1]] = 0
-            for a in from_actions:
-                if self.actions_by_tower[a[0]][a[1]] == 0:
-                    self.number_of_isolated_towers[self.m[a[0]][a[1]]] -= 1
-                self.actions_by_tower[a[0]][a[1]]+=1
-                self.actions_by_tower[action[0]][action[1]] += 1
+            if self.compute_isolated_towers:
+                target_actions = self.get_tower_actions(action[2], action[3])
+                self.actions_by_tower[action[2]][action[3]] = 0
+                for a in target_actions:
+                    if self.actions_by_tower[a[2]][a[3]] == 0:
+                        self.number_of_isolated_towers[self.m[a[2]][a[3]]] -= 1
+                    self.actions_by_tower[a[2]][a[3]] += 1
+                    self.actions_by_tower[action[2]][action[3]] += 1
+                
+                from_actions = self.get_tower_actions(action[0], action[1])
+                self.actions_by_tower[action[0]][action[1]] = 0
+                for a in from_actions:
+                    if self.actions_by_tower[a[0]][a[1]] == 0:
+                        self.number_of_isolated_towers[self.m[a[0]][a[1]]] -= 1
+                    self.actions_by_tower[a[0]][a[1]]+=1
+                    self.actions_by_tower[action[0]][action[1]] += 1
 
         else:
             raise Exception("No move to undo")
