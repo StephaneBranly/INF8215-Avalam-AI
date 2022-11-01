@@ -2,30 +2,10 @@
 Back to [readme menu](../README.md)
 
 ## Attributes
-### ```last_action```
-Built-in mutable sequence.
-If no argument is given, the constructor creates a new empty list.
-The argument must be an iterable if specified.
-
-----
-
 ### ```mask```
 Built-in mutable sequence.
 If no argument is given, the constructor creates a new empty list.
 The argument must be an iterable if specified.
-
-----
-
-### ```number_of_towers```
-dict() -> new empty dictionary
-dict(mapping) -> new dictionary initialized from a mapping object's
-(key, value) pairs
-dict(iterable) -> new dictionary initialized as if via:
-d = {}
-for k, v in iterable:
-d[k] = v
-dict(**kwargs) -> new dictionary initialized with the name=value pairs
-in the keyword argument list. For example: dict(one=1, two=2)
 
 ----
 
@@ -64,6 +44,18 @@ Return a hash of this object.
 ----
 
 ### ```get_number_of_tower_height(height)```
+
+----
+
+### ```get_number_of_isolated_tower_height(height)```
+
+----
+
+### ```get_tower_actions_len(i,j)```
+
+----
+
+### ```get_score()```
 
 ----
 

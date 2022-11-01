@@ -7,9 +7,7 @@ Some ideas available [here](https://md.picasoft.net/s/4HP7m5HFT)
 ```mermaid
 classDiagram
 class ImprovedBoard {
- last_action
  mask
- number_of_towers
   +play_action(action) 
   +undo_action() 
   +undo_all_actions() 
@@ -19,6 +17,9 @@ class ImprovedBoard {
   +is_wall(i,j) 
   +get_real_board(not_zero) 
   +get_number_of_tower_height(height) 
+  +get_number_of_isolated_tower_height(height) 
+  +get_tower_actions_len(i,j) 
+  +get_score() 
 }
 click ImprovedBoard href "https://github.com/StephaneBranly/Avalam-AI/blob/main/doc/ImprovedBoard.md" "Detail of the class ImprovedBoard"
 class Board {
@@ -60,6 +61,12 @@ class GeneticHeuristic {
 click GeneticHeuristic href "https://github.com/StephaneBranly/Avalam-AI/blob/main/doc/GeneticHeuristic.md" "Detail of the class GeneticHeuristic"
 GeneticHeuristic <|-- Genetic1Action
 GeneticHeuristic <|-- GeneticSingleLoop
+GeneticHeuristic <|-- GeneticBoardEvaluation
+class GeneticBoardEvaluation {
+  +evaluate(board,player,action) 
+  +clone() 
+}
+click GeneticBoardEvaluation href "https://github.com/StephaneBranly/Avalam-AI/blob/main/doc/GeneticBoardEvaluation.md" "Detail of the class GeneticBoardEvaluation"
 class GeneticSingleLoop {
   +evaluate(board,player,action) 
   +clone() 
