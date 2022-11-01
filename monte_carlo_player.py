@@ -1,5 +1,5 @@
 from strategies.MonteCarlo import MonteCarlo
-from strategies.simulate_functions import greedy_play, one_action_heuristic
+from strategies.simulate_functions import best_score, greedy_play, one_action_heuristic,random_play
 from avalam import *
 import time
 
@@ -66,5 +66,5 @@ class MonteCarloAgent(EvolvedAgent, MonteCarlo):
         return f"Monte Carlo Agent | {self.play_fn_name}"
 
 if __name__ == "__main__":
-    agent_main(MonteCarloAgent())
+    agent_main(MonteCarloAgent(play_fn=best_score))
 

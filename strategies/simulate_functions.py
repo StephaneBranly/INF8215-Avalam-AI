@@ -26,23 +26,23 @@ def random_play(board, player, step, time_left):
 def best_score(board, player, step, time_left):
     actions = list(board.get_actions())
 
-    best_score, best_action = -math.inf, None
-
     def evaluate(board, player, action):
         return board.get_score() * player
 
+    best_score, best_actions = -math.inf, [None]
     for a in actions:
         board.play_action(a)
         score = evaluate(board, player, a)
-        board.undo_action()
         if score > best_score:
-            best_score, best_action = score, a
-    return best_action
+            best_score, best_actions = score, [a]
+        elif score == best_score:
+            best_actions.append(a)
+        board.undo_action()
+
+    return random.choice(best_actions)
 
 def one_action_heuristic(board, player, step, time_left):
     actions = list(board.get_actions())
-
-    best_score, best_action = -math.inf, None
 
     def fullObsInit_evaluate(board, player, action):
         score = 0
@@ -61,23 +61,29 @@ def one_action_heuristic(board, player, step, time_left):
         score += board.get_number_of_tower_height(-4 * player) * -0.92
         score += board.get_number_of_tower_height(-5 * player) * -1
     
-        score += board.get_number_of_isolated_tower_height(5 * player) * -0.82
-        score += board.get_number_of_isolated_tower_height(4 * player) * -0.17
-        score += board.get_number_of_isolated_tower_height(3 * player) * 0.07
-        score += board.get_number_of_isolated_tower_height(2 * player) * 0.06
-        score += board.get_number_of_isolated_tower_height(1 * player) * 0.09
-        score += board.get_number_of_isolated_tower_height(0 * player) * 0
-        score += board.get_number_of_isolated_tower_height(-1 * player) * 0.07
-        score += board.get_number_of_isolated_tower_height(-2 * player) * -0.10
-        score += board.get_number_of_isolated_tower_height(-3 * player) * -0.26
-        score += board.get_number_of_isolated_tower_height(-4 * player) * -0.24
-        score += board.get_number_of_isolated_tower_height(-5 * player) * -0.7
+        # score += board.get_number_of_isolated_tower_height(5 * player) * -0.82
+        # score += board.get_number_of_isolated_tower_height(4 * player) * -0.17
+        # score += board.get_number_of_isolated_tower_height(3 * player) * 0.07
+        # score += board.get_number_of_isolated_tower_height(2 * player) * 0.06
+        # score += board.get_number_of_isolated_tower_height(1 * player) * 0.09
+        # score += board.get_number_of_isolated_tower_height(0 * player) * 0
+        # score += board.get_number_of_isolated_tower_height(-1 * player) * 0.07
+        # score += board.get_number_of_isolated_tower_height(-2 * player) * -0.10
+        # score += board.get_number_of_isolated_tower_height(-3 * player) * -0.26
+        # score += board.get_number_of_isolated_tower_height(-4 * player) * -0.24
+        # score += board.get_number_of_isolated_tower_height(-5 * player) * -0.7
         return score
 
+    best_score, best_actions = -math.inf, [None]
     for a in actions:
         board.play_action(a)
         score = fullObsInit_evaluate(board, player, a)
-        board.undo_action()
         if score > best_score:
-            best_score, best_action = score, a
-    return best_action
+            best_score, best_actions = score, [a]
+        elif score == best_score:
+            best_actions.append(a)
+        board.undo_action()
+
+    return random.choice(best_actions)
+
+    # return scores[random.randint(0, int(len(scores) * 0.1))][1]

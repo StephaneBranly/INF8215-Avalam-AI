@@ -49,7 +49,7 @@ from step_analyst_player import StepAnalystPlayer
 from alpha_beta_genetic_agent_IDS import AlphaBetaIDSGeneticAgent
 from best_move_genetic_agent import BestMoveGeneticAgent
 
-from strategies.simulate_functions import best_score, one_action_heuristic
+from strategies.simulate_functions import best_score, one_action_heuristic, random_play
 
 
 class TimeCreditExpired(Exception):
@@ -556,7 +556,7 @@ if __name__ == "__main__":
             else:
                 agents[i] = RandomAgent()
 
-        genetic_agent1 = AlphaBetaIDSGeneticAgent()
+        genetic_agent1 = BestMoveGeneticAgent()
         genetic_agent2 = BestMoveGeneticAgent()
         paramsTrain = {
             'mode': "train",
@@ -577,7 +577,7 @@ if __name__ == "__main__":
         paramsTrainMCTSHeuristic = {
             'mode': "train",
             'save': "mctsSimulationIso",
-            'generation': 0
+            'generation': 37
         }
 
         paramsEvaluateMCTSHeuristic = {
@@ -589,7 +589,7 @@ if __name__ == "__main__":
         paramsEvaluateMCTSisoHeuristic = {
             'mode': "evaluate",
             'save': "mctsSimulationIso",
-            'generation': 29
+            'generation': 38
         }
 
         paramsEvaluateGetScoreHeuristic = {
@@ -599,11 +599,11 @@ if __name__ == "__main__":
         }
         
 
-        genetic_agent1.setup(None, None, paramsEvaluateGetScoreHeuristic)
-        genetic_agent2.setup(None, None, paramsEvaluatefullObsInit)
-        agents = [genetic_agent2, genetic_agent1]
+        # genetic_agent1.setup(None, None, paramsTrainMCTSHeuristic)
+        # genetic_agent2.setup(None, None, paramsEvaluatefullObsInit)
+        # agents = [genetic_agent1, genetic_agent1]
         # //MonteCarloAgent(play_fn=one_action_heuristic)
-        # agents = [MonteCarloAgent(play_fn=one_action_heuristic), MonteCarloAgent(play_fn=best_score)]
+        agents = [MonteCarloAgent(play_fn=one_action_heuristic), MonteCarloAgent(play_fn=best_score)]
 
         # agents = [StepAnalystPlayer(MonteCarloAgent()), StepAnalystPlayer(MonteCarloAgent())]        
 
