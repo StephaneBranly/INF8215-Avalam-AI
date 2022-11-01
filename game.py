@@ -49,7 +49,7 @@ from step_analyst_player import StepAnalystPlayer
 from alpha_beta_genetic_agent_IDS import AlphaBetaIDSGeneticAgent
 from best_move_genetic_agent import BestMoveGeneticAgent
 
-from strategies.simulate_functions import one_action_heuristic, one_action_simple_h
+from strategies.simulate_functions import best_score, one_action_heuristic, random_play
 
 
 class TimeCreditExpired(Exception):
@@ -557,7 +557,7 @@ if __name__ == "__main__":
                 agents[i] = RandomAgent()
 
         genetic_agent1 = BestMoveGeneticAgent()
-        genetic_agent2 = AlphaBetaIDSGeneticAgent(only_useful=True)
+        genetic_agent2 = BestMoveGeneticAgent()
         paramsTrain = {
             'mode': "train",
             'save': "fullObsInit",
@@ -568,18 +568,42 @@ if __name__ == "__main__":
             "save": "fun",
             "generation": 0,
         }
-        paramsEvaluate2 = {
+        paramsEvaluatefullObsInit = {
             'mode': "evaluate",
             'save': "fullObsInit",
             'generation': 40
         }
+
+        paramsTrainMCTSHeuristic = {
+            'mode': "train",
+            'save': "mctsSimulationIso",
+            'generation': 37
+        }
+
+        paramsEvaluateMCTSHeuristic = {
+            'mode': "evaluate",
+            'save': "mctsSimulation",
+            'generation': 49
+        }
+
+        paramsEvaluateMCTSisoHeuristic = {
+            'mode': "evaluate",
+            'save': "mctsSimulationIso",
+            'generation': 38
+        }
+
+        paramsEvaluateGetScoreHeuristic = {
+            'mode': "evaluate",
+            'save': "bestScore",
+            'generation': 1
+        }
         
 
-        genetic_agent2.setup(None, None, paramsEvaluate2)
-        #genetic_agent2.setup(None, None, paramsEvaluate2)
-        # agents = [genetic_agent2, SecretAgent()]
+        # genetic_agent1.setup(None, None, paramsTrainMCTSHeuristic)
+        # genetic_agent2.setup(None, None, paramsEvaluatefullObsInit)
+        # agents = [genetic_agent1, genetic_agent1]
         # //MonteCarloAgent(play_fn=one_action_heuristic)
-        agents = [RandomAgent(), MonteCarloAgent(play_fn=one_action_heuristic)]
+        agents = [MonteCarloAgent(play_fn=one_action_heuristic), MonteCarloAgent(play_fn=best_score)]
 
         # agents = [StepAnalystPlayer(MonteCarloAgent()), StepAnalystPlayer(MonteCarloAgent())]        
 
@@ -592,6 +616,7 @@ if __name__ == "__main__":
                 agent_m1 = agents[1].get_agent_id()
             else:
                 agent_m1 = "Agent -1"
+            
             return [agent_p1, agent_m1]
 
         def compute_pool_results(history):

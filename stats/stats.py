@@ -118,11 +118,18 @@ def generate_board_fig(board, step, player, action, scores, pool, game, players)
                         [ True,  True,  True,  True, False,  False, False,  False,  True],
                         [ True,  True,  True,  True,  True, False,  False,  True,  True] ])
 
-    sns.heatmap(board, annot=True, cmap='coolwarm', cbar=False, linewidths=1, linecolor='black', square=True, mask=mask, vmin=-5, vmax=5, ax=ax1, annot_kws={"size": 20})
+    sns.heatmap(board.m, annot=True, cmap='coolwarm', cbar=False, linewidths=1, linecolor='black', square=True, mask=mask, vmin=-5, vmax=5, ax=ax1, annot_kws={"size": 20})
     step_to_display = f" {step}" if step < 10 else f"{step}"
     player_to_display = f" {player}" if player == 1 else f"{player}"
     ax1.set_title(f"Step {step_to_display} | Player {player_to_display} | Action {action}")
     ax1.arrow(y=action[0]+.5, x=action[1]+.5, dy=action[2]-action[0], dx=action[3]-action[1], color='red' if player==1 else 'blue', head_width=.4, head_length=.4, length_includes_head=True)
+    for x in range(mask.shape[0]):
+        for y in range(mask.shape[1]):
+            if board.get_tower_actions_len(x, y) <= 0 and board.m[x][y] != 0:
+                color = 'red' if board.m[x][y] > 0 else 'blue'
+                circle = plt.Circle((y+.5, x+.5), .4, color=color, fill=False, linewidth=2)
+                ax1.add_patch(circle)
+    
     xs = range(len(scores))
     positive = [True if x > 0 else False for x in scores]
     negative = [False if x > 0 else True for x in scores]
@@ -155,7 +162,7 @@ def generate_board_history_fig(board, history, players, path='', pool_id=0, game
     for i, action in enumerate(history):
         board.play_action(action)
         scores.append(board.get_score())
-        fig = generate_board_fig(board.m, i+1, player, action, scores, pool_id, game_id, players)
+        fig = generate_board_fig(board, i+1, player, action, scores, pool_id, game_id, players)
         filename = f"{path}gif/board_history_{i}_{pool_id}_{game_id}.png"
         plt.savefig(filename, fig=fig)
         player = -player

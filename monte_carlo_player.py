@@ -1,10 +1,10 @@
 from strategies.MonteCarlo import MonteCarlo
-from strategies.simulate_functions import greedy_play
+from strategies.simulate_functions import best_score, greedy_play, one_action_heuristic,random_play
 from avalam import *
 import time
 
 class MonteCarloAgent(EvolvedAgent, MonteCarlo):
-    def __init__(self, play_fn=greedy_play):
+    def __init__(self, play_fn=one_action_heuristic):
         self.play_fn_name = play_fn.__name__
         self.games = {}
         self.game_time_limit = None
@@ -51,7 +51,7 @@ class MonteCarloAgent(EvolvedAgent, MonteCarlo):
         
         # else:
         
-        action = self.use_strategy(board.clone(), player, step, time_to_play=time_to_play,stats=True) # , tree=self.games[game_id]['tree']
+        action = self.use_strategy(board, player, step, time_to_play=time_to_play,stats=True) # , tree=self.games[game_id]['tree']
         # self.games[game_id]['tree'] = new_tree
         # self.games[game_id]['board'] = new_board
         # Time left: {time_left-time.time() + start_time}\t
@@ -66,5 +66,5 @@ class MonteCarloAgent(EvolvedAgent, MonteCarlo):
         return f"Monte Carlo Agent | {self.play_fn_name}"
 
 if __name__ == "__main__":
-    agent_main(MonteCarloAgent())
+    agent_main(MonteCarloAgent(play_fn=best_score))
 

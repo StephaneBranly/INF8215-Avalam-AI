@@ -8,11 +8,12 @@ import time
 from heuristic.Genetic1Action import Genetic1Action
 from heuristic.GeneticMultAction import GeneticMultAction
 from heuristic.GeneticSingleLoop import GeneticSingleLoop
+from heuristic.GeneticBoardEvaluation import GeneticBoardEvaluation
 from heuristic.stats import *
 from utils import key_value_or_default
 from matplotlib.backends.backend_pdf import PdfPages
 
-available_heuristics = [Genetic1Action, GeneticMultAction, GeneticSingleLoop]
+available_heuristics = [Genetic1Action, GeneticMultAction, GeneticSingleLoop, GeneticBoardEvaluation]
 
 class GeneticAgent(EvolvedAgent):
     def setup(self, agent, parser, args):

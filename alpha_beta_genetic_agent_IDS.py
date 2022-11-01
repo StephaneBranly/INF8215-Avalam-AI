@@ -13,7 +13,9 @@ class AlphaBetaIDSGeneticAgent(GeneticAgent, AlphaBetaIDS):
 
     def play_agent(self, agent, percepts, player, step, time_left, stats=False):
         board = dict_to_improved_board(percepts)
-        action = self.use_strategy(board, player, step, 60 if time_left == None else time_left/((35-step)/2), other_params={'heuristic': agent, 'max_step': self.max_step}, stats=stats)
+        if time_left:
+            time_to_play = time_left/((34-step)/2) if step < 34 else time_left/2
+        action = self.use_strategy(board, player, step, 60 if time_left == None else time_to_play, other_params={'heuristic': agent, 'max_step': self.max_step}, stats=stats)
         # print("step", step,"explored", explored,"time",time.time()-start,"hashReduced",hashReduced,"transposition",transposition)
         return action
 
