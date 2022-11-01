@@ -1,3 +1,4 @@
+from heuristic.GeneticSingleLoopMinMax import GeneticSingleLoopMinMax
 from avalam import *
 import itertools
 import json
@@ -12,7 +13,7 @@ from heuristic.stats import *
 from utils import key_value_or_default
 from matplotlib.backends.backend_pdf import PdfPages
 
-available_heuristics = [Genetic1Action, GeneticMultAction, GeneticSingleLoop]
+available_heuristics = [Genetic1Action, GeneticMultAction, GeneticSingleLoop, GeneticSingleLoopMinMax]
 
 class GeneticAgent(EvolvedAgent):
     def setup(self, agent, parser, args):

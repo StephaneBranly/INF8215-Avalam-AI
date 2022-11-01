@@ -1,6 +1,0 @@
-Class     : BestMoveGeneticAgent
-Heuristic : GeneticSingleLoop
-Functions : single_loop_isolated_tower,enemy_single_loop_isolated_tower,single_loop_tower5,single_loop_tower4,single_loop_tower3,single_loop_tower2,enemy_single_loop_tower5,enemy_single_loop_tower4,enemy_single_loop_tower3,enemy_single_loop_tower2,single_loop_isolated_tower5,single_loop_isolated_tower4,single_loop_isolated_tower3,single_loop_isolated_tower2,enemy_single_loop_isolated_tower5,enemy_single_loop_isolated_tower4,enemy_single_loop_isolated_tower3,enemy_single_loop_isolated_tower2,wineable_tower,enemy_wineable_tower,score,remaining_actions
-Individu  : 30
-Keep      : 30
-Mutation  : 1

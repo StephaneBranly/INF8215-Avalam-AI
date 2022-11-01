@@ -28,6 +28,8 @@ import pickle
 import subprocess
 import threading
 
+from worst_move_genetic_agent import WorstMoveGeneticAgent
+
 # from MCTS.MonteCarlo import MonteCarlo
 # from MCTS.simulate_functions import one_action_heuristic, random_play
 
@@ -559,29 +561,29 @@ if __name__ == "__main__":
                 agents[i] = RandomAgent()
 
         genetic_agent1 = BestMoveGeneticAgent()
-        genetic_agent2 = AlphaBetaIDSGeneticAgent(only_useful=True)
+        genetic_agent2 = BestMoveGeneticAgent()
         paramsTrain = {
             'mode': "train",
-            'save': "fullObsInit",
-            'generation':23
+            'save': "SimpleHeuristic",
+            'generation':0
         }
         paramsEvaluate1 = {
             "mode": "evaluate",
-            "save": "fun",
-            "generation": 0,
+            "save": "fullObsInit",
+            "generation": 40,
         }
         paramsEvaluate2 = {
             'mode': "evaluate",
-            'save': "fullObsInit",
-            'generation': 40
+            'save': "SimpleHeuristic",
+            'generation': 0
         }
         
 
+        genetic_agent1.setup(None, None, paramsEvaluate1)
         genetic_agent2.setup(None, None, paramsEvaluate2)
-        #genetic_agent2.setup(None, None, paramsEvaluate2)
         # agents = [genetic_agent2, SecretAgent()]
         # //MonteCarloAgent(play_fn=one_action_heuristic)
-        agents = [RandomAgent(), MonteCarloAgent(play_fn=one_action_heuristic)]
+        agents = [genetic_agent1, genetic_agent2]
 
         # agents = [StepAnalystPlayer(MonteCarloAgent()), StepAnalystPlayer(MonteCarloAgent())]        
 

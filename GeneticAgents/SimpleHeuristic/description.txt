@@ -1,0 +1,6 @@
+Class     : AlphaBetaIDSGeneticAgent
+Heuristic : GeneticSingleLoop
+Functions : single_loop_isolated_tower,enemy_single_loop_isolated_tower,single_loop_tower5,enemy_single_loop_tower5,wineable_tower,enemy_wineable_tower,score
+Individu  : 20
+Keep      : 25
+Mutation  : 1

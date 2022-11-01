@@ -180,7 +180,7 @@ def enemy_single_loop_tower2(board,player,i,j,isolated = None):
 def single_loop_isolated_tower(board,player,i,j,isolated = None):
     if isolated is None:
         isolated = not board.is_tower_movable(i,j)
-    if isolated:
+    if isolated and board.m[i][j]*player > 0:
         return 1
     else:
         return 0

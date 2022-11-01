@@ -3,9 +3,9 @@ from heuristic.observation_function import *
 from heuristic.GeneticSingleLoop import GeneticSingleLoop
 
 
-save = "DoubleHeuristic"
+save = "DoubleHeuristicMax"
 heuristic = GeneticSingleLoop()
-size = 30
+size = 40
 
 functions = [
     single_loop_isolated_tower,
@@ -81,6 +81,10 @@ for i in range(size):
     parameters.append(negativRandom())
     # enemy isolated tower 1
     parameters.append(negativRandom())
+    # moveable tower
+    parameters.append(positivRandom())
+    # enemy moveable tower
+    parameters.append(negativRandom())
     # wineable tower
     parameters.append(0)
     # enemy wineable tower
@@ -88,10 +92,11 @@ for i in range(size):
     # score
     parameters.append(positivRandom())
 
-
-for i in range(size):
-    indiv = heuristic.clone()
-    parameters = []
+    indiv.set_parameters(parameters)
+    indiv.set_functions(functions)
+    print(len(parameters), len(functions))
+    indiv.save_as_json(f"GeneticAgents/{save}/gen1.json",0)
+"""
     # isolated tower
     parameters.append(positivRandom())
     # enemy isolated tower
@@ -133,10 +138,7 @@ for i in range(size):
     # enemy wineable tower
     parameters.append(0)
     # score
-    parameters.append(positivRandom())
+    parameters.append(positivRandom())"""
 
 
-    indiv.set_parameters(parameters)
-    indiv.set_functions(functions)
-    indiv.save_as_json(f"GeneticAgents/{save}/gen1.json",0)
 

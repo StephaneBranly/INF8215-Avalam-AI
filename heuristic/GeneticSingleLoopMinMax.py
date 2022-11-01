@@ -1,7 +1,7 @@
 from heuristic.GeneticHeuristic import GeneticHeuristic
 from heuristic.observation_function import *
 
-all_single_loop_functions = [single_loop_isolated_tower,enemy_single_loop_isolated_tower,single_loop_tower5,single_loop_tower4,single_loop_tower3,single_loop_tower2,enemy_single_loop_tower5,enemy_single_loop_tower4,enemy_single_loop_tower3,enemy_single_loop_tower2,single_loop_isolated_tower5,single_loop_isolated_tower4,single_loop_isolated_tower3,single_loop_isolated_tower2,enemy_single_loop_isolated_tower5,enemy_single_loop_isolated_tower4,enemy_single_loop_isolated_tower3,enemy_single_loop_isolated_tower2,wineable_tower,enemy_wineable_tower,score,remaining_actions]
+all_single_loop_functions = [single_loop_isolated_tower,enemy_single_loop_isolated_tower,single_loop_tower5,single_loop_tower4,single_loop_tower3,single_loop_tower2,enemy_single_loop_tower5,enemy_single_loop_tower4,enemy_single_loop_tower3,enemy_single_loop_tower2,single_loop_isolated_tower5,single_loop_isolated_tower4,single_loop_isolated_tower3,single_loop_isolated_tower2,single_loop_isolated_tower1,enemy_single_loop_isolated_tower5,enemy_single_loop_isolated_tower4,enemy_single_loop_isolated_tower3,enemy_single_loop_isolated_tower2,enemy_single_loop_isolated_tower1,moveable_tower,enemy_moveable_tower,wineable_tower,enemy_wineable_tower,score,remaining_actions]
 all_whole_board_functions = [score, remaining_actions]
 """
     This genetic Agent use a single loop to evaluate the board.
@@ -22,6 +22,7 @@ class GeneticSingleLoopMinMax(GeneticHeuristic):
             Evaluate the board for the player in a single loop
             We consider that the first functions are single loop and the lasts are whole board
         """
+
         score = 0
         start_index_whole_board = len(self._functions)
         offset = 0 if state == "min" else len(self._functions)
@@ -31,8 +32,7 @@ class GeneticSingleLoopMinMax(GeneticHeuristic):
 
                     if self._functions[k] in all_whole_board_functions:
                         start_index_whole_board = k
-                        break
-
+                        break    
                     score += self._parameters[k + offset]*self._functions[k](board,player,i,j,isolated)
         #print(start_index_whole_board,len(self._functions),len(self._parameters))
         for k in range(start_index_whole_board,len(self._functions)):

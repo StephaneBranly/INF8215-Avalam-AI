@@ -53,7 +53,7 @@ class AlphaBeta(Strategy):
 
         # temp ecoulé ou prof max atteinte
         if depth==max_depth or time.time()-start > time_to_play:
-            v = heuristic.evaluate(board, player, None)
+            v = heuristic.evaluate(board, player, None,"min")
             h = hash(tuple(map(tuple, board.m)))
             hash_maps[depth][h] = (v,None) 
             #print("max depth")
@@ -111,8 +111,11 @@ class AlphaBeta(Strategy):
         
         # temp ecoulé ou prof max atteinte
         if depth==max_depth or time.time()-start > time_to_play:
+            v = heuristic.evaluate(board, player, None,"max")
+            h = hash(tuple(map(tuple, board.m)))
+            hash_maps[depth][h] = (v,None) 
             #print("max depth")
-            return (heuristic.evaluate(board, player, None),None, 1, 0, 0)
+            return (v,None, 1, 0, 0)
 
         # fin de partie
         if(board.is_finished()):
