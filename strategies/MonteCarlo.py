@@ -134,8 +134,8 @@ class MonteCarlo(Strategy):
     def uct_score(self, node):
         """Return the UCT score of the node."""
         if node["n"] == 0:
-            return -math.inf
-        return node["u"] + self.c * math.sqrt(math.log(node['parent']["n"]) / node["n"])
+            return math.inf
+        return node["u"]/node['n'] + self.c * math.sqrt(math.log(node['parent']["n"]) / node["n"])
 
     def save_tree(self, tree):
         """Save the tree in a file."""
