@@ -410,13 +410,13 @@ class ImprovedBoard(Board):
         score = 0
 
         for i in range(-5, 6):
-            score += self.number_of_towers[i] * (1 if i > 0 else -1)
+            score += self.number_of_towers[i] * (1 if i > 0 else -1 if i < 0 else 0)
         if score == 0:
             return self.number_of_towers[5] - self.number_of_towers[-5]
         return score
 
-def dict_to_improved_board(dictio):
-    board = ImprovedBoard()
+def dict_to_improved_board(dictio, compute_isolated_towers=False):
+    board = ImprovedBoard(compute_isolated_towers=compute_isolated_towers)
     board.m = dictio['m']
     board.rows = dictio['rows']
     board.max_height = dictio['max_height']

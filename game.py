@@ -299,6 +299,8 @@ class Game:
             logging.info("Winner: draw game")
         self.trace.set_winner(winner, reason)
         self.viewer.finished(self.step, winner, reason)
+        print(f"Game finished in {self.step} steps")
+        print(f"Credits: {self.credits}")
         for i in range(2):
             if self.agents[i].hasEvolved():
                 self.agents[i].finished(self.step, winner, reason, 1 if i==0 else -1, self.game_id, self.pool_id)
@@ -600,11 +602,11 @@ if __name__ == "__main__":
         
 
         # genetic_agent1.setup(None, None, paramsTrainMCTSHeuristic)
-        # genetic_agent2.setup(None, None, paramsEvaluatefullObsInit)
+        genetic_agent2.setup(None, None, paramsEvaluatefullObsInit)
         # agents = [genetic_agent1, genetic_agent1]
         # //MonteCarloAgent(play_fn=one_action_heuristic)
-        agents = [MonteCarloAgent(play_fn=one_action_heuristic), MonteCarloAgent(play_fn=best_score)]
-
+        # agents = [genetic_agent2, MonteCarloAgent(play_fn=best_score)]
+        agents = [genetic_agent2, MonteCarloAgent(play_fn=best_score)]
         # agents = [StepAnalystPlayer(MonteCarloAgent()), StepAnalystPlayer(MonteCarloAgent())]        
 
         def get_agent_names():
@@ -645,7 +647,7 @@ if __name__ == "__main__":
             game_history['steps'].append(game.step)
             if args.gif:
                 actions_history = [a[1] for a in game.trace.actions]
-                generate_board_history_fig(ImprovedBoard(), actions_history, get_agent_names(), "stats/", p, game.game_id)
+                generate_board_history_fig(ImprovedBoard(compute_isolated_towers=True), actions_history, get_agent_names(), "stats/", p, game.game_id)
 
         def progress_bar(i, n):
             return"[%-20s] %d%%" % ('='*int(20*i/n), 100*i/n)
@@ -686,7 +688,7 @@ if __name__ == "__main__":
                             agent_m1 = agents[1].get_agent_id()
                         else:
                             agent_m1 = "Agent -1"
-                        generate_board_history_fig(ImprovedBoard(), t.get_history(), get_agent_names(), "stats/", p, t.get_id())
+                        generate_board_history_fig(ImprovedBoard(compute_isolated_towers=True), t.get_history(), get_agent_names(), "stats/", p, t.get_id())
 
             else:
                 for i in range(args.games):

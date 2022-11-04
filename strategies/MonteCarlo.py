@@ -125,8 +125,8 @@ class MonteCarlo(Strategy):
             current_player = -current_player
         
         board_score = board.get_score() * player
-
-        return 1 if board_score > 0 else 0 if board_score < 0 else 0.2
+        
+        return board_score
 
     def backpropagate(self, v, n_child, board):
         """Backpropagate the value v to the root of the tree."""
