@@ -417,6 +417,8 @@ class ImprovedBoard(Board):
         return self.number_of_towers[height]
 
     def get_number_of_isolated_tower_height(self, height):
+        if self.compute_isolated_towers == False:
+            raise Warning("Compute isolated towers is not enabled")
         return self.number_of_isolated_towers[height]
 
     def get_tower_actions_len(self, i, j):
