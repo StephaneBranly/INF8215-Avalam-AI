@@ -20,10 +20,10 @@ class MonteCarloAgent(EvolvedAgent, MonteCarlo):
             #     time_to_play = -3
             # else:
             #     time_to_play = 0
-            alpha = 0.001
-            beta = 2/18 - 2*alpha
+            alpha = 0.0001
+            beta = 2/17 - 2*alpha
             cstep = (step - step % 2)/2 + 1
-            time_to_play = self.game_time_limit * ((beta - alpha)/(1 - 18) * (cstep - 18) + alpha)
+            time_to_play = self.game_time_limit * ((beta - alpha)/(1 - 17) * (cstep - 17) + alpha)
             if time_to_play<=0:
                 time_to_play = 1
             

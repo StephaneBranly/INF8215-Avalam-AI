@@ -3,6 +3,7 @@ import json
 import gzip
 import time
 import random
+import numpy as np 
 
 from strategies.Strategy import Strategy
 
@@ -75,6 +76,9 @@ class MonteCarlo(Strategy):
                     new_board = board.clone()
                     new_board.play_action(best_action)
                     break
+        # if step >= 32:
+        #     with open(f"memaid_{step}.txt", "w") as f:
+        #         f.write(self.tree_to_mermaid(current_tree))
         return best_action, current_tree['n'], new_tree, new_board
     
     def node_dict(self, player=None, parent=None, action_made=None):
@@ -126,7 +130,7 @@ class MonteCarlo(Strategy):
         
         board_score = board.get_score() * player
         
-        return board_score
+        return 1 if board_score > 0 else 0 if board_score < 0 else 0.5
 
     def backpropagate(self, v, n_child, board):
         """Backpropagate the value v to the root of the tree."""
@@ -225,7 +229,7 @@ class MonteCarlo(Strategy):
                 id_ += 1
                 child_state = (child, current[1] + 1, id_)
                 mermaid += f"{self.state_to_string(current)} -->|{','.join([str(a) for a in child['action_made']])}| {self.state_to_string(child_state)}\n"
-                stack.append(child_state)
+                # stack.append(child_state)
         return mermaid
 
     def state_to_string(self, state):

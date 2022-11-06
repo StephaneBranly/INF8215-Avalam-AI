@@ -579,7 +579,7 @@ if __name__ == "__main__":
         paramsTrainMCTSHeuristic = {
             'mode': "train",
             'save': "mctsSimulationIso",
-            'generation': 37
+            # 'generation': 37
         }
 
         paramsEvaluateMCTSHeuristic = {
@@ -605,8 +605,8 @@ if __name__ == "__main__":
         genetic_agent2.setup(None, None, paramsEvaluatefullObsInit)
         # agents = [genetic_agent1, genetic_agent1]
         # //MonteCarloAgent(play_fn=one_action_heuristic)
-        # agents = [genetic_agent2, MonteCarloAgent(play_fn=best_score)]
-        agents = [genetic_agent2, MonteCarloAgent(play_fn=best_score)]
+        agents = [genetic_agent2, MonteCarloAgent(play_fn=one_action_heuristic)]
+        # agents = [GreedyAgent(), MonteCarloAgent(play_fn=best_score)]
         # agents = [StepAnalystPlayer(MonteCarloAgent()), StepAnalystPlayer(MonteCarloAgent())]        
 
         def get_agent_names():
