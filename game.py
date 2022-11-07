@@ -299,8 +299,8 @@ class Game:
             logging.info("Winner: draw game")
         self.trace.set_winner(winner, reason)
         self.viewer.finished(self.step, winner, reason)
-        print(f"Game finished in {self.step} steps")
-        print(f"Credits: {self.credits}")
+        # print(f"Game finished in {self.step} steps")
+        # print(f"Credits: {self.credits}")
         for i in range(2):
             if self.agents[i].hasEvolved():
                 self.agents[i].finished(self.step, winner, reason, 1 if i==0 else -1, self.game_id, self.pool_id)
@@ -579,19 +579,19 @@ if __name__ == "__main__":
         paramsTrainMCTSHeuristic = {
             'mode': "train",
             'save': "mctsSimulationIso",
-            # 'generation': 37
+            'generation': 20
         }
 
         paramsEvaluateMCTSHeuristic = {
             'mode': "evaluate",
             'save': "mctsSimulation",
-            'generation': 49
+            'generation': 99
         }
 
         paramsEvaluateMCTSisoHeuristic = {
             'mode': "evaluate",
             'save': "mctsSimulationIso",
-            'generation': 38
+            'generation': 34
         }
 
         paramsEvaluateGetScoreHeuristic = {
@@ -601,11 +601,11 @@ if __name__ == "__main__":
         }
         
 
-        # genetic_agent1.setup(None, None, paramsTrainMCTSHeuristic)
+        genetic_agent1.setup(None, None, paramsEvaluateMCTSisoHeuristic)
         genetic_agent2.setup(None, None, paramsEvaluatefullObsInit)
-        # agents = [genetic_agent1, genetic_agent1]
+        agents = [genetic_agent1, genetic_agent2]
         # //MonteCarloAgent(play_fn=one_action_heuristic)
-        agents = [genetic_agent2, MonteCarloAgent(play_fn=one_action_heuristic)]
+        # agents = [genetic_agent2, MonteCarloAgent(play_fn=one_action_heuristic)]
         # agents = [GreedyAgent(), MonteCarloAgent(play_fn=best_score)]
         # agents = [StepAnalystPlayer(MonteCarloAgent()), StepAnalystPlayer(MonteCarloAgent())]        
 

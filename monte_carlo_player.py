@@ -21,10 +21,10 @@ class MonteCarloAgent(EvolvedAgent, MonteCarlo):
             # else:
             #     time_to_play = 0
             alpha = 0.0001
-            beta = 2/17 - 2*alpha
+            beta = 2/18 - 2*alpha
             cstep = (step - step % 2)/2 + 1
-            time_to_play = self.game_time_limit * ((beta - alpha)/(1 - 17) * (cstep - 17) + alpha)
-            if time_to_play<=0:
+            time_to_play = self.game_time_limit * ((beta - alpha)/(1 - 18) * (cstep - 18) + alpha)
+            if time_to_play<=1:
                 time_to_play = 1
             
                 # time_to_play = self.game_time_limit / 18
@@ -32,7 +32,7 @@ class MonteCarloAgent(EvolvedAgent, MonteCarlo):
         else:
             time_to_play = 1
 
-        board = dict_to_improved_board(percepts)
+        board = dict_to_improved_board(percepts, compute_isolated_towers=False)
         start_time = time.time()
         
         action = self.use_strategy(board, player, step, time_to_play=time_to_play,stats=True)
