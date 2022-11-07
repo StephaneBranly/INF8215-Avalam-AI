@@ -601,11 +601,11 @@ if __name__ == "__main__":
         }
         
 
-        genetic_agent1.setup(None, None, paramsEvaluateMCTSisoHeuristic)
+        # genetic_agent1.setup(None, None, paramsEvaluateMCTSisoHeuristic)
         genetic_agent2.setup(None, None, paramsEvaluatefullObsInit)
         agents = [genetic_agent1, genetic_agent2]
         # //MonteCarloAgent(play_fn=one_action_heuristic)
-        # agents = [genetic_agent2, MonteCarloAgent(play_fn=one_action_heuristic)]
+        agents = [genetic_agent2, MonteCarloAgent(play_fn=one_action_heuristic)]
         # agents = [GreedyAgent(), MonteCarloAgent(play_fn=best_score)]
         # agents = [StepAnalystPlayer(MonteCarloAgent()), StepAnalystPlayer(MonteCarloAgent())]        
 
