@@ -16,6 +16,17 @@ from matplotlib.backends.backend_pdf import PdfPages
 available_heuristics = [Genetic1Action, GeneticMultAction, GeneticSingleLoop, GeneticBoardEvaluation]
 
 class GeneticAgent(EvolvedAgent):
+    """
+    Each GeneticAgent is defined by a description file, which contains the following properties:
+    - Class: the class of the agent
+    - Heuristic: the heuristic used by the agent
+    - Individu: the number of individu in the pool
+    - Keep: the number of individu to keep for the next generation
+    - Mutation: the rate of mutation
+
+    By refering to the folder name of the description file, the agent will be able to load and setup the correct heuristic and the correct number of individu.
+    """
+
     def setup(self, agent, parser, args):
         """Setup the agent."""
 
@@ -41,7 +52,6 @@ class GeneticAgent(EvolvedAgent):
         self.current_heuristic = self.default_heuristic() # for play and train
         self.heuristics = dict()
         if self.mode == "train":
-            self.matchs = [m for m in itertools.combinations(range(self.individu), 2)]
             self.load_heuristics_of_pool()
         elif self.mode == "play":
             if self.individu == -1:
@@ -68,6 +78,7 @@ class GeneticAgent(EvolvedAgent):
             print('No more generation')
 
     def load_heuristics_of_pool(self):
+        self.matchs = [m if random.random() > 0.5 else [m[1],m[0]] for m in itertools.combinations(range(self.individu), 2)]
         if self.current_gen == 0:
             if len(self.heuristics.keys()) == 0: # first individu added, we generate a new file
                 f = open(f"GeneticAgents/{self.save_path}/gen{self.current_gen}.json", "w")
@@ -76,14 +87,6 @@ class GeneticAgent(EvolvedAgent):
             for a in range(self.individu):
                 if a == 0:
                     self.heuristics[a] = self.default_heuristic()
-                    # f = open(f"GeneticAgents/{self.save_path}/description_copy.txt", "w")
-                    # f.write(f"Class     : {self.__class__.__name__}\n")
-                    # f.write(f"Heuristic : {self.heuristic}\n")
-                    # f.write(f"Functions : {','.join(self.functions)}\n")
-                    # f.write(f"Individu  : {str(self.individu)}\n")
-                    # f.write(f"Keep      : {str(self.keep)}\n")
-                    # f.write(f"Mutation  : {str(self.rate)}\n")
-                    # f.close()
                 else:
                     self.heuristics[a] = self.heuristics[0].clone()
                     self.heuristics[a].set_parameters([random.uniform(-1,1) for _ in range(len(self.heuristics[0]._functions))])
