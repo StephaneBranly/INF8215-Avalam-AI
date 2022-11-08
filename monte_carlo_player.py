@@ -26,7 +26,7 @@ class MonteCarloAgent(EvolvedAgent, MonteCarlo):
         else:
             time_to_play = 1
 
-        board = dict_to_improved_board(percepts, compute_isolated_towers=True)
+        board = dict_to_improved_board(percepts, compute_isolated_towers=False)
         start_time = time.time()
         
         action = self.use_strategy(board, player, step, time_to_play=time_to_play,stats=True)

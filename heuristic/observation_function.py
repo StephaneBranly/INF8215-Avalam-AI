@@ -314,4 +314,3 @@ def board_isolated_tower2_enemy(board, player):
 
 def board_isolated_tower1_enemy(board, player):
     return board_isolated_tower1(board, -player)
-

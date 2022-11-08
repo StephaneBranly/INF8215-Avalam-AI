@@ -71,7 +71,7 @@ class SecretAgent(EvolvedAgent):
             if step <= self.step_limits[i]:
                 agent_to_play = self.agents[i]
                 time_to_play = time_left / ((35-step)/2)
-                if time_to_play < 0:
+                if time_to_play < 1:
                     time_to_play = 1
                 break
         start = time.time()

@@ -49,7 +49,7 @@ from step_analyst_player import StepAnalystPlayer
 from alpha_beta_genetic_agent_IDS import AlphaBetaIDSGeneticAgent
 from best_move_genetic_agent import BestMoveGeneticAgent
 
-from strategies.simulate_functions import best_score, one_action_heuristic, random_play
+from strategies.simulate_functions import best_score, one_action_heuristic, one_action_heuristic_iso, random_play
 
 
 class TimeCreditExpired(Exception):
@@ -558,54 +558,26 @@ if __name__ == "__main__":
             else:
                 agents[i] = RandomAgent()
 
-        genetic_agent1 = BestMoveGeneticAgent()
+        genetic_agent1 = AlphaBetaIDSGeneticAgent()
         genetic_agent2 = BestMoveGeneticAgent()
-        paramsTrain = {
-            'mode': "train",
-            'save': "fullObsInit",
-            'generation':23
-        }
+        paramsTrain = { 'mode': "train", 'save': "fullObsInit", 'generation':23 }
         paramsEvaluate1 = {
             "mode": "evaluate",
             "save": "fun",
-            "generation": 0,
-        }
-        paramsEvaluatefullObsInit = {
-            'mode': "evaluate",
-            'save': "fullObsInit",
-            'generation': 40
-        }
+            "generation": 0, }
+        paramsEvaluatefullObsInit = { 'mode': "evaluate", 'save': "fullObsInit", 'generation': 40 }
+        paramsTrainHeuristic = { 'mode': "train", 'save': "IDSimproved", 'generation': 1 }
+        paramsEvaluateMCTSHeuristic = { 'mode': "evaluate", 'save': "mctsSimulation", 'generation': 99 }
+        paramsEvaluateMCTSisoHeuristic = { 'mode': "evaluate", 'save': "mctsSimulationIso", 'generation': 34 }
+        paramsEvaluateGetScoreHeuristic = { 'mode': "evaluate", 'save': "bestScore", 'generation': 1 }
+        paramsEvaluateIDS = { 'mode': "evaluate", 'save': "IDSimproved", 'generation': 1 }
 
-        paramsTrainMCTSHeuristic = {
-            'mode': "train",
-            'save': "mctsSimulationIso",
-            'generation': 20
-        }
-
-        paramsEvaluateMCTSHeuristic = {
-            'mode': "evaluate",
-            'save': "mctsSimulation",
-            'generation': 99
-        }
-
-        paramsEvaluateMCTSisoHeuristic = {
-            'mode': "evaluate",
-            'save': "mctsSimulationIso",
-            'generation': 34
-        }
-
-        paramsEvaluateGetScoreHeuristic = {
-            'mode': "evaluate",
-            'save': "bestScore",
-            'generation': 1
-        }
-        
-
-        # genetic_agent1.setup(None, None, paramsEvaluateMCTSisoHeuristic)
+        genetic_agent1.setup(None, None, paramsTrainHeuristic)
+        # genetic_agent1.setup(None, None, paramsEvaluateIDS)
         genetic_agent2.setup(None, None, paramsEvaluatefullObsInit)
-        agents = [genetic_agent1, genetic_agent2]
+        agents = [genetic_agent1, genetic_agent1]
         # //MonteCarloAgent(play_fn=one_action_heuristic)
-        agents = [genetic_agent2, MonteCarloAgent(play_fn=one_action_heuristic)]
+        # agents = [genetic_agent2, MonteCarloAgent(play_fn=best_score)]
         # agents = [GreedyAgent(), MonteCarloAgent(play_fn=best_score)]
         # agents = [StepAnalystPlayer(MonteCarloAgent()), StepAnalystPlayer(MonteCarloAgent())]        
 

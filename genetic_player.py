@@ -122,7 +122,7 @@ class GeneticAgent(EvolvedAgent):
             if player == 1:
                 if winner != 0:
                     self.scores[self.matchs[game_id][player_winner]]    += 1 # or abs(winner)
-                    self.scores[self.matchs[game_id][1-player_winner]]  -= 1 # or abs(winner)
+                    self.scores[self.matchs[game_id][1-player_winner]]  -= 0 # or abs(winner)
 
     def load_agent(self, individu, generation):
         if individu not in self.heuristics:
