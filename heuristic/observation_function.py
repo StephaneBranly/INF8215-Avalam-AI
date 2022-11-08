@@ -314,3 +314,59 @@ def board_isolated_tower2_enemy(board, player):
 
 def board_isolated_tower1_enemy(board, player):
     return board_isolated_tower1(board, -player)
+
+def board_towers_links_1_1(board, player):
+    return board.get_number_of_addable_towers_link(1, 1, player)
+
+def board_towers_links_1_2(board, player):
+    return board.get_number_of_addable_towers_link(1, 2, player)
+
+def board_towers_links_1_3(board, player):
+    return board.get_number_of_addable_towers_link(1, 3, player)
+
+def board_towers_links_1_4(board, player):
+    return board.get_number_of_addable_towers_link(1, 4, player)
+
+def board_towers_links_2_2(board, player):
+    return board.get_number_of_addable_towers_link(2, 2, player)
+
+def board_towers_links_2_3(board, player):
+    return board.get_number_of_addable_towers_link(2, 3, player)
+
+
+def board_towers_links_1_1_enemy(board, player):
+    return board_towers_links_1_1(board, -player)
+
+def board_towers_links_1_2_enemy(board, player):
+    return board_towers_links_1_2(board, -player)
+
+def board_towers_links_1_3_enemy(board, player):
+    return board_towers_links_1_3(board, -player)
+
+def board_towers_links_1_4_enemy(board, player):
+    return board_towers_links_1_4(board, -player)
+
+def board_towers_links_2_2_enemy(board, player):
+    return board_towers_links_2_2(board, -player)
+
+def board_towers_links_2_3_enemy(board, player):
+    return board_towers_links_2_3(board, -player)
+
+
+def board_towers_links_1_1_different(board, player):
+    return board_towers_links_1_1(board, 0)
+
+def board_towers_links_1_2_different(board, player):
+    return board_towers_links_1_2(board, 0)
+
+def board_towers_links_1_3_different(board, player):
+    return board_towers_links_1_3(board, 0)
+
+def board_towers_links_1_4_different(board, player):
+    return board_towers_links_1_4(board, 0)
+
+def board_towers_links_2_2_different(board, player):
+    return board_towers_links_2_2(board, 0)
+
+def board_towers_links_2_3_different(board, player):
+    return board_towers_links_2_3(board, 0)
