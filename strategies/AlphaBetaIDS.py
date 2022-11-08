@@ -32,7 +32,8 @@ class AlphaBetaIDS(AlphaBeta):
                 hashMaps.append({})
 
             _, m, explored, hash_reduced, transposition = self.max_value(board.clone(), heuristic, player, -math.inf, math.inf, 0, max_depth, hashMaps, start, step, time_to_play)
-            print("Depth: ", max_depth, "Time: ", time.time()-new_start,"action", m,"explored", explored,"hashReduced",hash_reduced,"transposition",transposition)
+            if stats:
+                print("Depth: ", max_depth, "Time: ", time.time()-new_start,"action", m,"explored", explored,"hashReduced",hash_reduced,"transposition",transposition)
             
             if(time.time()-start<time_to_play):
                 action = m

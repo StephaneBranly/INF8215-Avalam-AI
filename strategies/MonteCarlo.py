@@ -3,12 +3,14 @@ import json
 import gzip
 import time
 import random
+import numpy as np 
 
 from strategies.Strategy import Strategy
 
 class MonteCarlo(Strategy):
-    def __init__(self, c=math.sqrt(2), play_fn=None, node_score_fn=None):
+    def __init__(self, c=math.sqrt(2), play_fn=None, node_score_fn=None, keep_tree=False):
         self.c = c
+        self.keep_tree = keep_tree
         self.tree = None
         self.root_board = None
         self.play_fn = play_fn
@@ -22,9 +24,21 @@ class MonteCarlo(Strategy):
         super().__init__()
 
     def use_strategy(self, board, player, step, time_to_play, stats=False, other_params=None):
-        action, iterations, new_tree, new_board = self.mcts(board, player, step, time_limit=time_to_play)
+        if self.keep_tree and self.tree and self.root_board:
+            self.tree, action_made = self.go_down_tree(board)
+            if self.tree:
+                self.tree['parent'] = None
+                self.tree['action_made'] = None
+                if stats:
+                    print(f"Saved old tree. {self.tree['n']} simulations kept. Enemy played {action_made}.")
+    
+        action, iterations, new_tree, new_board = self.mcts(board, player, step, time_limit=time_to_play, tree=self.tree)
         if stats:
             print(f"MonteCarlo simulations: {iterations}")
+
+        if self.keep_tree:
+            self.tree = new_tree
+            self.root_board = new_board
         return action
 
     def mcts(self, board, player, step, iterations=None, time_limit=None, tree=None):
@@ -55,13 +69,16 @@ class MonteCarlo(Strategy):
 
         new_tree, new_board = None, None
         best_action = self.best_action(current_tree)
-        if tree:
+        if self.keep_tree:
             for child in current_tree["childs"]:
                 if child['action_made'] == best_action:
                     new_tree = child
                     new_board = board.clone()
                     new_board.play_action(best_action)
                     break
+        # if step >= 32:
+        #     with open(f"memaid_{step}.txt", "w") as f:
+        #         f.write(self.tree_to_mermaid(current_tree))
         return best_action, current_tree['n'], new_tree, new_board
     
     def node_dict(self, player=None, parent=None, action_made=None):
@@ -110,7 +127,10 @@ class MonteCarlo(Strategy):
             action = self.play_fn(board, current_player, 0, None)
             board.play_action(action)
             current_player = -current_player
-        return board.get_score() * player
+        
+        board_score = board.get_score() * player
+        
+        return 1 if board_score > 0 else 0 if board_score < 0 else 0.5
 
     def backpropagate(self, v, n_child, board):
         """Backpropagate the value v to the root of the tree."""
@@ -134,8 +154,8 @@ class MonteCarlo(Strategy):
     def uct_score(self, node):
         """Return the UCT score of the node."""
         if node["n"] == 0:
-            return -math.inf
-        return node["u"] + self.c * math.sqrt(math.log(node['parent']["n"]) / node["n"])
+            return math.inf
+        return node["u"]/node['n'] + self.c * math.sqrt(math.log(node['parent']["n"]) / node["n"])
 
     def save_tree(self, tree):
         """Save the tree in a file."""
@@ -171,10 +191,17 @@ class MonteCarlo(Strategy):
         except:
             return self.node_dict()
 
-    def go_down_tree(self, tree, initial_board, current_board):
+    def go_down_tree(self, current_board, tree=None, initial_board=None):
         """Go down the tree by using two different ImprovedBoard"""
+
+        if tree is None:
+            tree = self.tree
+        if initial_board is None:
+            initial_board = self.root_board
+
         new_tree = None
         action_made = None
+
         for child in tree['childs']:
             initial_board.play_action(child['action_made'])
             if initial_board.get_hash() == current_board.get_hash():
@@ -202,7 +229,7 @@ class MonteCarlo(Strategy):
                 id_ += 1
                 child_state = (child, current[1] + 1, id_)
                 mermaid += f"{self.state_to_string(current)} -->|{','.join([str(a) for a in child['action_made']])}| {self.state_to_string(child_state)}\n"
-                stack.append(child_state)
+                # stack.append(child_state)
         return mermaid
 
     def state_to_string(self, state):

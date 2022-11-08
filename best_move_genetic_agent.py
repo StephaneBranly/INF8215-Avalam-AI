@@ -12,7 +12,7 @@ class BestMoveGeneticAgent(GeneticAgent, BestMove):
         super().__init__()
 
     def play_agent(self, agent, percepts, player, step, time_left, stats=False):
-        board = dict_to_improved_board(percepts)
+        board = dict_to_improved_board(percepts, True)
         action = self.use_strategy(board, player, step, 10, other_params={'heuristic': agent}, stats=stats)
         # print("step", step,"explored", explored,"time",time.time()-start,"hashReduced",hashReduced,"transposition",transposition)
         return action

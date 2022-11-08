@@ -253,22 +253,22 @@ def enemy_wineable_tower(board,player,i,j,isolated = None):
 ### Observation functions for GeneticBoardEvaluation
 
 def board_score(board, player):
-    return board.get_score() * player
+    return board.get_score() * player / 20
 
 def board_tower5(board, player):
-    return board.get_number_of_tower_height(5 * player)
+    return board.get_number_of_tower_height(5 * player) / 9
 
 def board_tower4(board, player):
-    return board.get_number_of_tower_height(4 * player)
+    return board.get_number_of_tower_height(4 * player) / 10
 
 def board_tower3(board, player):
-    return board.get_number_of_tower_height(3 * player)
+    return board.get_number_of_tower_height(3 * player) / 10
 
 def board_tower2(board, player):
-    return board.get_number_of_tower_height(2 * player)
+    return board.get_number_of_tower_height(2 * player) / 12
 
 def board_tower1(board, player):
-    return board.get_number_of_tower_height(1 * player)
+    return board.get_number_of_tower_height(1 * player) / 24
 
 def board_tower5_enemy(board, player):
     return board_tower5(board, -player)
@@ -314,4 +314,3 @@ def board_isolated_tower2_enemy(board, player):
 
 def board_isolated_tower1_enemy(board, player):
     return board_isolated_tower1(board, -player)
-
