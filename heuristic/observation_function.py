@@ -316,26 +316,26 @@ def board_isolated_tower1_enemy(board, player):
     return board_isolated_tower1(board, -player)
 
 def board_towers_links_1_1(board, player):
-    return board.get_number_of_addable_towers_link(1, 1, player)
+    return board.get_number_of_addable_towers_link(1, 1, player) / 36
 
 def board_towers_links_1_2(board, player):
-    return board.get_number_of_addable_towers_link(1, 2, player)
+    return board.get_number_of_addable_towers_link(1, 2, player) / 30
 
 def board_towers_links_1_3(board, player):
-    return board.get_number_of_addable_towers_link(1, 3, player)
+    return board.get_number_of_addable_towers_link(1, 3, player) / 24
 
 def board_towers_links_1_4(board, player):
-    return board.get_number_of_addable_towers_link(1, 4, player)
+    return board.get_number_of_addable_towers_link(1, 4, player) / 18
 
 def board_towers_links_2_2(board, player):
-    return board.get_number_of_addable_towers_link(2, 2, player)
+    return board.get_number_of_addable_towers_link(2, 2, player) / 12
 
 def board_towers_links_2_3(board, player):
-    return board.get_number_of_addable_towers_link(2, 3, player)
+    return board.get_number_of_addable_towers_link(2, 3, player) / 6
 
 
 def board_towers_links_1_1_enemy(board, player):
-    return board_towers_links_1_1(board, -player)
+    return board_towers_links_1_1(board, -player) 
 
 def board_towers_links_1_2_enemy(board, player):
     return board_towers_links_1_2(board, -player)
@@ -354,19 +354,19 @@ def board_towers_links_2_3_enemy(board, player):
 
 
 def board_towers_links_1_1_different(board, player):
-    return board_towers_links_1_1(board, 0)
+    return board_towers_links_1_1(board, 0) / 76
 
 def board_towers_links_1_2_different(board, player):
-    return board_towers_links_1_2(board, 0)
+    return board_towers_links_1_2(board, 0) / 60
 
 def board_towers_links_1_3_different(board, player):
-    return board_towers_links_1_3(board, 0)
+    return board_towers_links_1_3(board, 0) / 48
 
 def board_towers_links_1_4_different(board, player):
-    return board_towers_links_1_4(board, 0)
+    return board_towers_links_1_4(board, 0) / 36
 
 def board_towers_links_2_2_different(board, player):
-    return board_towers_links_2_2(board, 0)
+    return board_towers_links_2_2(board, 0) / 24
 
 def board_towers_links_2_3_different(board, player):
-    return board_towers_links_2_3(board, 0)
+    return board_towers_links_2_3(board, 0) / 12
