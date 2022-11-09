@@ -105,9 +105,10 @@ def generate_summary_file(path=''):
         fig3 = generate_win_rate_fig(pool_df)
         pdf.savefig(fig3)
 
-def generate_board_fig(board, step, player, action, scores, pool, game, players):
-    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 14), gridspec_kw={'height_ratios': [2, 1]})
-    fig.suptitle(f"Pool {pool} | Game {game}", fontsize=16)
+def generate_board_fig(board, step, player, action, scores, time_to_play_history, max_time_to_play, pool, game, players):
+    fig, axes = plt.subplots(3, 1, figsize=(10, 14), gridspec_kw={'height_ratios': [2, 1, 1]})
+    # fig.suptitle(f"Pool {pool} | Game {game}", fontsize=16)
+    fig.suptitle(f"Game report", fontsize=16)
     mask = np.array([ [ True,  True,  False, False,  True,  True,  True,  True,  True],
                         [ True,  False, False,  False, False,  True,  True,  True,  True],
                         [ True, False,  False, False,  False, False,  False,  True,  True],
@@ -118,51 +119,64 @@ def generate_board_fig(board, step, player, action, scores, pool, game, players)
                         [ True,  True,  True,  True, False,  False, False,  False,  True],
                         [ True,  True,  True,  True,  True, False,  False,  True,  True] ])
 
-    sns.heatmap(board.m, annot=True, cmap='coolwarm', cbar=False, linewidths=1, linecolor='black', square=True, mask=mask, vmin=-5, vmax=5, ax=ax1, annot_kws={"size": 20})
+    sns.heatmap(board.m, annot=True, cmap='coolwarm', cbar=False, linewidths=1, linecolor='black', square=True, mask=mask, vmin=-5, vmax=5, ax=axes[0], annot_kws={"size": 20})
     step_to_display = f" {step}" if step < 10 else f"{step}"
     player_to_display = f" {player}" if player == 1 else f"{player}"
-    ax1.set_title(f"Step {step_to_display} | Player {player_to_display} | Action {action}")
-    ax1.arrow(y=action[0]+.5, x=action[1]+.5, dy=action[2]-action[0], dx=action[3]-action[1], color='red' if player==1 else 'blue', head_width=.4, head_length=.4, length_includes_head=True)
+    axes[0].set_title(f"Step {step_to_display} | Player {player_to_display} | Action {action}")
+    axes[0].arrow(y=action[0]+.5, x=action[1]+.5, dy=action[2]-action[0], dx=action[3]-action[1], color='red' if player==1 else 'blue', head_width=.4, head_length=.4, length_includes_head=True)
     for x in range(mask.shape[0]):
         for y in range(mask.shape[1]):
             if board.get_tower_actions_len(x, y) <= 0 and board.m[x][y] != 0:
                 color = 'red' if board.m[x][y] > 0 else 'blue'
                 circle = plt.Circle((y+.5, x+.5), .4, color=color, fill=False, linewidth=2)
-                ax1.add_patch(circle)
+                axes[0].add_patch(circle)
     
     xs = range(len(scores))
     positive = [True if x > 0 else False for x in scores]
     negative = [False if x > 0 else True for x in scores]
-    sns.lineplot(x=xs, y=scores, ax=ax2, marker='o', color='grey', linewidth=1)
-    ax2.fill_between(xs, scores, where=positive, interpolate=True, color='red')
-    ax2.fill_between(xs, scores, where=negative, interpolate=True, color='blue')
+    sns.lineplot(x=xs, y=scores, ax=axes[1], marker='o', color='grey', linewidth=1)
+    axes[1].fill_between(xs, scores, where=positive, interpolate=True, color='red')
+    axes[1].fill_between(xs, scores, where=negative, interpolate=True, color='blue')
     rect_p1=mpatches.Rectangle((0,0),40,20, alpha=0.1,facecolor="red")
     rect_m1=mpatches.Rectangle((0,-20),40,20, alpha=0.1,facecolor="blue")
-    plt.gca().add_patch(rect_p1)
-    plt.gca().add_patch(rect_m1)
-    ax2.set_xlim((0,40))
-    ax2.set_ylim((-20,20))
-    ax2.set_title('Score evolution')
-    ax2.set_xticks(range(40))
-    ax2.set_xticklabels(range(40), rotation=90)
-    ax2.set_yticks(np.arange(-20, 22, 2))
-    ax2.set_xlabel('Step')
-    ax2.set_ylabel('Score')
-    ax2.text(step+0.4, scores[-1]+0.2, f"{scores[-1]}", fontsize = 14, color='black', ha='center')
-    ax2.add_line(plt.axhline(y=0, color='grey', linestyle='--'))
-    ax2.add_line(plt.axvline(x=step, color='grey', linestyle='--'))
-    ax2.text(39, 19, str(players[0]), color='red', ha="right", va="top", fontsize=14)
-    ax2.text(39, -19, str(players[1]), color='blue', ha="right", va="bottom", fontsize=14)
+    axes[1].add_patch(rect_p1)
+    axes[1].add_patch(rect_m1)
+    axes[1].set_xlim((0,40))
+    axes[1].set_ylim((-20,20))
+    axes[1].set_title('Score evolution')
+    axes[1].set_xticks(range(40))
+    axes[1].set_xticklabels(range(40), rotation=90)
+    axes[1].set_yticks(np.arange(-20, 22, 2))
+    axes[1].set_xlabel('Step')
+    axes[1].set_ylabel('Score')
+    axes[1].text(step+0.4, scores[-1]+0.2, f"{scores[-1]}", fontsize = 14, color='black', ha='center')
+    # axes[1].add_line(plt.axhline(y=0, color='grey', linestyle='--'))
+    # axes[1].add_line(plt.axvline(x=step, color='grey', linestyle='--'))
+    axes[1].text(39, 19, str(players[0]), color='red', ha="right", va="top", fontsize=14)
+    axes[1].text(39, -19, str(players[1]), color='blue', ha="right", va="bottom", fontsize=14)
+
+    time_to_play = pd.DataFrame(time_to_play_history, columns=['time'])
+    colors = ['red' if c % 2 == 1 else 'blue' for c in range(40)]
+    sns.barplot(ax=axes[2], data=time_to_play, y='time', x=time_to_play.index, palette=colors)
+    axes[2].set_xticks(range(40))
+    axes[2].set_ylim((0, max_time_to_play))
+    axes[2].set_xticklabels(range(40), rotation=90)
+    axes[2].set_title("Time to play")
+    axes[2].set_xlabel("Step")
+    axes[2].set_ylabel("Time spent (s)")
     return fig
 
-def generate_board_history_fig(board, history, players, path='', pool_id=0, game_id=0):
+def generate_board_history_fig(board, actions_history, time_to_play_history, players, path='', pool_id=0, game_id=0):
     filenames = []
     scores = [0]
+    time_to_play = [0]
+    max_time_to_play = max(time_to_play_history)
     player = 1
-    for i, action in enumerate(history):
+    for i, action in enumerate(actions_history):
         board.play_action(action)
         scores.append(board.get_score())
-        fig = generate_board_fig(board, i+1, player, action, scores, pool_id, game_id, players)
+        time_to_play.append(time_to_play_history[i])
+        fig = generate_board_fig(board, i+1, player, action, scores, time_to_play, max_time_to_play, pool_id, game_id, players)
         filename = f"{path}gif/board_history_{i}_{pool_id}_{game_id}.png"
         plt.savefig(filename, fig=fig)
         player = -player

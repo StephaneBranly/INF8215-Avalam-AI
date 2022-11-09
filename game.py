@@ -577,7 +577,7 @@ if __name__ == "__main__":
         # genetic_agent1.setup(None, None, paramsEvaluateLinks)
         # genetic_agent1.setup(None, None, paramsEvaluateIDS)
         genetic_agent2.setup(None, None, paramsEvaluatefullObsInit)
-        agents = [genetic_agent2, genetic_agent1]
+        # agents = [genetic_agent2, RandomAgent()]
         # //MonteCarloAgent(play_fn=one_action_heuristic)
         agents = [genetic_agent2, MonteCarloAgent(play_fn=best_score)]
         # agents = [GreedyAgent(), MonteCarloAgent(play_fn=best_score)]
@@ -621,7 +621,8 @@ if __name__ == "__main__":
             game_history['steps'].append(game.step)
             if args.gif:
                 actions_history = [a[1] for a in game.trace.actions]
-                generate_board_history_fig(ImprovedBoard(compute_isolated_towers=True), actions_history, get_agent_names(), "stats/", p, game.game_id)
+                time_to_play_history = [a[2] for a in game.trace.actions]
+                generate_board_history_fig(ImprovedBoard(compute_isolated_towers=True), actions_history, time_to_play_history, get_agent_names(), "stats/", p, game.game_id)
 
         def progress_bar(i, n):
             return"[%-20s] %d%%" % ('='*int(20*i/n), 100*i/n)
