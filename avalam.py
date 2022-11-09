@@ -485,10 +485,12 @@ class ImprovedBoard(Board):
             raise Warning("Compute isolated towers is not enabled")
 
         key = None
-        if from_height > to_height:
-            key = 100 * from_height + 10 * to_height + player
+        if from_height < to_height:
+            key = 100 * from_height + 10 * to_height + abs(player)
         else:
-            key = 100 * to_height + 10 * from_height + player
+            key = 100 * to_height + 10 * from_height + abs(player)
+        if player:
+            key *= player
         return int(self.addable_towers[key])
 
     def get_tower_actions_len(self, i, j):
