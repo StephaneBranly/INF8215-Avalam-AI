@@ -571,18 +571,19 @@ if __name__ == "__main__":
         paramsEvaluateMCTSisoHeuristic = { 'mode': "evaluate", 'save': "mctsSimulationIso", 'generation': 34 }
         paramsEvaluateGetScoreHeuristic = { 'mode': "evaluate", 'save': "bestScore", 'generation': 1 }
         paramsEvaluateIDS = { 'mode': "evaluate", 'save': "IDSimproved", 'generation': 1 }
-        paramsTrainLinks = { 'mode': "train", 'save': "links", 'generation': 21 }
-        paramsEvaluateLinks = { 'mode': 'evaluate', 'save': 'links', 'generation': 78}
+        paramsTrainLinks = { 'mode': "train", 'save': "links", 'generation': 0 }
+        paramsEvaluateLinks = { 'mode': 'evaluate', 'save': 'links', 'generation': 15 }
 
-        # genetic_agent1.setup(None, None, paramsEvaluateLinks)
+        genetic_agent1.setup(None, None, paramsEvaluateLinks)
         # genetic_agent1.setup(None, None, paramsEvaluateIDS)
         genetic_agent2.setup(None, None, paramsEvaluatefullObsInit)
         # agents = [genetic_agent2, RandomAgent()]
         # //MonteCarloAgent(play_fn=one_action_heuristic)
-        agents = [genetic_agent2, MonteCarloAgent(play_fn=best_score)]
+        # agents = [genetic_agent2, MonteCarloAgent(play_fn=best_score)]
         # agents = [GreedyAgent(), MonteCarloAgent(play_fn=best_score)]
         # agents = [StepAnalystPlayer(MonteCarloAgent()), StepAnalystPlayer(MonteCarloAgent())]        
-
+        agents = [genetic_agent2, genetic_agent1]
+        
         def get_agent_names():
             if agents[0].hasEvolved():
                 agent_p1 = agents[0].get_agent_id()

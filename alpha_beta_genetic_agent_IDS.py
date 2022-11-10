@@ -11,7 +11,7 @@ class AlphaBetaIDSGeneticAgent(GeneticAgent, AlphaBetaIDS):
         self.max_step=max_step
         super().__init__()
 
-    def play_agent(self, agent, percepts, player, step, time_left, stats=False):
+    def play_agent(self, agent, percepts, player, step, time_left, stats=True):
         board = dict_to_improved_board(percepts, True)
         if time_left:
             time_to_play = time_left/((34-step)/2) if step < 34 else time_left/2
