@@ -571,8 +571,8 @@ if __name__ == "__main__":
         paramsEvaluateMCTSisoHeuristic = { 'mode': "evaluate", 'save': "mctsSimulationIso", 'generation': 34 }
         paramsEvaluateGetScoreHeuristic = { 'mode': "evaluate", 'save': "bestScore", 'generation': 1 }
         paramsEvaluateIDS = { 'mode': "evaluate", 'save': "IDSimproved", 'generation': 1 }
-        paramsTrainLinks = { 'mode': "train", 'save': "links", 'generation': 0 }
-        paramsEvaluateLinks = { 'mode': 'evaluate', 'save': 'links', 'generation': 15 }
+        paramsTrainLinks = { 'mode': "train", 'save': "links", 'generation': 57 }
+        paramsEvaluateLinks = { 'mode': 'evaluate', 'save': 'links', 'generation': 117 }
 
         genetic_agent1.setup(None, None, paramsEvaluateLinks)
         # genetic_agent1.setup(None, None, paramsEvaluateIDS)
@@ -582,6 +582,7 @@ if __name__ == "__main__":
         # agents = [genetic_agent2, MonteCarloAgent(play_fn=best_score)]
         # agents = [GreedyAgent(), MonteCarloAgent(play_fn=best_score)]
         # agents = [StepAnalystPlayer(MonteCarloAgent()), StepAnalystPlayer(MonteCarloAgent())]        
+        # agents = [genetic_agent1, genetic_agent1]
         agents = [genetic_agent2, genetic_agent1]
         
         def get_agent_names():
