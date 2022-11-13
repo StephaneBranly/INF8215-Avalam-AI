@@ -66,6 +66,8 @@ class MonteCarlo(Strategy):
                 self.backpropagate(v, n_child, board)
             except Exception as e:       
                 raise e
+        if step == 1:
+            self.save_tree(current_tree)
 
         new_tree, new_board = None, None
         best_action = self.best_action(current_tree)

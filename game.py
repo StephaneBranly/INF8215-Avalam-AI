@@ -28,6 +28,8 @@ import pickle
 import subprocess
 import threading
 
+from alpha_beta_genetic_agent_IDS_NN import AlphaBetaIDSGeneticAgentNN
+
 # from MCTS.MonteCarlo import MonteCarlo
 # from MCTS.simulate_functions import one_action_heuristic, random_play
 
@@ -41,7 +43,7 @@ from stats.stats import generate_board_history_fig, generate_summary_file
 # Agent classes for multithreading
 from greedy_player import GreedyAgent
 from random_player import RandomAgent
-from genetic_observation_NN_player import ObservationNN1actionAgent
+
 from alpha_beta_genetic_agent import AlphaBetaGeneticAgent
 from monte_carlo_player import MonteCarloAgent
 from step_analyst_player import StepAnalystPlayer
