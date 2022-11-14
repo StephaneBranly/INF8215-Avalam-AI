@@ -56,16 +56,22 @@ class GeneticHeuristic(Heuristic):
 
     def crossover(self,other):
         new_parameters = []
+        new_parameters2 = []
         for i in range(len(self._parameters)):
             if random.random() < 0.5:
                 new_parameters.append(self._parameters[i])
+                new_parameters2.append(other._parameters[i])
             else:
                 new_parameters.append(other.get_parameters()[i])
+                new_parameters2.append(self._parameters[i])
 
         cl = self.clone()
         cl.set_parameters(new_parameters)
         cl.set_functions(self._functions)
-        return cl
+        cl2 = self.clone()
+        cl2.set_parameters(new_parameters2)
+        cl2.set_functions(self._functions)
+        return cl,cl2
 
     def save_as_json(self, filename, score):
         """Warning: no empty file : it needs to have a array called "gen" """
