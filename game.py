@@ -41,7 +41,6 @@ from stats.stats import generate_board_history_fig, generate_summary_file
 # Agent classes for multithreading
 from greedy_player import GreedyAgent
 from random_player import RandomAgent
-from genetic_observation_NN_player import ObservationNN1actionAgent
 from alpha_beta_genetic_agent import AlphaBetaGeneticAgent
 from monte_carlo_player import MonteCarloAgent
 from step_analyst_player import StepAnalystPlayer
@@ -560,7 +559,7 @@ if __name__ == "__main__":
 
         genetic_agent1 = BestMoveGeneticAgent()
         genetic_agent2 = BestMoveGeneticAgent()
-        paramsTrain = { 'mode': "train", 'save': "fullObsInit", 'generation':23 }
+        paramsTrain = { 'mode': "train", 'save': "test", 'generation':0 }
         paramsEvaluate1 = {
             "mode": "evaluate",
             "save": "fun",
@@ -575,7 +574,7 @@ if __name__ == "__main__":
         # paramsEvaluateLinks = { 'mode': 'evaluate', 'save': 'links', 'generation': 117 }
         paramsEvaluateLinks = { 'mode': 'evaluate', 'save': 'links', 'generation': 117 }
 
-        genetic_agent1.setup(None, None, paramsTrainLinks)
+        genetic_agent1.setup(None, None, paramsTrain)
         # genetic_agent1.setup(None, None, paramsEvaluateIDS)
         genetic_agent2.setup(None, None, paramsEvaluatefullObsInit)
         # agents = [genetic_agent2, RandomAgent()]
