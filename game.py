@@ -558,7 +558,7 @@ if __name__ == "__main__":
             else:
                 agents[i] = RandomAgent()
 
-        genetic_agent1 = AlphaBetaIDSGeneticAgent()
+        genetic_agent1 = BestMoveGeneticAgent()
         genetic_agent2 = BestMoveGeneticAgent()
         paramsTrain = { 'mode': "train", 'save': "fullObsInit", 'generation':23 }
         paramsEvaluate1 = {
@@ -571,16 +571,21 @@ if __name__ == "__main__":
         paramsEvaluateMCTSisoHeuristic = { 'mode': "evaluate", 'save': "mctsSimulationIso", 'generation': 34 }
         paramsEvaluateGetScoreHeuristic = { 'mode': "evaluate", 'save': "bestScore", 'generation': 1 }
         paramsEvaluateIDS = { 'mode': "evaluate", 'save': "IDSimproved", 'generation': 1 }
+        paramsTrainLinks = { 'mode': "train", 'save': "links", 'generation': 128 }
+        # paramsEvaluateLinks = { 'mode': 'evaluate', 'save': 'links', 'generation': 117 }
+        paramsEvaluateLinks = { 'mode': 'evaluate', 'save': 'links', 'generation': 117 }
 
-        genetic_agent1.setup(None, None, paramsTrainHeuristic)
+        genetic_agent1.setup(None, None, paramsTrainLinks)
         # genetic_agent1.setup(None, None, paramsEvaluateIDS)
         genetic_agent2.setup(None, None, paramsEvaluatefullObsInit)
-        agents = [genetic_agent1, genetic_agent1]
+        # agents = [genetic_agent2, RandomAgent()]
         # //MonteCarloAgent(play_fn=one_action_heuristic)
         # agents = [genetic_agent2, MonteCarloAgent(play_fn=best_score)]
-        # agents = [GreedyAgent(), MonteCarloAgent(play_fn=best_score)]
+        # agents = [RandomAgent(), GreedyAgent()]
         # agents = [StepAnalystPlayer(MonteCarloAgent()), StepAnalystPlayer(MonteCarloAgent())]        
-
+        agents = [genetic_agent1, genetic_agent1]
+        # agents = [genetic_agent1, genetic_agent2]
+        
         def get_agent_names():
             if agents[0].hasEvolved():
                 agent_p1 = agents[0].get_agent_id()
@@ -619,7 +624,8 @@ if __name__ == "__main__":
             game_history['steps'].append(game.step)
             if args.gif:
                 actions_history = [a[1] for a in game.trace.actions]
-                generate_board_history_fig(ImprovedBoard(compute_isolated_towers=True), actions_history, get_agent_names(), "stats/", p, game.game_id)
+                time_to_play_history = [a[2] for a in game.trace.actions]
+                generate_board_history_fig(ImprovedBoard(compute_isolated_towers=True), actions_history, time_to_play_history, get_agent_names(), "stats/", p, game.game_id)
 
         def progress_bar(i, n):
             return"[%-20s] %d%%" % ('='*int(20*i/n), 100*i/n)
