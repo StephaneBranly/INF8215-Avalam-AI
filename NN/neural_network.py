@@ -38,22 +38,28 @@ class NN:
                         self.biases[i][j][k] = np.random.randn()
 
     def crossover(self, other):
-        child = NN(self.layers)
+        child1 = NN(self.layers)
+        child2 = NN(self.layers)
+
         for i in range(len(self.weights)):
             for j in range(len(self.weights[i])):
                 for k in range(len(self.weights[i][j])):
                     if np.random.rand() < 0.5:
-                        child.weights[i][j][k] = self.weights[i][j][k]
+                        child1.weights[i][j][k] = self.weights[i][j][k]
+                        child2.weights[i][j][k] = other.weights[i][j][k]
                     else:
-                        child.weights[i][j][k] = other.weights[i][j][k]
+                        child1.weights[i][j][k] = other.weights[i][j][k]
+                        child2.weights[i][j][k] = self.weights[i][j][k]
         for i in range(len(self.biases)):
             for j in range(len(self.biases[i])):
                 for k in range(len(self.biases[i][j])):
                     if np.random.rand() < 0.5:
-                        child.biases[i][j][k] = self.biases[i][j][k]
+                        child1.biases[i][j][k] = self.biases[i][j][k]
+                        child2.biases[i][j][k] = other.biases[i][j][k]
                     else:
-                        child.biases[i][j][k] = other.biases[i][j][k]
-        return child
+                        child1.biases[i][j][k] = other.biases[i][j][k]
+                        child2.biases[i][j][k] = self.biases[i][j][k]
+        return child1, child2
 
     def save_as_json(self, filename, score):
         """Warning: no empty file : it needs to have a array called "gen" """
