@@ -59,7 +59,7 @@ class MonteCarlo(Strategy):
             try:
                 i += 1
                 n_leaf = self.select(current_tree, board)
-                n_child = self.expand(n_leaf, board)
+                n_child = self.expand(n_leaf, board, step)
                 if n_child is None:
                     return self.best_action(current_tree)
                 v = self.simulate(board, player, n_child["player"])
@@ -106,7 +106,7 @@ class MonteCarlo(Strategy):
                 best_score, best_child = score, child
         return self.select(best_child, board)
 
-    def expand(self, n_leaf, board):
+    def expand(self, n_leaf, board, step):
         """Expand the leaf node n_leaf. The board is updated to the state of the child node."""
         if n_leaf['n'] == 0:
             return n_leaf
@@ -114,9 +114,42 @@ class MonteCarlo(Strategy):
             return n_leaf
         actions = list(board.get_actions())
         n_child = None
-        for a in actions:
-            n_child = self.node_dict(parent=n_leaf, action_made=a)
-            n_leaf["childs"].append(n_child)
+
+        def evaluate(board, player, action):
+            params = [0.42071394720114674, 1, -1, 1, -1, 1, 0.5838536982992937, -1, -0.5954259580684425, 0.3312304375677593, 0.44191235823226904, 0.9899212066129495, 0.1799603945101671, 0.918889129472998, 0.10048777312002755, 0.10706584523671503, -0.31524518575522076, -0.9803229565820908, -0.5622079427119793, -1, 0.3012717505458522]
+            score = 0
+
+            score += board.get_score() * player * params[0]
+            score += board.get_number_of_tower_height(5 * player) * params[1]
+            score += board.get_number_of_tower_height(4 * player) * params[2]
+            score += board.get_number_of_tower_height(3 * player) * params[3]
+            score += board.get_number_of_tower_height(2 * player) * params[4]
+            score += board.get_number_of_tower_height(1 * player) * params[5]
+            score += board.get_number_of_tower_height(-5 * player) * params[6]
+            score += board.get_number_of_tower_height(-4 * player) * params[7]
+            score += board.get_number_of_tower_height(-3 * player) * params[8]
+            score += board.get_number_of_tower_height(-2 * player) * params[9]
+            score += board.get_number_of_tower_height(-1 * player) * params[10]
+        
+            return score
+
+        scores = []
+        if step < 16:
+            for a in actions:
+                board.play_action(a)
+                scores.append((evaluate(board, n_leaf["player"], a), a))
+                board.undo_action()
+
+            scores.sort(key=lambda x: x[0], reverse=True)
+            scores = scores[:int(len(scores) * 0.1)]
+
+            for a in scores:
+                n_child = self.node_dict(parent=n_leaf, action_made=a[1])
+                n_leaf["childs"].append(n_child)
+        else:
+            for a in actions:
+                n_child = self.node_dict(parent=n_leaf, action_made=a)
+                n_leaf["childs"].append(n_child)
         if n_child:
             board.play_action(n_child['action_made'])
         return n_child

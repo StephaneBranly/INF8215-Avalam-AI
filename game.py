@@ -583,7 +583,7 @@ if __name__ == "__main__":
         # agents = [genetic_agent2, MonteCarloAgent(play_fn=best_score)]
         # agents = [RandomAgent(), GreedyAgent()]
         # agents = [StepAnalystPlayer(MonteCarloAgent()), StepAnalystPlayer(MonteCarloAgent())]        
-        agents = [genetic_agent1, genetic_agent1]
+        agents = [genetic_agent2, MonteCarloAgent(play_fn=random_play)]
         # agents = [genetic_agent1, genetic_agent2]
         
         def get_agent_names():
