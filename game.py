@@ -571,7 +571,7 @@ if __name__ == "__main__":
         paramsEvaluateMCTSisoHeuristic = { 'mode': "evaluate", 'save': "mctsSimulationIso", 'generation': 34 }
         paramsEvaluateGetScoreHeuristic = { 'mode': "evaluate", 'save': "bestScore", 'generation': 1 }
         paramsEvaluateIDS = { 'mode': "evaluate", 'save': "IDSimproved", 'generation': 1 }
-        paramsTrainLinks = { 'mode': "train", 'save': "links", 'generation': 128 }
+        paramsTrainLinks = { 'mode': "train", 'save': "links", 'generation': 251 }
         # paramsEvaluateLinks = { 'mode': 'evaluate', 'save': 'links', 'generation': 117 }
         paramsEvaluateLinks = { 'mode': 'evaluate', 'save': 'links', 'generation': 117 }
 
