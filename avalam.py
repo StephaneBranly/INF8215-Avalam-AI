@@ -228,7 +228,6 @@ class ImprovedBoard(Board):
 
         super().__init__(percepts, max_height, invert)
 
-        self.test = test
         self.number_of_towers = {
             -5: 0,
             -4: 0,
