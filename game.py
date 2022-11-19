@@ -41,7 +41,6 @@ from stats.stats import generate_board_history_fig, generate_summary_file
 # Agent classes for multithreading
 from greedy_player import GreedyAgent
 from random_player import RandomAgent
-from genetic_observation_NN_player import ObservationNN1actionAgent
 from alpha_beta_genetic_agent import AlphaBetaGeneticAgent
 from monte_carlo_player import MonteCarloAgent
 from step_analyst_player import StepAnalystPlayer
@@ -558,13 +557,17 @@ if __name__ == "__main__":
             else:
                 agents[i] = RandomAgent()
 
-        genetic_agent1 = BestMoveGeneticAgent()
-        genetic_agent2 = BestMoveGeneticAgent()
-        paramsTrain = { 'mode': "train", 'save': "fullObsInit", 'generation':23 }
+        genetic_agent1 = AlphaBetaIDSGeneticAgent()
+        genetic_agent2 = AlphaBetaIDSGeneticAgent()
+        paramsTrain = { 'mode': "train", 'save': "test", 'generation':141 }
         paramsEvaluate1 = {
             "mode": "evaluate",
-            "save": "fun",
-            "generation": 0, }
+            "save": "test",
+            "generation": 179, }
+        paramsEvaluate2 = {
+            "mode": "evaluate",
+            "save": "test",
+            "generation": 140, }
         paramsEvaluatefullObsInit = { 'mode': "evaluate", 'save': "fullObsInit", 'generation': 40 }
         paramsTrainHeuristic = { 'mode': "train", 'save': "IDSimproved", 'generation': 1 }
         paramsEvaluateMCTSHeuristic = { 'mode': "evaluate", 'save': "mctsSimulation", 'generation': 99 }
@@ -583,7 +586,7 @@ if __name__ == "__main__":
         # agents = [genetic_agent2, MonteCarloAgent(play_fn=best_score)]
         # agents = [RandomAgent(), GreedyAgent()]
         # agents = [StepAnalystPlayer(MonteCarloAgent()), StepAnalystPlayer(MonteCarloAgent())]        
-        agents = [genetic_agent1, genetic_agent1]
+        agents = [RandomAgent(), genetic_agent1]
         # agents = [genetic_agent1, genetic_agent2]
         
         def get_agent_names():

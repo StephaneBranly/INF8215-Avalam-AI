@@ -9,11 +9,12 @@ from heuristic.Genetic1Action import Genetic1Action
 from heuristic.GeneticMultAction import GeneticMultAction
 from heuristic.GeneticSingleLoop import GeneticSingleLoop
 from heuristic.GeneticBoardEvaluation import GeneticBoardEvaluation
+from heuristic.NN_GeneticHeuristic import NNGeneticHeuristic
 from heuristic.stats import *
 from utils import key_value_or_default
 from matplotlib.backends.backend_pdf import PdfPages
 
-available_heuristics = [Genetic1Action, GeneticMultAction, GeneticSingleLoop, GeneticBoardEvaluation]
+available_heuristics = [Genetic1Action, GeneticMultAction, GeneticSingleLoop, GeneticBoardEvaluation,NNGeneticHeuristic]
 
 class GeneticAgent(EvolvedAgent):
     """
@@ -160,15 +161,16 @@ class GeneticAgent(EvolvedAgent):
                 f.write('{ \"gen\": []}')
                 f.close()
 
-                for l in range(self.individu):
+                for l in range(self.individu//2):
                     father = self.default_heuristic()
                     father.load_from_json(f"GeneticAgents/{self.save_path}/gen{self.current_gen}.json", results[random.randint(0, self.individu*self.keep//100)][0])
                     mother = self.default_heuristic()
                     mother.load_from_json(f"GeneticAgents/{self.save_path}/gen{self.current_gen}.json", results[random.randint(0, self.individu*self.keep//100)][0])
-                    child = father.crossover(mother)
-                    child.mutate(self.rate/100)
-                    
-                    child.save_as_json(f"GeneticAgents/{self.save_path}/gen{self.current_gen+1}.json", l)
+                    child1, child2 = father.crossover(mother)
+                    child1.mutate(self.rate/100)
+                    child2.mutate(self.rate/100)
+                    child1.save_as_json(f"GeneticAgents/{self.save_path}/gen{self.current_gen+1}.json", l*2)
+                    child1.save_as_json(f"GeneticAgents/{self.save_path}/gen{self.current_gen+1}.json", l*2+1)
                 self.current_gen += 1
 
                 self.load_heuristics_of_pool()
