@@ -15,14 +15,6 @@ class AlphaBetaIDSGeneticAgent(GeneticAgent, AlphaBetaIDS):
     def play_agent(self, agent, percepts, player, step, time_left, stats=True):
         board = dict_to_improved_board(percepts, True)
         start = time.time()
-        """if step<=12:
-            self.max_step=1
-        elif step<=16:
-            self.max_step=3
-        elif step<=20:
-            self.max_step=5
-        else:
-            self.max_step=8"""
         if time_left:
             time_to_play = time_left/((34-step)/2) if step < 34 else time_left/2
         action = self.use_strategy(board, player, step, 6000000 if time_left == None else time_to_play, other_params={'heuristic': agent, 'max_step': self.max_step}, stats=stats)
