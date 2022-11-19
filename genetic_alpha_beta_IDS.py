@@ -19,7 +19,7 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
 """
 import time
 from avalam import *
-from heuristic import *
+from heuristic_function import *
 from ImprovedBoard import *
 import math
 
