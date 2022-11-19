@@ -189,7 +189,7 @@ class GeneticAgent(EvolvedAgent):
         return "Genetic Agent"
 
     def generate_stats_file(self):
-        dfs = generate_dataframes(self.save_path)
+        dfs, best_individus = generate_dataframes(self.save_path)
         with PdfPages(f"GeneticAgents/{self.save_path}/stats.pdf") as pdf:
             fig = generate_header_page(self.save_path)
             pdf.savefig(fig)
@@ -198,7 +198,7 @@ class GeneticAgent(EvolvedAgent):
                     function_name = None
                 else:
                     function_name = self.current_heuristic.interprete_params()[param]
-                fig = plot_param_evolution(dfs, param, function_name)
+                fig = plot_param_evolution(dfs, param, function_name, best_individus)
                 pdf.savefig(fig)
 
     def argument_parser(self,agent, parser):
