@@ -557,13 +557,17 @@ if __name__ == "__main__":
             else:
                 agents[i] = RandomAgent()
 
-        genetic_agent1 = BestMoveGeneticAgent()
-        genetic_agent2 = BestMoveGeneticAgent()
-        paramsTrain = { 'mode': "train", 'save': "test", 'generation':0 }
+        genetic_agent1 = AlphaBetaIDSGeneticAgent()
+        genetic_agent2 = AlphaBetaIDSGeneticAgent()
+        paramsTrain = { 'mode': "train", 'save': "test", 'generation':141 }
         paramsEvaluate1 = {
             "mode": "evaluate",
-            "save": "fun",
-            "generation": 0, }
+            "save": "test",
+            "generation": 179, }
+        paramsEvaluate2 = {
+            "mode": "evaluate",
+            "save": "test",
+            "generation": 140, }
         paramsEvaluatefullObsInit = { 'mode': "evaluate", 'save': "fullObsInit", 'generation': 40 }
         paramsTrainHeuristic = { 'mode': "train", 'save': "IDSimproved", 'generation': 1 }
         paramsEvaluateMCTSHeuristic = { 'mode': "evaluate", 'save': "mctsSimulation", 'generation': 99 }
@@ -574,7 +578,7 @@ if __name__ == "__main__":
         # paramsEvaluateLinks = { 'mode': 'evaluate', 'save': 'links', 'generation': 117 }
         paramsEvaluateLinks = { 'mode': 'evaluate', 'save': 'links', 'generation': 117 }
 
-        genetic_agent1.setup(None, None, paramsTrain)
+        genetic_agent1.setup(None, None, paramsTrainLinks)
         # genetic_agent1.setup(None, None, paramsEvaluateIDS)
         genetic_agent2.setup(None, None, paramsEvaluatefullObsInit)
         # agents = [genetic_agent2, RandomAgent()]
@@ -582,7 +586,7 @@ if __name__ == "__main__":
         # agents = [genetic_agent2, MonteCarloAgent(play_fn=best_score)]
         # agents = [RandomAgent(), GreedyAgent()]
         # agents = [StepAnalystPlayer(MonteCarloAgent()), StepAnalystPlayer(MonteCarloAgent())]        
-        agents = [genetic_agent1, genetic_agent1]
+        agents = [RandomAgent(), genetic_agent1]
         # agents = [genetic_agent1, genetic_agent2]
         
         def get_agent_names():
