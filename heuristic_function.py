@@ -1,3 +1,23 @@
+#!/usr/bin/env python3
+"""
+Avalam agent.
+Copyright (C) 2022, BRANLY Stéphane et GUICHARD Amaury
+Polytechnique Montréal
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; version 2 of the License.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, see <http://www.gnu.org/licenses/>.
+
+"""
+
 ### Observation functions for GeneticBoardEvaluation
 
 
@@ -163,7 +183,10 @@ all_board_evaluation_functions = [
 
 class heuristic():
     def __init__(self):
+        # adresses des fonctions heuristiques utilisees
         self._functions = all_board_evaluation_functions
+
+        # poids associes aux fonctions heuristiques, poids appris par apprentissage genetique
         self._parameters = [1, 0.23925245828455366, -0.8181484992958412, 0.28686914814889386, -0.7216321371209762, 0.15360213462978645, -1, -1, -0.6765322286790754, -1, -1, 1, 0.03582411297467614, 0.5577908243743128, 1, -0.5121882152638122, -1, -0.9435076009143804, -1, -0.6735918128472957, 0.33117466761938186, -1, -0.4836084740661424, 0.24786234817358, -0.39480510777050437, 0.4036063877761802, -0.5674668997876433, -1, -0.41343415388698634, 0.8954955111776148, -0.000610865097223634, 0.05884335158860998, -0.05153401225549792, 1, 0.46976303813562237, 0.5217812967782662, 1, -0.7307078732950549, -0.5063841152387378]
 
     def __call__(self, board, player):

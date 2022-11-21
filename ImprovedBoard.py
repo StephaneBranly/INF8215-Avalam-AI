@@ -1,6 +1,27 @@
+#!/usr/bin/env python3
+"""
+Avalam agent.
+Copyright (C) 2022, BRANLY Stéphane et GUICHARD Amaury
+Polytechnique Montréal
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; version 2 of the License.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, see <http://www.gnu.org/licenses/>.
+
+"""
+
 from avalam import *
 
 class ImprovedBoard(Board):
+    # indique les zones appartenant au plateau ou non
     mask = [[True , True , False, False, True , True , True , True , True ],
             [True , False, False, False, False, True , True , True , True ],
             [True , False, False, False, False, False, False, True , True ],
@@ -26,6 +47,7 @@ class ImprovedBoard(Board):
 
         super().__init__(percepts, max_height, invert)
 
+        # dictionnaire pour compter les tours de chaque taille
         self.number_of_towers = {
             -5: 0,
             -4: 0,
@@ -41,6 +63,8 @@ class ImprovedBoard(Board):
         }
 
         self.compute_isolated_towers = compute_isolated_towers
+
+        # dictionnaire pour compter les tours isolées de chaque taille
         self.number_of_isolated_towers = {
             -5: 0,
             -4: 0,
@@ -55,6 +79,7 @@ class ImprovedBoard(Board):
             5: 0
         }
 
+        # dictionnaire pour compter chaque type d'action possible en fonction de la taille de la tour d'origine et de destination
         self.addable_towers = {
             111: 0,
             121: 0,
@@ -76,8 +101,10 @@ class ImprovedBoard(Board):
             -231: 0,     
         }
        
+        # tableau contenant toutes les actions possibles
         self.available_actions = []
 
+        # initialisation des differents attributs a la reception des percepts
         for i in range(self.rows):
             for j in range(self.columns):
                 if (i, j) in self.real_board:
@@ -86,8 +113,10 @@ class ImprovedBoard(Board):
                         self.available_actions += actions
                         self.actions_by_tower[i][j]=len(actions)
                         if self.actions_by_tower[i][j] == 0:
+                            # si une tour n'a pas d'actions possibles, alors elle est isolee
                             self.number_of_isolated_towers[self.m[i][j]] += 1
                         else:
+                            # sinon, on refere chaque type d'action possible
                             for a in actions:
                                 self.compute_addable_towers(a, 1/2)
                     self.number_of_towers[self.m[i][j]] += 1
@@ -101,12 +130,12 @@ class ImprovedBoard(Board):
             print(action)
             print(self.last_action)
         
-        # Before Action
-        ## Tower count
+        # AVANT L'ACTION, on fait comme si l'on supprimait la tour de destination et la tour d'origine
+        ## Comptage des tours
         self.number_of_towers[self.m[action[0]][action[1]]] -= 1
         self.number_of_towers[self.m[action[2]][action[3]]] -= 1
 
-        ## Available actions count
+        ## Comptage des tours isolees, actions et actions par tour
         if self.compute_isolated_towers:
             for i in range(-1,2):
                 for j in range(-1,2):
@@ -133,17 +162,17 @@ class ImprovedBoard(Board):
                                 self.number_of_isolated_towers[self.m[a[0]][a[1]]] += 1
             self.compute_addable_towers(action, +1)
 
-        ## Save action
+        ## On sauvegarde l'action faite
         self.last_action.append((action, self.m[action[0]][action[1]], self.m[action[2]][action[3]]))
 
         # Action
         r = super().play_action(action)
 
-        # After Action
-        ## Tower count
+        # APRES L'ACTION, on fait comme si on ajoutait une tour
+        ## Comptage des tours
         self.number_of_towers[self.m[action[2]][action[3]]] += 1
         
-        ## Available actions count
+        ## Comptage des tours isolees, actions et actions par tour
         if self.compute_isolated_towers:
             self.actions_by_tower[action[0]][action[1]] = 0
             self.actions_by_tower[action[2]][action[3]] = 0
@@ -168,11 +197,11 @@ class ImprovedBoard(Board):
         if len(self.last_action):
             action, s, e = self.last_action.pop()
 
-            # Before Undo Action
-            ## Tower count
+            # AVANT UNDO ACTION
+            ## Comptage des tours
             self.number_of_towers[self.m[action[2]][action[3]]] -= 1
 
-            ## Available actions count
+            ## Comptage des tours isolees, actions et actions par tour
             if self.compute_isolated_towers:
                 for i in range(-1,2):
                     for j in range(-1,2):
@@ -187,16 +216,16 @@ class ImprovedBoard(Board):
                 if self.actions_by_tower[action[2]][action[3]] == 0:
                     self.number_of_isolated_towers[self.m[action[2]][action[3]]] -= 1
 
-            # Undo Action
+            # UNDO ACTION
             self.m[action[0]][action[1]] = s
             self.m[action[2]][action[3]] = e
 
-            # After Undo Action
-            ## Tower count
+            # APRES UNDO L'ACTION, on fait comme si on ajoutait une tour
+            ## Comptage des tours
             self.number_of_towers[s] += 1
             self.number_of_towers[e] += 1
 
-            ## Available actions count
+            ## Comptage des tours isolees, actions et actions par tour
             if self.compute_isolated_towers:
                 self.actions_by_tower[action[2]][action[3]] = -1
                 self.actions_by_tower[action[0]][action[1]] = -1
@@ -259,6 +288,7 @@ class ImprovedBoard(Board):
         return useful_towers
 
     def is_wall(self, i, j):
+        """Return if a cell is a wall"""
         return not self.mask[i][j]
 
     def compute_addable_towers(self, action, delta):
@@ -321,6 +351,7 @@ class ImprovedBoard(Board):
     def get_score(self):
         score = 0
 
+        # optimisation du get score
         for i in range(-5, 6):
             score += self.number_of_towers[i] * (1 if i > 0 else -1 if i < 0 else 0)
         if score == 0:
@@ -328,6 +359,7 @@ class ImprovedBoard(Board):
         return score
 
     def get_actions(self):
+        # optimisation du get action
         if self.compute_isolated_towers:
             for a in self.available_actions:
                 yield a

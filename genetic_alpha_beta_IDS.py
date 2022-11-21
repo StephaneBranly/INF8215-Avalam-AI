@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Avalam agent.
-Copyright (C) 2022, <<<<<<<<<<< YOUR NAMES HERE >>>>>>>>>>>
+Copyright (C) 2022, BRANLY Stéphane et GUICHARD Amaury
 Polytechnique Montréal
 
 This program is free software; you can redistribute it and/or modify
@@ -23,14 +23,13 @@ from heuristic_function import *
 from ImprovedBoard import *
 import math
 
-
-
-
 class MyAgent(Agent):
 
     def __init__(self):
+        # ratio de trimming calculés empiriquement
         self.trimming_ratios = {6:{2:4.43,3:28.68},8:{2:3.62,3:32.08},10:{2:3.62,3:27.12},12:{2:4.33,3:26.17,4:4.32},13:{2:2.94},14:{2:3.77,3:22.14,4:3.82},15:{2:4.97},16:{2:4.0,3:18.92,4:2.62,5:9.13},17:{2:3.53},18:{2:3.48,3:17.09,4:3.9,5:6.9},20:{2:3.65,3:16.19,4:3.36,5:6.65},21:{2:4.0,3:10.47},22:{2:3.24,3:11.12,4:2.92,5:5.91,6:2.84,7:3.76},23:{2:3.56,3:9.05,4:2.51},24:{2:3.27,3:9.0,4:2.32,5:5.2,6:2.36,7:2.4},25:{2:5.26,3:6.77,4:2.56},26:{2:3.14,3:6.09,4:2.41,5:3.47,6:1.63,7:1.87,8:0.43},27:{2:3.73,3:4.5,4:2.31,5:3.8,6:1.19,7:2.04},28:{2:2.84,3:4.02,4:1.87,5:2.02,6:1.16,7:0.75,8:0.85},29:{2:2.57,3:3.03,4:1.97,5:2.35,6:2.57,7:0.87,8:1.06},30:{2:2.35,3:2.18,4:1.23,5:0.89,6:0.95,7:0.99,8:1.0},31:{2:2.43,3:2.35,4:1.42,5:0.76,6:1.17,7:1.03,8:0.91}}
 
+        # definition de l'objet heuristique utilisé pour l'algorithme Alpha Beta
         self.heuristic_core = heuristic()
         super().__init__()
 
@@ -87,14 +86,6 @@ class MyAgent(Agent):
             # si on a le temps de parcourir la profondeur en entier on stocke l'action retournée
             if(time.time()-start<time_to_play or depth==1):
                 action = m
-        
-        print("depth: ", depth)
-        if finished:
-            print("finished : ",end="")
-            if v > 0:
-                print("player",player, "win")
-            else:
-                print("player",player, "lose")
 
         return action
 
@@ -188,10 +179,6 @@ class MyAgent(Agent):
 
     def heuristic(self, board, player) -> float:
         return self.heuristic_core(board,player)
-
-
-
-
 
 if __name__ == "__main__":
     agent_main(MyAgent())
