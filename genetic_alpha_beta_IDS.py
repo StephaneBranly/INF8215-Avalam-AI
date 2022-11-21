@@ -55,7 +55,6 @@ class MyAgent(Agent):
         # step charnieres, grace au trimming on fini la partie avec "trop de temps" ici on augmente le temps alloue car ca permet de visiter une profondeur supplementaire
         if step > 17 and step < 25:
             time_to_play *= 1.75
-        print(time_left, time_to_play)
 
         # voir improved board
         board = dict_to_improved_board(percepts,True)
@@ -64,13 +63,13 @@ class MyAgent(Agent):
         if step <= 5:
             max_depth = 1
         else:
-            max_depth = 15
+            max_depth = 35
         
         depth = 0
         last_time = 0
-
+        finished = False
         #tant qu'il nous reste du temps qu'on a pas parcouru tte les depth autorisé et qu'il reste assez de temps pour parcourir la depth suivante (voir trimming)
-        while time.time()-start<time_to_play and depth<max_depth and not self.need_trimming(step,depth,start,time_to_play,last_time):
+        while time.time()-start<time_to_play and depth<max_depth and not self.need_trimming(step,depth,start,time_to_play,last_time) and not finished:
 
             new_start = time.time()
             depth += 1
@@ -81,73 +80,86 @@ class MyAgent(Agent):
                 hashMaps.append({})
             
             # visite jusqu'a une certaine profondeur
-            v, m = self.max(board, player, -math.inf, math.inf, 0, depth, hashMaps, start, time_to_play)
+            v, m, finished = self.max(board, player, -math.inf, math.inf, 0, depth, hashMaps, start, time_to_play)
 
 
             last_time = time.time()-new_start
             # si on a le temps de parcourir la profondeur en entier on stocke l'action retournée
             if(time.time()-start<time_to_play or depth==1):
                 action = m
+        
+        print("depth: ", depth)
+        if finished:
+            print("finished : ",end="")
+            if v > 0:
+                print("player",player, "win")
+            else:
+                print("player",player, "lose")
 
         return action
 
     def min(self, board, player, alpha, beta, depth, max_depth, hash_maps, start, time_to_play):
         
-        v,m = self.trivial_case(board, player, depth, max_depth, hash_maps, start, time_to_play)
+        v,m, finished = self.trivial_case(board, player, depth, max_depth, hash_maps, start, time_to_play)
         if v is not None:
-            return (v,m)
+            return (v,m, finished)
 
         v,m = (math.inf,None)
 
         actions = [a for a in board.get_actions()]
         actions.sort(key=lambda a: self.sort_evaluate(board, a, player), reverse=False)
 
+        finished = True
         for a in actions:
             board.play_action(a)
-            nV, _ = self.max(board, player, alpha, beta, depth+1, max_depth, hash_maps, start, time_to_play)
+            nV, _, nFinished = self.max(board, player, alpha, beta, depth+1, max_depth, hash_maps, start, time_to_play)
             board.undo_action()
+            if(not nFinished):
+                finished = False
             if nV < v:
                 v = nV
                 m = a
                 beta = min(beta, v)
             if v <= alpha:
-                self.save_hash(board, depth, hash_maps, v, m)
-                return (v,m)
+                self.save_hash(board, depth, hash_maps, v, m, finished)
+                return (v,m,finished)
 
-        self.save_hash(board, depth, hash_maps, v, m)
-        return (v,m)
+        self.save_hash(board, depth, hash_maps, v, m, finished)
+        return (v,m,finished)
 
     def max(self, board, player, alpha, beta, depth, max_depth, hash_maps, start, time_to_play):
-        v,m = self.trivial_case(board, player, depth, max_depth, hash_maps, start, time_to_play)
+        v,m,finished = self.trivial_case(board, player, depth, max_depth, hash_maps, start, time_to_play)
         if v is not None:
-            return (v,m)
+            return (v,m,finished)
         
         v,m = (-math.inf,None)
 
         actions = [a for a in board.get_actions()]
         actions.sort(key=lambda a: self.sort_evaluate(board, a, player), reverse=True)
-
+        finished = True
         for a in actions:
             board.play_action(a)
-            nV, _ = self.min(board, player, alpha, beta, depth+1, max_depth, hash_maps, start, time_to_play)
+            nV, _, nFinished = self.min(board, player, alpha, beta, depth+1, max_depth, hash_maps, start, time_to_play)
             board.undo_action()
+            if(not nFinished):
+                finished = False
             if nV > v:
                 v = nV
                 m = a
                 alpha = max(alpha, v)
             if v >= beta:
-                self.save_hash(board, depth, hash_maps, v, m)
-                return (v,m)
+                self.save_hash(board, depth, hash_maps, v, m, finished)
+                return (v,m,finished)
 
-        self.save_hash(board, depth, hash_maps, v, m)
-        return (v,m)
+        self.save_hash(board, depth, hash_maps, v, m, finished)
+        return (v,m,finished)
 
 
-    def save_hash(self, board, depth, hash_maps, v, m):
+    def save_hash(self, board, depth, hash_maps, v, m, finished = False):
         # NB si deux etats sont identiques, ils sont forcement à la meme step/depth
         if depth > 1:
             hash = board.get_hash()
-            hash_maps[depth][hash] = (v,m)
+            hash_maps[depth][hash] = (v,m,finished)
         
 
     def sort_evaluate(self,board,action,player):
@@ -160,19 +172,19 @@ class MyAgent(Agent):
 
         # partie terminée 
         if board.is_finished():
-            return (1000000*player*board.get_score(),None)
+            return (1000000*player*board.get_score(),None,True)
         
         # fin exploration
         if depth >= max_depth or time.time()-start > time_to_play:
-            return (self.heuristic(board,player),None)
+            return (self.heuristic(board,player),None,False)
         
         # etat deja visité 
         if depth >= 1:
             h = board.get_hash()
             if h in hash_maps[depth]:
-                return (hash_maps[depth][h][0],hash_maps[depth][h][1])
+                return (hash_maps[depth][h][0],hash_maps[depth][h][1],hash_maps[depth][h][2])
 
-        return (None,None)
+        return (None,None,False)
 
     def heuristic(self, board, player) -> float:
         return self.heuristic_core(board,player)
