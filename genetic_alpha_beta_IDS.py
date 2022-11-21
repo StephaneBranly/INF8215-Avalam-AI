@@ -53,7 +53,7 @@ class MyAgent(Agent):
         time_to_play = time_left/((34-step)/2) if step < 34 else time_left/2
 
         # step charnieres, grace au trimming on fini la partie avec "trop de temps" ici on augmente le temps alloue car ca permet de visiter une profondeur supplementaire
-        if player == 1 and step > 17 and step < 25:
+        if step > 17 and step < 25:
             time_to_play *= 1.75
         print(time_left, time_to_play)
 
