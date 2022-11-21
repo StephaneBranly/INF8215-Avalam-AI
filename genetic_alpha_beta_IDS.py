@@ -91,20 +91,24 @@ class MyAgent(Agent):
 
     def min(self, board, player, alpha, beta, depth, max_depth, hash_maps, start, time_to_play):
         
+        # verification des cas triviaux
         v,m, finished = self.trivial_case(board, player, depth, max_depth, hash_maps, start, time_to_play)
         if v is not None:
             return (v,m, finished)
 
         v,m = (math.inf,None)
 
+        # tri des actions pour optimiser le pruning
         actions = [a for a in board.get_actions()]
         actions.sort(key=lambda a: self.sort_evaluate(board, a, player), reverse=False)
 
         finished = True
+        # parcours min max avec pruning
         for a in actions:
             board.play_action(a)
             nV, _, nFinished = self.max(board, player, alpha, beta, depth+1, max_depth, hash_maps, start, time_to_play)
             board.undo_action()
+            # si un etat non parcouru jusqu'au bout, on ne peut pas dire que la partie est finie 
             if(not nFinished):
                 finished = False
             if nV < v:
@@ -119,19 +123,25 @@ class MyAgent(Agent):
         return (v,m,finished)
 
     def max(self, board, player, alpha, beta, depth, max_depth, hash_maps, start, time_to_play):
+
+        # verification des cas triviaux
         v,m,finished = self.trivial_case(board, player, depth, max_depth, hash_maps, start, time_to_play)
         if v is not None:
             return (v,m,finished)
         
         v,m = (-math.inf,None)
 
+        # tri des actions pour opti le pruning
         actions = [a for a in board.get_actions()]
         actions.sort(key=lambda a: self.sort_evaluate(board, a, player), reverse=True)
+
+        # parcours min max avec pruning
         finished = True
         for a in actions:
             board.play_action(a)
             nV, _, nFinished = self.min(board, player, alpha, beta, depth+1, max_depth, hash_maps, start, time_to_play)
             board.undo_action()
+            # si un etat non parcouru jusqu'au bout, on ne peut pas dire que la partie est finie 
             if(not nFinished):
                 finished = False
             if nV > v:
@@ -161,7 +171,7 @@ class MyAgent(Agent):
 
     def trivial_case(self, board, player, depth, max_depth, hash_maps, start, time_to_play):
 
-        # partie terminée 
+        # partie terminée (finished est a true)
         if board.is_finished():
             return (1000000*player*board.get_score(),None,True)
         
