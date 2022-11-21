@@ -44,8 +44,6 @@ class MyAgent(Agent):
 
     def play(self, percepts, player, step, time_left):
 
-        print("step: ", step)
-
         start = time.time()
 
         # on determine le temps du coup, une partie fait en moyenne 34-35 coups donc on divise le temps restant par le nombre de step a jouer
