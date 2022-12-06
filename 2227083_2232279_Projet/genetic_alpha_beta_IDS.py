@@ -84,7 +84,7 @@ class MyAgent(Agent):
             # si on a le temps de parcourir la profondeur en entier on stocke l'action retournée
             if(time.time()-start<time_to_play or depth==1):
                 action = m
-             
+
         return action
 
     def min(self, board, player, alpha, beta, depth, max_depth, hash_maps, start, time_to_play):
