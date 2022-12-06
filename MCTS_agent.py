@@ -38,9 +38,9 @@ class MyAgent(Agent):
             if step in [1,2]:
                 self.game_time_limit = time_left
             alpha = 0.00001
-            beta = 2/18 - 2*alpha
+            beta = 2/19 - 2*alpha
             cstep = (step - step % 2)/2 + 1
-            time_to_play = self.game_time_limit * ((beta - alpha)/(1 - 18) * (cstep - 18) + alpha)
+            time_to_play = self.game_time_limit * ((beta - alpha)/(1 - 19) * (cstep - 19) + alpha)
             if time_to_play<=1:
                 time_to_play = 1
         else:
