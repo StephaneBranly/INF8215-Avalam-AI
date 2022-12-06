@@ -17,7 +17,6 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 """
-import time
 from avalam import *
 from heuristic_function import *
 from ImprovedBoard import *
@@ -26,11 +25,8 @@ import math
 class MyAgent(Agent):
 
     def __init__(self):
-
         self.heuristic_core = heuristic()
         super().__init__()
-
-
 
     def play(self, percepts, player, step, time_left):
         max = -math.inf
