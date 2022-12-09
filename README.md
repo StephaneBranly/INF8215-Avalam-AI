@@ -1,6 +1,6 @@
 # Avalam-AI
 
-Some ideas available [here](https://md.picasoft.net/s/4HP7m5HFT)
+Check the [project report](./Rapport.pdf)
 
 ## Class diagram
 
